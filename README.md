@@ -1,36 +1,70 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Culcheth & Glazebury Residents Association
 
-## Getting Started
+Community website for the Culcheth and Glazebury Residents Association. Built with **Next.js 15**, deployed on **Vercel**, and backed by **Neon** (serverless Postgres).
 
-First, run the development server:
+## Stack
+
+- **Next.js 15** (App Router, React 19, TypeScript)
+- **Vercel** – hosting, serverless, Blob storage
+- **Neon** – serverless PostgreSQL
+- **NextAuth v5** – credentials auth, JWT session
+- **Tailwind CSS** – styling
+- **Nodemailer** – SMTP (admin-configured; contact form + assignment emails)
+
+## Getting started
+
+### 1. Install dependencies
+
+```bash
+npm install
+```
+
+### 2. Database
+
+1. Create a project and database at [neon.tech](https://neon.tech).
+2. Run the schema in the Neon SQL Editor: copy and execute `scripts/schema.sql`.
+3. Add your first admin user (e.g. via SQL): insert into `users` with `role = 'admin'` and a bcrypt-hashed password, or sign up normally then set `role = 'admin'` in the DB.
+
+### 3. Environment variables
+
+Copy `.env.example` to `.env.local` and set:
+
+- **DATABASE_URL** – Neon connection string (with `?sslmode=require`).
+- **NEXTAUTH_SECRET** – e.g. `openssl rand -base64 32`.
+- **NEXTAUTH_URL** – `http://localhost:3000` locally; your production URL on Vercel.
+- **ENCRYPTION_KEY** – used to encrypt the SMTP password stored in the admin Settings (e.g. 32-character random string).
+
+Optional for gallery uploads:
+
+- **BLOB_READ_WRITE_TOKEN** – from Vercel when Blob is enabled.
+
+### 4. Run the dev server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000). Sign up, then set your user’s `role` to `admin` in Neon to access the admin panel.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Features
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **Public**: Home, News, Gallery, Contact, About, Terms, Privacy, Cookies.
+- **Auth**: Sign up / Sign in (NextAuth Credentials + JWT). Middleware protects `/admin` (admin only) and `/forum` (signed-in only).
+- **Forum**: Categories, threads, replies. Add categories under Admin → Forum.
+- **Contact**: Form sends email to your inbox (Proton Mail or any address) and stores messages in the DB. Configure SMTP under Admin → Settings.
+- **Messages**: Admin can assign contact messages to other admins; assigning sends an email to that admin.
+- **News**: Admin CRUD; public list and post pages.
+- **Gallery**: Admin uploads (Vercel Blob); public grid.
 
 ## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Push to GitHub and import the repo in Vercel.
+2. Set environment variables: `DATABASE_URL`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`, `ENCRYPTION_KEY`. Optionally enable Vercel Blob and add `BLOB_READ_WRITE_TOKEN`.
+3. Deploy. Run `scripts/schema.sql` in Neon if the DB is new.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Scripts
+
+- `npm run dev` – development (Turbopack)
+- `npm run build` – production build
+- `npm run start` – run production build locally
+- `npm run lint` – ESLint
