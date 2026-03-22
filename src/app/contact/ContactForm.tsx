@@ -1,10 +1,11 @@
 "use client";
 
 import { useActionState } from "react";
-import { submitContact, type ContactResult } from "@/app/actions/contact";
+import { submitContact } from "@/app/actions/contact";
 import { Input, Textarea, Button } from "@/components/ui";
+import type { ContactContent } from "@/lib/site-content";
 
-export function ContactForm() {
+export function ContactForm({ labels }: { labels: ContactContent }) {
   const [state, formAction] = useActionState(submitContact, null);
 
   return (
@@ -21,35 +22,35 @@ export function ContactForm() {
       )}
       <form action={formAction} className="mt-8 flex flex-col gap-5">
         <Input
-          label="Your name"
+          label={labels.labelName}
           name="name"
           type="text"
           required
           placeholder="Jane Smith"
         />
         <Input
-          label="Email"
+          label={labels.labelEmail}
           name="email"
           type="email"
           required
           placeholder="you@example.com"
         />
         <Input
-          label="Subject"
+          label={labels.labelSubject}
           name="subject"
           type="text"
           required
           placeholder="Brief subject"
         />
         <Textarea
-          label="Message"
+          label={labels.labelMessage}
           name="body"
           required
           placeholder="Your message..."
           rows={5}
         />
         <Button type="submit" className="w-full">
-          Send message
+          {labels.labelSubmit}
         </Button>
       </form>
     </>

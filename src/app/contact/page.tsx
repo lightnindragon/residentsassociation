@@ -1,16 +1,18 @@
+import { getContactContent } from "@/lib/site-content";
 import { ContactForm } from "./ContactForm";
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const content = await getContactContent();
+
   return (
     <div className="mx-auto max-w-xl px-4 py-16 sm:px-6">
       <h1 className="font-heading text-3xl font-semibold text-[var(--foreground)]">
-        Contact us
+        {content.title}
       </h1>
       <p className="mt-2 text-[var(--color-muted)]">
-        Send a message to the residents association. We’ll get back to you as
-        soon as we can.
+        {content.description}
       </p>
-      <ContactForm />
+      <ContactForm labels={content} />
     </div>
   );
 }

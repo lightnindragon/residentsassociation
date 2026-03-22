@@ -3,6 +3,7 @@
 import { getSql } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
+import { getCategoryForumPath, forumCategoryUrl, forumThreadUrl } from "@/lib/forum-paths";
 
 export async function createThread(
   _prev: { error?: string } | null,
@@ -18,15 +19,21 @@ export async function createThread(
 
   try {
     const sql = getSql();
-    const [cat] = await sql`
-      SELECT slug FROM forum_categories WHERE id = ${categoryId}::uuid LIMIT 1
-    `;
-    const slug = (cat as { slug: string })?.slug;
-    await sql`
+    const [urow] = await sql`SELECT banned FROM users WHERE id = ${user.id}::uuid LIMIT 1`;
+    if ((urow as { banned?: boolean })?.banned) return { error: "Your account cannot post." };
+    const [inserted] = await sql`
       INSERT INTO forum_threads (category_id, title, author_id)
       VALUES (${categoryId}::uuid, ${title}, ${user.id}::uuid)
+      RETURNING id
     `;
-    revalidatePath(slug ? `/forum/${slug}` : "/forum");
+    const newThreadId = (inserted as { id: string })?.id;
+    if (newThreadId) {
+      const { notifyForumNewThread } = await import("@/lib/forum-notify");
+      void notifyForumNewThread(newThreadId, user.id);
+    }
+    const paths = await getCategoryForumPath(categoryId);
+    if (paths) revalidatePath(forumCategoryUrl(paths.areaSlug, paths.categorySlug));
+    revalidatePath("/forum");
     return null;
   } catch (e) {
     console.error(e);
@@ -48,6 +55,8 @@ export async function createReply(
 
   try {
     const sql = getSql();
+    const [urow] = await sql`SELECT banned FROM users WHERE id = ${user.id}::uuid LIMIT 1`;
+    if ((urow as { banned?: boolean })?.banned) return { error: "Your account cannot post." };
     const [thread] = await sql`
       SELECT locked, category_id FROM forum_threads WHERE id = ${threadId}::uuid LIMIT 1
     `;
@@ -61,11 +70,11 @@ export async function createReply(
     await sql`
       UPDATE forum_threads SET updated_at = NOW() WHERE id = ${threadId}::uuid
     `;
-    const [cat] = await sql`
-      SELECT slug FROM forum_categories WHERE id = ${t?.category_id}::uuid LIMIT 1
-    `;
-    const slug = (cat as { slug: string })?.slug;
-    revalidatePath(`/forum/${slug}/${threadId}`);
+    const { notifyForumNewReply } = await import("@/lib/forum-notify");
+    void notifyForumNewReply(threadId, user.id, body);
+    const paths = t ? await getCategoryForumPath(t.category_id) : null;
+    if (paths) revalidatePath(forumThreadUrl(paths.areaSlug, paths.categorySlug, threadId));
+    revalidatePath("/forum");
     return null;
   } catch (e) {
     console.error(e);

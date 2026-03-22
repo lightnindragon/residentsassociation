@@ -21,8 +21,17 @@ export async function uploadImage(
       INSERT INTO gallery_images (url, caption)
       VALUES (${blob.url}, ${caption})
     `;
+    try {
+      await sql`
+        INSERT INTO media_assets (url, label, source)
+        VALUES (${blob.url}, ${caption}, 'gallery')
+      `;
+    } catch {
+      // media_assets table may not exist on older DBs
+    }
     revalidatePath("/gallery");
     revalidatePath("/admin/gallery");
+    revalidatePath("/admin/media");
     return null;
   } catch (e) {
     console.error(e);

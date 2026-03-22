@@ -20,12 +20,10 @@ export async function submitContact(
 
   try {
     const sql = getSql();
-    const rows = await sql`
+    await sql`
       INSERT INTO contact_messages (name, email, subject, body, status)
-      VALUES (${name}, ${email}, ${subject}, ${body}, 'new')
-      RETURNING id
+      VALUES (${name}, ${email}, ${subject}, ${body}, 'unresponded')
     `;
-    const id = (rows[0] as { id: string })?.id;
 
     const sendResult = await sendContactEmail({
       to: email,

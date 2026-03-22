@@ -3,16 +3,35 @@
 import { getSmtpConfig } from "@/lib/email";
 import nodemailer from "nodemailer";
 
+function getTransport(config: { host: string; port: number; user: string; password: string }) {
+  return nodemailer.createTransport({
+    host: config.host,
+    port: config.port,
+    secure: config.port === 465,
+    auth: config.user && config.password ? { user: config.user, pass: config.password } : undefined,
+  });
+}
+
+export async function testConnection(): Promise<{ ok: boolean; error?: string }> {
+  const config = await getSmtpConfig();
+  if (!config) return { ok: false, error: "SMTP not configured. Save settings first." };
+  try {
+    const transport = getTransport(config);
+    await transport.verify();
+    return { ok: true };
+  } catch (e) {
+    return {
+      ok: false,
+      error: e instanceof Error ? e.message : "Connection failed",
+    };
+  }
+}
+
 export async function sendTestEmail(): Promise<{ ok: boolean; error?: string }> {
   const config = await getSmtpConfig();
   if (!config) return { ok: false, error: "SMTP not configured" };
   try {
-    const transport = nodemailer.createTransport({
-      host: config.host,
-      port: config.port,
-      secure: config.port === 465,
-      auth: config.user && config.password ? { user: config.user, pass: config.password } : undefined,
-    });
+    const transport = getTransport(config);
     await transport.sendMail({
       from: config.from_address || config.contact_inbox,
       to: config.contact_inbox,

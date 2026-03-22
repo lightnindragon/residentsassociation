@@ -3,7 +3,7 @@
 import bcrypt from "bcryptjs";
 import { getSql } from "@/lib/db";
 
-export type SignUpResult = { error?: string } | null;
+export type SignUpResult = { error?: string; pendingApproval?: boolean } | null;
 
 export async function signUp(
   _prev: SignUpResult,
@@ -28,12 +28,13 @@ export async function signUp(
     if (existing.length > 0) {
       return { error: "An account with this email already exists." };
     }
+    const notifyBlog = formData.get("notify_new_blog") === "1";
     const password_hash = await bcrypt.hash(password, 12);
     await sql`
-      INSERT INTO users (email, password_hash, name, role)
-      VALUES (${email}, ${password_hash}, ${name}, 'user')
+      INSERT INTO users (email, password_hash, name, role, approved, notify_new_blog)
+      VALUES (${email}, ${password_hash}, ${name}, 'user', false, ${notifyBlog})
     `;
-    return {};
+    return { pendingApproval: true };
   } catch (e) {
     console.error(e);
     return { error: "Something went wrong. Please try again." };

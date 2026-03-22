@@ -6,17 +6,26 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "create-admin": "node --env-file=.env.local scripts/create-admin.js"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",
+    "@tiptap/extension-image": "^3.20.4",
+    "@tiptap/extension-link": "^3.20.4",
+    "@tiptap/extension-placeholder": "^3.20.4",
+    "@tiptap/pm": "^3.20.4",
+    "@tiptap/react": "^3.20.4",
+    "@tiptap/starter-kit": "^3.20.4",
     "@vercel/blob": "^2.3.1",
     "bcryptjs": "^3.0.3",
+    "isomorphic-dompurify": "^3.5.1",
     "next": "16.1.7",
     "next-auth": "^5.0.0-beta.30",
     "nodemailer": "^8.0.2",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "sonner": "^2.0.7"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

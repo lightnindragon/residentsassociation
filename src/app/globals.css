@@ -21,20 +21,7 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0c0a09;
-    --foreground: #fafaf9;
-    --color-primary: #2dd4bf;
-    --color-primary-hover: #5eead4;
-    --color-primary-muted: #134e4a;
-    --color-accent: #fbbf24;
-    --color-accent-hover: #fcd34d;
-    --color-muted: #a8a29e;
-    --color-border: #292524;
-    --color-card: #1c1917;
-  }
-}
+/* Light theme only – residents association, not dev/tech; no dark mode. */
 
 body {
   background: var(--background);

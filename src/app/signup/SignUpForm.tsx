@@ -10,7 +10,11 @@ export function SignUpForm() {
   const [state, formAction] = useActionState(async (prev: SignUpResult | null, formData: FormData) => {
     const result = await signUp(prev, formData);
     if (result && !result.error) {
-      router.push("/login?registered=1");
+      if (result.pendingApproval) {
+        router.push("/login?pending=1");
+      } else {
+        router.push("/login?registered=1");
+      }
       return null;
     }
     return result ?? null;
@@ -49,6 +53,10 @@ export function SignUpForm() {
           placeholder="At least 8 characters"
           autoComplete="new-password"
         />
+        <label className="flex cursor-pointer items-start gap-2 text-sm text-[var(--foreground)]">
+          <input type="checkbox" name="notify_new_blog" value="1" className="mt-1" />
+          <span>Email me when a new blog article is published</span>
+        </label>
         <Button type="submit" className="w-full">
           Sign up
         </Button>
