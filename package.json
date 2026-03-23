@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "create-admin": "node --env-file=.env.local scripts/create-admin.js"
+    "create-admin": "node --env-file=.env.local scripts/create-admin.js",
+    "upload-site-logo": "node --env-file=.env.local scripts/upload-site-logo.js"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",

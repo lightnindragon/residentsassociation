@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { auth, signOut } from "@/lib/auth";
 import { Button } from "@/components/ui";
 import { getDonationSettings } from "@/lib/donations";
@@ -7,6 +8,7 @@ import { getHeaderNewsCategories } from "@/lib/news-nav";
 import { getSiteSettings } from "@/lib/site-settings";
 import { NewsNav } from "@/components/NewsNav";
 import { SocialIconLinks } from "@/components/SocialIconLinks";
+import { getHeaderLogoSrc } from "@/lib/branding";
 
 export async function Header() {
   const session = await auth();
@@ -16,15 +18,24 @@ export async function Header() {
   const showDonate = !!session?.user && donationSettings?.enabled === true;
   const newsCategories = await getHeaderNewsCategories();
   const social = await getSiteSettings();
+  const logoSrc = getHeaderLogoSrc();
 
   return (
     <header className="sticky top-0 z-50 border-b border-[var(--color-border)] bg-[var(--color-card)]/95 backdrop-blur supports-[backdrop-filter]:bg-[var(--color-card)]/80">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
         <Link
           href="/"
-          className="shrink-0 font-heading text-xl font-semibold text-[var(--foreground)]"
+          className="flex shrink-0 items-center text-[var(--foreground)]"
         >
-          Culcheth & Glazebury RA
+          <Image
+            src={logoSrc}
+            alt="Culcheth &amp; Glazebury Residents Association"
+            width={200}
+            height={48}
+            className="h-9 w-auto max-h-9 max-w-[10.5rem] object-contain object-left sm:h-10 sm:max-h-10 sm:max-w-[12rem]"
+            sizes="(max-width: 640px) 168px, 192px"
+            priority
+          />
         </Link>
         <nav className="flex flex-wrap items-center justify-end gap-x-4 gap-y-2 text-sm">
           <NewsNav categories={newsCategories} />
