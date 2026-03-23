@@ -14,6 +14,54 @@ async function requireAdminRole() {
   if (role !== "admin" && role !== "dev") throw new Error("Forbidden");
 }
 
+export async function addResident(formData: FormData): Promise<{ ok: boolean; error?: string }> {
+  try {
+    await requireAdminRole();
+    const email = formData.get("email")?.toString()?.trim()?.toLowerCase();
+    const password = formData.get("password")?.toString();
+    const name = formData.get("name")?.toString()?.trim();
+    const forum_username = formData.get("forum_username")?.toString()?.trim() || null;
+    const forum_town = formData.get("forum_town")?.toString()?.trim() || null;
+    const address = formData.get("address")?.toString()?.trim() || null;
+    const admin_notes = formData.get("admin_notes")?.toString()?.trim() || null;
+    const approved = formData.get("approved") === "1";
+
+    if (!email || !password || !name) {
+      return { ok: false, error: "Name, email and password are required." };
+    }
+    if (password.length < 8) {
+      return { ok: false, error: "Password must be at least 8 characters." };
+    }
+
+    const sql = getSql();
+    const existing = await sql`
+      SELECT id FROM users WHERE email = ${email} LIMIT 1
+    `;
+    if (existing.length > 0) {
+      return { ok: false, error: "An account with this email already exists." };
+    }
+
+    const password_hash = await bcrypt.hash(password, 12);
+    
+    await sql`
+      INSERT INTO users (
+        email, password_hash, name, role, approved, 
+        forum_username, forum_town, address, admin_notes
+      )
+      VALUES (
+        ${email}, ${password_hash}, ${name}, 'user', ${approved}, 
+        ${forum_username}, ${forum_town}, ${address}, ${admin_notes}
+      )
+    `;
+    
+    revalidatePath("/admin/residents");
+    return { ok: true };
+  } catch (e) {
+    console.error(e);
+    return { ok: false, error: "Failed to add resident." };
+  }
+}
+
 export async function setUserBanned(userId: string, banned: boolean, bannedUntil?: Date | null): Promise<{ ok: boolean }> {
   try {
     await requireAdminRole();

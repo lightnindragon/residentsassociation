@@ -26,10 +26,20 @@ export default async function AdminResidentsPage() {
 
   return (
     <div>
-      <h1 className="font-heading text-2xl font-semibold">Residents</h1>
-      <p className="mt-1 text-sm text-[var(--color-muted)]">
-        Approve sign-ups, edit forum names, and add admin notes.
-      </p>
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h1 className="font-heading text-2xl font-semibold">Residents</h1>
+          <p className="mt-1 text-sm text-[var(--color-muted)]">
+            Approve sign-ups, edit forum names, and add admin notes.
+          </p>
+        </div>
+        <Link
+          href="/admin/residents/new"
+          className="inline-flex items-center justify-center rounded-md bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-white hover:bg-[var(--color-primary-hover)]"
+        >
+          Add resident
+        </Link>
+      </div>
       <div className="mt-6 overflow-x-auto">
         <table className="w-full min-w-[640px] border-collapse text-sm">
           <thead>
