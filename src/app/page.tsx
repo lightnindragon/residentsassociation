@@ -72,7 +72,7 @@ export default async function HomePage() {
             </Link>
             {session?.user ? (
               <Link href="/forum">
-                <Button variant="ghost" className="min-w-[140px]">
+                <Button variant="outline" className="min-w-[140px]">
                   Forum
                 </Button>
               </Link>
