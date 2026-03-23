@@ -118,6 +118,9 @@ async function main() {
 
   const sql = neon(databaseUrl);
 
+  // Avoid duplicate gallery rows when re-seeding (same fixed caption).
+  await sql`DELETE FROM gallery_images WHERE caption = ${caption}`;
+
   await sql`
     INSERT INTO gallery_images (url, caption)
     VALUES (${imagePublicUrl}, ${caption})

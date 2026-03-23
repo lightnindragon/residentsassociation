@@ -1,5 +1,56 @@
 import { getSql } from "@/lib/db";
 
+/**
+ * Hero and other CMS image URLs are often set while developing (seed scripts hitting prod DB).
+ * Absolute URLs to localhost break on production; absolute URLs to this site's own host can
+ * require extra `images.remotePatterns` — path-only URLs always work for `/public` files.
+ */
+export function normalizeSiteImageUrl(raw: string): string {
+  const trimmed = raw.trim();
+  if (!trimmed) return "";
+  if (trimmed.startsWith("/") && !trimmed.startsWith("//")) {
+    return trimmed;
+  }
+
+  function candidateOrigins(): string[] {
+    const out: string[] = [];
+    const nextAuth = process.env.NEXTAUTH_URL?.trim().replace(/\/$/, "");
+    if (nextAuth?.startsWith("http")) {
+      try {
+        out.push(new URL(nextAuth).origin);
+      } catch {
+        /* ignore */
+      }
+    }
+    const vercel = process.env.VERCEL_URL?.trim();
+    if (vercel) {
+      out.push(`https://${vercel}`);
+    }
+    return [...new Set(out)];
+  }
+
+  try {
+    const parsed = new URL(trimmed);
+    const host = parsed.hostname.toLowerCase();
+    if (
+      host === "localhost" ||
+      host === "127.0.0.1" ||
+      host === "::1" ||
+      host === "[::1]" ||
+      host.endsWith(".local")
+    ) {
+      return `${parsed.pathname}${parsed.search}`;
+    }
+    for (const origin of candidateOrigins()) {
+      if (parsed.origin === origin) {
+        return `${parsed.pathname}${parsed.search}`;
+      }
+    }
+  } catch {
+    return trimmed;
+  }
+  return trimmed;
+}
 
 export type ContactContent = {
   title: string;
@@ -17,7 +68,7 @@ export async function getHomeHeroImageUrl(): Promise<string> {
     const sql = getSql();
     const rows = await sql`SELECT value FROM site_content WHERE key = 'home_hero_image_url' LIMIT 1`;
     const row = rows[0] as { value: string } | undefined;
-    return row?.value?.trim() ?? "";
+    return normalizeSiteImageUrl(row?.value ?? "");
   } catch {
     return "";
   }

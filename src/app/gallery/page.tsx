@@ -1,4 +1,5 @@
 import { getSql } from "@/lib/db";
+import { normalizeSiteImageUrl } from "@/lib/site-content";
 import Image from "next/image";
 
 export default async function GalleryPage() {
@@ -10,12 +11,16 @@ export default async function GalleryPage() {
   }> = [];
   try {
     const sql = getSql();
-    images = (await sql`
+    const rows = (await sql`
       SELECT id, url, caption, uploaded_at
       FROM gallery_images
       ORDER BY uploaded_at DESC
       LIMIT 100
     `) as typeof images;
+    images = rows.map((img) => ({
+      ...img,
+      url: normalizeSiteImageUrl(img.url),
+    }));
   } catch {
     // no DB
   }
