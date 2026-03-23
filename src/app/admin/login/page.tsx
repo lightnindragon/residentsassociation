@@ -1,10 +1,15 @@
 import { signIn } from "@/lib/auth";
 import { Input, Button } from "@/components/ui";
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { redirect, unstable_rethrow } from "next/navigation";
 import { auth } from "@/lib/auth";
 
-export default async function AdminLoginPage() {
+export default async function AdminLoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
+  const params = await searchParams;
   const session = await auth();
   const user = session?.user as { role?: string } | undefined;
   if (user?.role === "admin" || user?.role === "dev") {
@@ -22,10 +27,14 @@ export default async function AdminLoginPage() {
       <p className="mt-1 text-[var(--color-muted)]">
         Committee and site administrators only.
       </p>
+      {params.error === "CredentialsSignin" && (
+        <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-400">
+          Invalid email or password, or this account is not an administrator.
+        </p>
+      )}
       <form
         action={async (formData: FormData) => {
           "use server";
-          const { redirect } = await import("next/navigation");
           const { auth } = await import("@/lib/auth");
           try {
             await signIn("credentials", {
@@ -40,8 +49,9 @@ export default async function AdminLoginPage() {
             } else {
               redirect("/");
             }
-          } catch {
-            // Sign in failed, stay on page
+          } catch (error) {
+            unstable_rethrow(error);
+            redirect("/admin/login?error=CredentialsSignin");
           }
         }}
         className="mt-6 flex flex-col gap-4"

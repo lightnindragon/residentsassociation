@@ -1,6 +1,8 @@
 import { signIn } from "@/lib/auth";
 import { Input, Button } from "@/components/ui";
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { unstable_rethrow } from "next/navigation";
 
 export default async function LoginPage({
   searchParams,
@@ -35,7 +37,6 @@ export default async function LoginPage({
       <form
         action={async (formData: FormData) => {
           "use server";
-          const { redirect } = await import("next/navigation");
           const { auth } = await import("@/lib/auth");
           const cbUrl = formData.get("callbackUrl")?.toString() || "/";
           try {
@@ -47,8 +48,14 @@ export default async function LoginPage({
             } else {
               redirect(cbUrl);
             }
-          } catch {
-            // Sign in failed, stay on page
+          } catch (error) {
+            // redirect() throws NEXT_REDIRECT — must rethrow or navigation never happens
+            unstable_rethrow(error);
+            const q = new URLSearchParams({
+              error: "CredentialsSignin",
+              callbackUrl: cbUrl,
+            });
+            redirect(`/login?${q.toString()}`);
           }
         }}
         className="mt-6 flex flex-col gap-4"
