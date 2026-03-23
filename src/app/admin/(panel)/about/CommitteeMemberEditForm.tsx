@@ -22,8 +22,17 @@ export function CommitteeMemberEditForm({ member }: { member: Member }) {
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    
+    const formData = new FormData();
+    formData.append("id", member.id);
+    formData.append("name", name);
+    formData.append("role", role);
+    if (file) {
+      formData.append("file", file);
+    }
+
     startTransition(async () => {
-      const result = await updateCommitteeMember(member.id, name, role, file ?? undefined);
+      const result = await updateCommitteeMember(formData);
       if (result.ok) {
         setEditing(false);
         setFile(null);

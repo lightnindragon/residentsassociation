@@ -19,8 +19,16 @@ export function CommitteeMemberForm() {
       setError("Name is required.");
       return;
     }
+    
+    const formData = new FormData();
+    formData.append("name", name.trim());
+    formData.append("role", role.trim());
+    if (file) {
+      formData.append("file", file);
+    }
+
     startTransition(async () => {
-      const result = await addCommitteeMember(name.trim(), role.trim(), file ?? undefined);
+      const result = await addCommitteeMember(formData);
       if (result.ok) {
         setName("");
         setRole("");

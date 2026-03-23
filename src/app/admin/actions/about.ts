@@ -21,14 +21,16 @@ export async function saveAboutIntro(intro: string): Promise<{ ok: boolean; erro
 }
 
 export async function addCommitteeMember(
-  name: string,
-  role: string,
-  imageFile?: File | null
+  formData: FormData
 ): Promise<{ ok: boolean; error?: string }> {
   try {
+    const name = formData.get("name")?.toString() || "";
+    const role = formData.get("role")?.toString() || "";
+    const imageFile = formData.get("file") as File | null;
+
     const sql = getSql();
     let imageUrl: string | null = null;
-    if (imageFile?.size) {
+    if (imageFile && imageFile.size > 0) {
       const blob = await put(`committee/${Date.now()}-${imageFile.name}`, imageFile, { access: "public" });
       imageUrl = blob.url;
     }
@@ -48,15 +50,19 @@ export async function addCommitteeMember(
 }
 
 export async function updateCommitteeMember(
-  id: string,
-  name: string,
-  role: string,
-  imageFile?: File | null
+  formData: FormData
 ): Promise<{ ok: boolean; error?: string }> {
   try {
+    const id = formData.get("id")?.toString();
+    const name = formData.get("name")?.toString() || "";
+    const role = formData.get("role")?.toString() || "";
+    const imageFile = formData.get("file") as File | null;
+
+    if (!id) return { ok: false, error: "ID missing" };
+
     const sql = getSql();
     let imageUrl: string | null | undefined;
-    if (imageFile?.size) {
+    if (imageFile && imageFile.size > 0) {
       const [row] = await sql`SELECT image_url FROM committee_members WHERE id = ${id}::uuid LIMIT 1`;
       const oldUrl = (row as { image_url: string | null })?.image_url;
       if (oldUrl) await del(oldUrl).catch(() => {});
