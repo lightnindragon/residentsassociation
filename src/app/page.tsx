@@ -2,11 +2,34 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button, Card, CardHeader, CardContent } from "@/components/ui";
 import { auth } from "@/lib/auth";
-import { getHomeHeroImageUrl } from "@/lib/site-content";
+import { getHomeHeroImageUrl, normalizeSiteImageUrl } from "@/lib/site-content";
+import { getSql } from "@/lib/db";
 
 export default async function HomePage() {
   const session = await auth();
   const heroUrl = await getHomeHeroImageUrl();
+
+  let latestNews: Array<{
+    id: string;
+    title: string;
+    slug: string;
+    excerpt: string | null;
+    cover_image_url: string | null;
+    published_at: string | null;
+    created_at: string;
+  }> = [];
+  try {
+    const sql = getSql();
+    latestNews = (await sql`
+      SELECT id, title, slug, excerpt, cover_image_url, published_at, created_at
+      FROM posts
+      WHERE published_at IS NOT NULL AND published_at <= NOW()
+      ORDER BY published_at DESC
+      LIMIT 3
+    `) as typeof latestNews;
+  } catch {
+    // no DB
+  }
 
   return (
     <div className="flex flex-col">
@@ -58,50 +81,79 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-4xl px-4 py-16 sm:px-6">
-        <h2 className="font-heading text-2xl font-semibold text-[var(--foreground)]">Get involved</h2>
-        <div className="mt-8 grid gap-6 sm:grid-cols-2">
+      <section className="mx-auto max-w-5xl px-4 py-16 sm:px-6">
+        <div className="flex items-center justify-between">
+          <h2 className="font-heading text-2xl font-semibold text-[var(--foreground)]">Latest News</h2>
           <Link href="/news">
-            <Card className="h-full transition-shadow hover:shadow-md">
-              <CardHeader>News & updates</CardHeader>
-              <CardContent>
-                Read the latest community news and announcements from the association.
-              </CardContent>
-            </Card>
+            <Button variant="outline" className="px-3 py-1.5 text-sm h-auto">View all news</Button>
           </Link>
-          {session?.user ? (
-            <Link href="/forum">
-              <Card className="h-full transition-shadow hover:shadow-md">
-                <CardHeader>Residents forum</CardHeader>
-                <CardContent>
-                  Join the conversation and take part in community discussions.
-                </CardContent>
+        </div>
+        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {latestNews.map((p) => {
+            const imageUrl = normalizeSiteImageUrl(p.cover_image_url || "");
+            return (
+              <Link key={p.id} href={`/news/${p.slug}`}>
+                <Card className="h-full transition-shadow hover:shadow-md overflow-hidden flex flex-col">
+                  {imageUrl && (
+                    <div className="relative h-48 w-full shrink-0 border-b border-[var(--color-border)] bg-[var(--color-card)]">
+                      <Image
+                        src={imageUrl}
+                        alt={p.title}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                  )}
+                  <div className="flex flex-col flex-1">
+                    <CardHeader className="flex-none pb-2">{p.title}</CardHeader>
+                    <CardContent className="flex-1 flex flex-col justify-between">
+                      <p className="line-clamp-3 text-sm text-[var(--color-muted)]">
+                        {p.excerpt || "No excerpt."}
+                      </p>
+                      <span className="mt-4 block text-xs font-medium text-[var(--color-primary)]">
+                        {p.published_at
+                          ? new Date(p.published_at).toLocaleDateString()
+                          : new Date(p.created_at).toLocaleDateString()}
+                      </span>
+                    </CardContent>
+                  </div>
+                </Card>
+              </Link>
+            );
+          })}
+        </div>
+      </section>
+
+      <section className="border-t border-[var(--color-border)] bg-[var(--color-card)]/50">
+        <div className="mx-auto max-w-4xl px-4 py-16 sm:px-6">
+          <h2 className="font-heading text-2xl font-semibold text-[var(--foreground)] text-center">Get involved</h2>
+          <div className="mt-8 grid gap-6 sm:grid-cols-2">
+            {session?.user ? (
+              <Link href="/forum">
+                <Card className="h-full bg-transparent transition-shadow hover:shadow-md">
+                  <CardHeader>Residents forum</CardHeader>
+                  <CardContent>
+                    Join the conversation and take part in community discussions.
+                  </CardContent>
+                </Card>
+              </Link>
+            ) : (
+              <Link href="/login?callbackUrl=/forum">
+                <Card className="h-full bg-transparent transition-shadow hover:shadow-md">
+                  <CardHeader>Residents forum</CardHeader>
+                  <CardContent>
+                    Sign in to view and take part in community discussions.
+                  </CardContent>
+                </Card>
+              </Link>
+            )}
+            <Link href="/gallery">
+              <Card className="h-full bg-transparent transition-shadow hover:shadow-md">
+                <CardHeader>Gallery</CardHeader>
+                <CardContent>Browse photos from local events and the area.</CardContent>
               </Card>
             </Link>
-          ) : (
-            <Link href="/login?callbackUrl=/forum">
-              <Card className="h-full transition-shadow hover:shadow-md">
-                <CardHeader>Residents forum</CardHeader>
-                <CardContent>
-                  Sign in to view and take part in community discussions.
-                </CardContent>
-              </Card>
-            </Link>
-          )}
-          <Link href="/gallery">
-            <Card className="h-full transition-shadow hover:shadow-md">
-              <CardHeader>Gallery</CardHeader>
-              <CardContent>Browse photos from local events and the area.</CardContent>
-            </Card>
-          </Link>
-          <Link href="/contact">
-            <Card className="h-full transition-shadow hover:shadow-md">
-              <CardHeader>Contact</CardHeader>
-              <CardContent>
-                Get in touch with the committee or send a message to the association.
-              </CardContent>
-            </Card>
-          </Link>
+          </div>
         </div>
       </section>
     </div>
