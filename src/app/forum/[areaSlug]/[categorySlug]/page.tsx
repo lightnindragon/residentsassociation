@@ -109,44 +109,56 @@ export default async function ForumCategoryPage({
         </div>
       )}
       <CreateThreadForm categoryId={category.id} />
-      <ul className="mt-8 space-y-2">
-        {threads.length === 0 ? (
-          <li className="rounded-xl border border-dashed border-[var(--color-border)] py-12 text-center text-[var(--color-muted)]">
-            No threads yet — start the first one above.
-          </li>
-        ) : (
-          threads.map((t) => (
-            <li key={t.id}>
-              <Link
-                href={`/forum/${areaSlug}/${categorySlug}/${t.id}`}
-                className="block rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] px-4 py-4 transition hover:border-[var(--color-primary)]/30 hover:shadow-sm"
-              >
-                <div className="flex flex-wrap items-center gap-2">
-                  {t.unread && <Badge variant="default" className="bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary)]">New</Badge>}
-                  {t.pinned && <Badge variant="warning">Pinned</Badge>}
-                  {t.locked && <Badge variant="muted">Locked</Badge>}
-                  <span className={`font-medium ${t.unread ? "text-[var(--foreground)]" : "text-[var(--foreground)]/90"}`}>{t.title}</span>
+      <div className="mt-8 overflow-hidden rounded-md border border-[#006699] bg-[var(--color-card)] shadow-sm">
+        <div className="flex justify-between bg-[#006699] px-4 py-2 text-xs font-bold uppercase text-white">
+          <div className="flex-1">TOPICS</div>
+          <div className="hidden w-20 text-center sm:block">REPLIES</div>
+          <div className="hidden w-48 pl-4 sm:block">LAST POST</div>
+        </div>
+        <div className="divide-y divide-[var(--color-border)]">
+          {threads.length === 0 ? (
+            <div className="px-4 py-8 text-center text-sm text-[var(--color-muted)]">No threads yet — start the first one above.</div>
+          ) : (
+            threads.map((t) => (
+              <div key={t.id} className={`flex items-center px-4 py-3 transition-colors hover:bg-[#fff9e6] dark:hover:bg-[var(--color-muted)]/10 ${t.unread ? "bg-[#fffdf0] dark:bg-[var(--color-card)]" : "bg-white dark:bg-[var(--background)]"}`}>
+                <div className="mr-3 flex shrink-0 items-center justify-center">
+                  <svg className={`h-8 w-8 ${t.unread ? "text-red-500" : "text-[#006699] opacity-70 dark:text-[#4da6ff]"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                  </svg>
                 </div>
-                <p className="mt-1 flex flex-wrap items-center gap-x-2 text-sm text-[var(--color-muted)]">
-                  <span>Started by {t.author_name ?? "Unknown"}</span>
-                  {t.reply_count > 0 && (
+                <div className="min-w-0 flex-1">
+                  <Link href={`/forum/${areaSlug}/${categorySlug}/${t.id}`} className={`text-base font-bold hover:underline ${t.unread ? "text-red-600 dark:text-red-400" : "text-[#006699] dark:text-[#4da6ff]"}`}>
+                    {t.title}
+                  </Link>
+                  <div className="mt-0.5 flex items-center gap-2 text-xs text-[var(--color-muted)]">
+                    {t.pinned && <Badge variant="warning" className="px-1 py-0 text-[10px] uppercase">Pinned</Badge>}
+                    {t.locked && <Badge variant="muted" className="px-1 py-0 text-[10px] uppercase">Locked</Badge>}
+                    <span>by {t.author_name ?? "Unknown"}</span>
+                  </div>
+                </div>
+                <div className="hidden w-20 text-center text-sm font-medium text-[var(--foreground)] sm:block">
+                  {t.reply_count}
+                </div>
+                <div className="hidden w-48 pl-4 text-xs text-[var(--color-muted)] sm:block">
+                  {t.last_reply_author && t.last_reply_at ? (
                     <>
-                      <span>·</span>
-                      <span>{t.reply_count} {t.reply_count === 1 ? "reply" : "replies"}</span>
+                      by <span className="font-semibold text-[var(--foreground)]">{t.last_reply_author}</span>
+                      <br />
+                      {new Date(t.last_reply_at).toLocaleString()}
+                    </>
+                  ) : (
+                    <>
+                      by <span className="font-semibold text-[var(--foreground)]">{t.author_name ?? "Unknown"}</span>
+                      <br />
+                      {new Date(t.created_at).toLocaleString()}
                     </>
                   )}
-                  {t.last_reply_author && t.last_reply_at && (
-                    <>
-                      <span>·</span>
-                      <span>Last reply by <span className="font-medium text-[var(--foreground)]">{t.last_reply_author}</span> at {new Date(t.last_reply_at).toLocaleString()}</span>
-                    </>
-                  )}
-                </p>
-              </Link>
-            </li>
-          ))
-        )}
-      </ul>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
     </div>
   );
 }
