@@ -81,12 +81,6 @@ export async function Header() {
                 Account
               </Link>
               <Link
-                href="/enquiries"
-                className="font-medium text-[var(--foreground)] hover:text-[var(--color-primary)]"
-              >
-                My enquiries
-              </Link>
-              <Link
                 href="/forum"
                 className="font-medium text-[var(--foreground)] hover:text-[var(--color-primary)]"
               >
