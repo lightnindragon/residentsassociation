@@ -13,7 +13,16 @@ export default async function ForumAreaPage({
 }) {
   const { areaSlug } = await params;
   type AreaRow = { id: string; name: string; slug: string; description: string | null };
-  type CatRow = { id: string; name: string; slug: string; description: string | null; sort_order: number };
+  type CatRow = { 
+    id: string; 
+    name: string; 
+    slug: string; 
+    description: string | null; 
+    sort_order: number;
+    thread_count: number;
+    latest_thread_title: string | null;
+    latest_thread_date: string | null;
+  };
   let area: AreaRow | null = null;
   let categories: CatRow[] = [];
   try {
@@ -24,10 +33,13 @@ export default async function ForumAreaPage({
     area = (aRows[0] as AreaRow) ?? null;
     if (area) {
       const cRows = await sql`
-        SELECT id, name, slug, description, sort_order
-        FROM forum_categories
-        WHERE area_id = ${area.id}
-        ORDER BY sort_order ASC, name ASC
+        SELECT c.id, c.name, c.slug, c.description, c.sort_order,
+          (SELECT COUNT(*)::int FROM forum_threads WHERE category_id = c.id) AS thread_count,
+          (SELECT title FROM forum_threads WHERE category_id = c.id ORDER BY updated_at DESC LIMIT 1) AS latest_thread_title,
+          (SELECT updated_at FROM forum_threads WHERE category_id = c.id ORDER BY updated_at DESC LIMIT 1) AS latest_thread_date
+        FROM forum_categories c
+        WHERE c.area_id = ${area.id}
+        ORDER BY c.sort_order ASC, c.name ASC
       `;
       categories = cRows as CatRow[];
     }
@@ -71,10 +83,18 @@ export default async function ForumAreaPage({
         ) : (
           categories.map((c) => (
             <Link key={c.id} href={`/forum/${areaSlug}/${c.slug}`}>
-              <Card className="h-full border-[var(--color-border)] transition-shadow hover:shadow-md">
-                <CardHeader className="text-lg">{c.name}</CardHeader>
-                <CardContent className="text-sm text-[var(--color-muted)]">
-                  {c.description || "View discussions"}
+              <Card className="flex h-full flex-col border-[var(--color-border)] transition-shadow hover:border-[var(--color-primary)]/40 hover:shadow-md">
+                <CardHeader className="text-lg pb-2 font-semibold">{c.name}</CardHeader>
+                <CardContent className="flex-1 text-sm text-[var(--color-muted)]">
+                  <p className="mb-4">{c.description || "View discussions"}</p>
+                  <div className="mt-auto border-t border-[var(--color-border)] pt-3 text-xs flex flex-col gap-1">
+                    <span className="font-medium text-[var(--foreground)]">{c.thread_count} {c.thread_count === 1 ? "thread" : "threads"}</span>
+                    {c.latest_thread_title && c.latest_thread_date && (
+                      <span className="truncate">
+                        Latest: <span className="font-medium text-[var(--foreground)]">{c.latest_thread_title}</span> ({new Date(c.latest_thread_date).toLocaleDateString()})
+                      </span>
+                    )}
+                  </div>
                 </CardContent>
               </Card>
             </Link>

@@ -4,6 +4,7 @@ import { getSql } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import { getCategoryForumPath, forumCategoryUrl, forumThreadUrl } from "@/lib/forum-paths";
+import DOMPurify from "isomorphic-dompurify";
 
 export async function createThread(
   _prev: { error?: string } | null,
@@ -15,12 +16,17 @@ export async function createThread(
 
   const categoryId = formData.get("categoryId")?.toString();
   const title = formData.get("title")?.toString()?.trim();
+  const rawBody = formData.get("body")?.toString()?.trim() || "";
   if (!categoryId || !title) return { error: "Title is required." };
+  
+  const body = DOMPurify.sanitize(rawBody);
 
   try {
     const sql = getSql();
     const [urow] = await sql`SELECT banned FROM users WHERE id = ${user.id}::uuid LIMIT 1`;
     if ((urow as { banned?: boolean })?.banned) return { error: "Your account cannot post." };
+    
+    // Start transaction if possible, or just sequentially
     const [inserted] = await sql`
       INSERT INTO forum_threads (category_id, title, author_id)
       VALUES (${categoryId}::uuid, ${title}, ${user.id}::uuid)
@@ -28,6 +34,12 @@ export async function createThread(
     `;
     const newThreadId = (inserted as { id: string })?.id;
     if (newThreadId) {
+      if (body) {
+        await sql`
+          INSERT INTO forum_posts (thread_id, author_id, body)
+          VALUES (${newThreadId}::uuid, ${user.id}::uuid, ${body})
+        `;
+      }
       const { notifyForumNewThread } = await import("@/lib/forum-notify");
       void notifyForumNewThread(newThreadId, user.id);
     }
@@ -50,8 +62,10 @@ export async function createReply(
   if (!user?.id) return { error: "You must be signed in to reply." };
 
   const threadId = formData.get("threadId")?.toString();
-  const body = formData.get("body")?.toString()?.trim();
-  if (!threadId || !body) return { error: "Message is required." };
+  const rawBody = formData.get("body")?.toString()?.trim();
+  if (!threadId || !rawBody) return { error: "Message is required." };
+
+  const body = DOMPurify.sanitize(rawBody);
 
   try {
     const sql = getSql();

@@ -235,3 +235,20 @@ INSERT INTO forum_areas (name, slug, sort_order)
 SELECT 'General', 'general', 0
 WHERE NOT EXISTS (SELECT 1 FROM forum_areas WHERE slug = 'general');
 UPDATE forum_categories SET area_id = (SELECT id FROM forum_areas WHERE slug = 'general' LIMIT 1) WHERE area_id IS NULL;
+
+-- Professional Forum Upgrades
+ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar_url TEXT;
+
+CREATE TABLE IF NOT EXISTS forum_thread_views (
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  thread_id UUID NOT NULL REFERENCES forum_threads(id) ON DELETE CASCADE,
+  last_viewed_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (user_id, thread_id)
+);
+
+CREATE TABLE IF NOT EXISTS forum_post_likes (
+  post_id UUID NOT NULL REFERENCES forum_posts(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (post_id, user_id)
+);

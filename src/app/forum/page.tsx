@@ -9,13 +9,15 @@ export default async function ForumPage() {
     slug: string;
     description: string | null;
     sort_order: number;
+    category_count: number;
   }> = [];
   try {
     const sql = getSql();
     areas = (await sql`
-      SELECT id, name, slug, description, sort_order
-      FROM forum_areas
-      ORDER BY sort_order ASC, name ASC
+      SELECT a.id, a.name, a.slug, a.description, a.sort_order,
+        (SELECT COUNT(*)::int FROM forum_categories WHERE area_id = a.id) AS category_count
+      FROM forum_areas a
+      ORDER BY a.sort_order ASC, a.name ASC
     `) as typeof areas;
   } catch {
     // no DB
@@ -35,10 +37,13 @@ export default async function ForumPage() {
         ) : (
           areas.map((a) => (
             <Link key={a.id} href={`/forum/${a.slug}`}>
-              <Card className="h-full border-[var(--color-border)] transition-shadow hover:shadow-md">
-                <CardHeader className="text-xl">{a.name}</CardHeader>
-                <CardContent className="text-sm text-[var(--color-muted)]">
-                  {a.description || "Open area"}
+              <Card className="flex h-full flex-col border-[var(--color-border)] transition-shadow hover:border-[var(--color-primary)]/40 hover:shadow-md">
+                <CardHeader className="text-xl font-semibold pb-2">{a.name}</CardHeader>
+                <CardContent className="flex-1 text-sm text-[var(--color-muted)] flex flex-col justify-between">
+                  <p className="mb-4">{a.description || "Open area"}</p>
+                  <div className="border-t border-[var(--color-border)] pt-3 text-xs font-medium text-[var(--foreground)]">
+                    {a.category_count} {a.category_count === 1 ? "category" : "categories"}
+                  </div>
                 </CardContent>
               </Card>
             </Link>

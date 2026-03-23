@@ -39,6 +39,18 @@ export function RichTextEditor({ name, initialHtml, placeholder }: Props) {
     }
   }, [editor, initialHtml]);
 
+  useEffect(() => {
+    function handleQuote(e: Event) {
+      if (!editor) return;
+      const ce = e as CustomEvent<{ html: string }>;
+      if (ce.detail?.html) {
+        editor.chain().focus().insertContent(ce.detail.html).run();
+      }
+    }
+    window.addEventListener("forum-quote", handleQuote);
+    return () => window.removeEventListener("forum-quote", handleQuote);
+  }, [editor]);
+
   if (!editor) return <div className="min-h-[200px] rounded border border-[var(--color-border)] bg-[var(--color-card)] p-3 text-sm text-[var(--color-muted)]">Loading editor…</div>;
 
   return (

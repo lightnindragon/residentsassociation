@@ -7,18 +7,29 @@ import { ReplyForm } from "./ReplyForm";
 import { ThreadModeration } from "./ThreadModeration";
 import { DeletePostButton } from "./DeletePostButton";
 import { BanUserButton } from "./BanUserButton";
+import { QuoteButton } from "./QuoteButton";
+import { LikeButton } from "./LikeButton";
 import { ForumFollowButton } from "@/components/ForumFollowButton";
 import { isFollowing } from "@/app/forum/actions/follow";
 
+import Image from "next/image";
+
 export default async function ForumThreadPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ areaSlug: string; categorySlug: string; threadId: string }>;
+  searchParams: Promise<{ page?: string }>;
 }) {
   const { areaSlug, categorySlug, threadId } = await params;
+  const { page } = await searchParams;
   const session = await auth();
   const user = session?.user as { role?: string; id?: string } | undefined;
   const isAdmin = user?.role === "admin" || user?.role === "dev";
+
+  const postsPerPage = 20;
+  const currentPage = Math.max(1, parseInt(page ?? "1", 10) || 1);
+  const offset = (currentPage - 1) * postsPerPage;
 
   type AreaRow = { id: string; name: string; slug: string };
   type CategoryRow = { id: string; name: string; slug: string };
@@ -32,6 +43,7 @@ export default async function ForumThreadPage({
     author_role: string | null;
     author_name: string | null;
     author_town: string | null;
+    author_avatar: string | null;
   };
   type PostRow = {
     id: string;
@@ -41,12 +53,16 @@ export default async function ForumThreadPage({
     author_role: string | null;
     author_name: string | null;
     author_town: string | null;
+    author_avatar: string | null;
+    like_count: number;
+    user_liked: boolean;
   };
 
   let area: AreaRow | null = null;
   let category: CategoryRow | null = null;
   let thread: ThreadRow | null = null;
   let posts: PostRow[] = [];
+  let totalPosts = 0;
 
   try {
     const sql = getSql();
@@ -61,7 +77,7 @@ export default async function ForumThreadPage({
       category = (catRows[0] as CategoryRow) ?? null;
       if (category) {
         const threadRows = await sql`
-          SELECT t.id, t.title, t.created_at, t.locked, t.pinned, t.author_id, u.role AS author_role,
+          SELECT t.id, t.title, t.created_at, t.locked, t.pinned, t.author_id, u.role AS author_role, u.avatar_url AS author_avatar,
             CASE WHEN u.role IN ('admin', 'dev') THEN 'Admin'
                  ELSE COALESCE(u.forum_username, u.name) END AS author_name,
             CASE WHEN u.role IN ('admin', 'dev') THEN NULL ELSE u.forum_town END AS author_town
@@ -72,15 +88,30 @@ export default async function ForumThreadPage({
         `;
         thread = (threadRows[0] as ThreadRow) ?? null;
         if (thread) {
+          if (session?.user?.id) {
+            // Update thread view
+            await sql`
+              INSERT INTO forum_thread_views (user_id, thread_id, last_viewed_at)
+              VALUES (${session.user.id}::uuid, ${threadId}::uuid, NOW())
+              ON CONFLICT (user_id, thread_id) DO UPDATE SET last_viewed_at = NOW()
+            `;
+          }
+
+          const countRow = await sql`SELECT COUNT(*)::int as count FROM forum_posts WHERE thread_id = ${threadId}::uuid`;
+          totalPosts = countRow[0]?.count ?? 0;
+
           const postRows = await sql`
-            SELECT p.id, p.body, p.created_at, p.author_id, u.role AS author_role,
+            SELECT p.id, p.body, p.created_at, p.author_id, u.role AS author_role, u.avatar_url AS author_avatar,
               CASE WHEN u.role IN ('admin', 'dev') THEN 'Admin'
                    ELSE COALESCE(u.forum_username, u.name) END AS author_name,
-              CASE WHEN u.role IN ('admin', 'dev') THEN NULL ELSE u.forum_town END AS author_town
+              CASE WHEN u.role IN ('admin', 'dev') THEN NULL ELSE u.forum_town END AS author_town,
+              (SELECT COUNT(*)::int FROM forum_post_likes WHERE post_id = p.id) AS like_count,
+              EXISTS(SELECT 1 FROM forum_post_likes WHERE post_id = p.id AND user_id = ${session?.user?.id ? session.user.id : null}::uuid) AS user_liked
             FROM forum_posts p
             LEFT JOIN users u ON u.id = p.author_id
             WHERE p.thread_id = ${threadId}::uuid
             ORDER BY p.created_at ASC
+            LIMIT ${postsPerPage} OFFSET ${offset}
           `;
           posts = postRows as PostRow[];
         }
@@ -161,6 +192,17 @@ export default async function ForumThreadPage({
             }`}
           >
             <div className="flex items-start justify-between gap-3">
+              <div className="flex shrink-0">
+                {p.author_avatar ? (
+                  <div className="relative h-10 w-10 overflow-hidden rounded-full border border-[var(--color-border)] bg-[var(--color-card)]">
+                    <Image src={p.author_avatar} alt={p.author_name ?? "User"} fill className="object-cover" />
+                  </div>
+                ) : (
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full border border-[var(--color-border)] bg-[var(--color-muted)]/10 text-xs font-semibold text-[var(--foreground)]">
+                    {p.author_name?.[0]?.toUpperCase() ?? "?"}
+                  </div>
+                )}
+              </div>
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-baseline gap-2">
                   <span className="font-semibold text-[var(--foreground)]">
@@ -178,22 +220,57 @@ export default async function ForumThreadPage({
                 <p className="mt-0.5 text-xs text-[var(--color-muted)]">
                   {new Date(p.created_at).toLocaleString()}
                 </p>
-                <div className="mt-3 whitespace-pre-wrap text-[var(--foreground)] leading-relaxed">
-                  {p.body}
-                </div>
+                <div className="mt-3 whitespace-pre-wrap text-[var(--foreground)] leading-relaxed prose prose-sm max-w-none dark:prose-invert"
+                  dangerouslySetInnerHTML={{ __html: p.body }}
+                />
               </div>
-              {isAdmin && (
-                <div className="flex shrink-0 flex-col items-end gap-2">
-                  <DeletePostButton postId={p.id} threadId={threadId} />
-                  {p.author_role === "user" && (
-                    <BanUserButton targetUserId={p.author_id} />
-                  )}
-                </div>
-              )}
+              <div className="flex shrink-0 flex-col items-end gap-2">
+                {session?.user && !thread.locked && (
+                  <div className="flex items-center gap-1">
+                    <LikeButton
+                      postId={p.id}
+                      initialLiked={p.user_liked}
+                      initialCount={p.like_count}
+                      pathToRevalidate={`/forum/${areaSlug}/${categorySlug}/${threadId}`}
+                    />
+                    <QuoteButton authorName={p.author_name ?? "Unknown"} htmlBody={p.body} />
+                  </div>
+                )}
+                {isAdmin && (
+                  <>
+                    <DeletePostButton postId={p.id} threadId={threadId} />
+                    {p.author_role === "user" && (
+                      <BanUserButton targetUserId={p.author_id} />
+                    )}
+                  </>
+                )}
+              </div>
             </div>
           </li>
         ))}
       </ul>
+
+      {totalPosts > postsPerPage && (
+        <div className="mt-8 flex justify-center gap-2">
+          {Array.from({ length: Math.ceil(totalPosts / postsPerPage) }).map((_, i) => {
+            const p = i + 1;
+            const isCurrent = p === currentPage;
+            return (
+              <Link
+                key={p}
+                href={`/forum/${areaSlug}/${categorySlug}/${threadId}?page=${p}`}
+                className={`flex h-8 w-8 items-center justify-center rounded-lg border text-sm font-medium transition ${
+                  isCurrent
+                    ? "border-[var(--color-primary)] bg-[var(--color-primary)] text-white"
+                    : "border-[var(--color-border)] bg-[var(--color-card)] text-[var(--foreground)] hover:border-[var(--color-primary)]/50"
+                }`}
+              >
+                {p}
+              </Link>
+            );
+          })}
+        </div>
+      )}
 
       {session?.user && !thread.locked && <ReplyForm threadId={threadId} />}
     </div>

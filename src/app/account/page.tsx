@@ -14,12 +14,13 @@ export default async function AccountPage() {
     notify_new_blog: boolean;
     forum_emails_enabled: boolean;
     role: string;
+    avatar_url: string | null;
   };
   let row: Row | null = null;
   try {
     const sql = getSql();
     const rows = await sql`
-      SELECT forum_username, forum_town, notify_new_blog, forum_emails_enabled, role
+      SELECT forum_username, forum_town, notify_new_blog, forum_emails_enabled, role, avatar_url
       FROM users WHERE id = ${userId}::uuid LIMIT 1
     `;
     row = (rows[0] as Row) ?? null;
