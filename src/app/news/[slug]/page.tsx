@@ -53,8 +53,8 @@ export default async function NewsPostPage({
       `;
       comments = cRows as CommentRow[];
     }
-  } catch {
-    // no DB
+  } catch (err) {
+    console.error("Error in NewsPostPage DB fetch:", err);
   }
   if (!post) notFound();
 

@@ -20,6 +20,7 @@ const extraHosts = [
 ];
 
 const nextConfig: NextConfig = {
+  serverExternalPackages: ["isomorphic-dompurify", "jsdom"],
   images: {
     remotePatterns: [
       // Legacy / docs example host (rare)
