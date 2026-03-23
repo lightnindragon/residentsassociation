@@ -1,7 +1,10 @@
 import Link from "next/link";
 import { getSql } from "@/lib/db";
+import { auth } from "@/lib/auth";
 
 export default async function ForumPage() {
+  const session = await auth();
+  
   type AreaRow = { id: string; name: string; slug: string; description: string | null };
   type CatRow = { 
     id: string; 
@@ -16,9 +19,18 @@ export default async function ForumPage() {
     last_post_thread_id: string | null;
     last_post_thread_title: string | null;
   };
+  type RecentThreadRow = {
+    thread_id: string;
+    thread_title: string;
+    category_slug: string;
+    area_slug: string;
+    last_post_at: string;
+    last_post_author: string;
+  };
   
   let areas: AreaRow[] = [];
   let categories: CatRow[] = [];
+  let recentThreads: RecentThreadRow[] = [];
   
   try {
     const sql = getSql();
@@ -52,6 +64,24 @@ export default async function ForumPage() {
       FROM forum_categories c
       ORDER BY c.sort_order ASC, c.name ASC
     `) as CatRow[];
+
+    if (session?.user) {
+      recentThreads = (await sql`
+        SELECT DISTINCT ON (t.id) 
+          t.id AS thread_id, 
+          t.title AS thread_title, 
+          c.slug AS category_slug, 
+          a.slug AS area_slug, 
+          p.created_at AS last_post_at, 
+          COALESCE(u.forum_username, u.name) AS last_post_author
+        FROM forum_threads t
+        JOIN forum_categories c ON t.category_id = c.id
+        JOIN forum_areas a ON c.area_id = a.id
+        JOIN forum_posts p ON p.thread_id = t.id
+        LEFT JOIN users u ON u.id = p.author_id
+        ORDER BY t.id, p.created_at DESC
+      `).sort((a: any, b: any) => new Date(b.last_post_at).getTime() - new Date(a.last_post_at).getTime()).slice(0, 5) as RecentThreadRow[];
+    }
   } catch {
     // no DB
   }
@@ -66,6 +96,30 @@ export default async function ForumPage() {
           Browse by area, then pick a category to join the conversation.
         </p>
       </div>
+
+      {session?.user && recentThreads.length > 0 && (
+        <div className="mb-8">
+          <h2 className="mb-4 font-heading text-xl font-semibold text-[var(--foreground)]">Latest posts</h2>
+          <div className="overflow-hidden rounded-md border border-[var(--color-border)] bg-[var(--color-card)] shadow-sm">
+            <div className="divide-y divide-[var(--color-border)]">
+              {recentThreads.map((thread) => (
+                <div key={thread.thread_id} className="flex items-center px-4 py-3 transition-colors hover:bg-[var(--color-muted)]/5">
+                  <div className="min-w-0 flex-1">
+                    <Link href={`/forum/${thread.area_slug}/${thread.category_slug}/${thread.thread_id}`} className="text-sm font-semibold text-[#006699] hover:underline dark:text-[#4da6ff]">
+                      {thread.thread_title}
+                    </Link>
+                    <div className="mt-1 flex items-center gap-2 text-xs text-[var(--color-muted)]">
+                      <span>by <span className="font-medium text-[var(--foreground)]">{thread.last_post_author}</span></span>
+                      <span>·</span>
+                      <span>{new Date(thread.last_post_at).toLocaleString('en-GB', { timeZone: 'Europe/London', dateStyle: 'short', timeStyle: 'short' })}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="space-y-8">
         {areas.length === 0 ? (
