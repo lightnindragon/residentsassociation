@@ -1,6 +1,8 @@
 import Link from "next/link";
+import Image from "next/image";
 import { getSql } from "@/lib/db";
 import { Card, CardHeader, CardContent } from "@/components/ui";
+import { normalizeSiteImageUrl } from "@/lib/site-content";
 
 export default async function NewsPage() {
   let posts: Array<{
@@ -8,13 +10,14 @@ export default async function NewsPage() {
     title: string;
     slug: string;
     excerpt: string | null;
+    cover_image_url: string | null;
     published_at: string | null;
     created_at: string;
   }> = [];
   try {
     const sql = getSql();
     posts = (await sql`
-      SELECT id, title, slug, excerpt, published_at, created_at
+      SELECT id, title, slug, excerpt, cover_image_url, published_at, created_at
       FROM posts
       WHERE published_at IS NOT NULL AND published_at <= NOW()
       ORDER BY published_at DESC
@@ -36,21 +39,34 @@ export default async function NewsPage() {
         {posts.length === 0 ? (
           <p className="text-[var(--color-muted)]">No news posts yet.</p>
         ) : (
-          posts.map((p) => (
-            <Link key={p.id} href={`/news/${p.slug}`}>
-              <Card className="transition-shadow hover:shadow-md">
-                <CardHeader>{p.title}</CardHeader>
-                <CardContent>
-                  {p.excerpt || "No excerpt."}
-                  <span className="mt-2 block text-xs text-[var(--color-muted)]">
-                    {p.published_at
-                      ? new Date(p.published_at).toLocaleDateString()
-                      : new Date(p.created_at).toLocaleDateString()}
-                  </span>
-                </CardContent>
-              </Card>
-            </Link>
-          ))
+          posts.map((p) => {
+            const imageUrl = normalizeSiteImageUrl(p.cover_image_url || "");
+            return (
+              <Link key={p.id} href={`/news/${p.slug}`}>
+                <Card className="transition-shadow hover:shadow-md overflow-hidden">
+                  {imageUrl && (
+                    <div className="relative h-48 w-full border-b border-[var(--color-border)] bg-[var(--color-card)] sm:h-64">
+                      <Image
+                        src={imageUrl}
+                        alt={p.title}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                  )}
+                  <CardHeader>{p.title}</CardHeader>
+                  <CardContent>
+                    {p.excerpt || "No excerpt."}
+                    <span className="mt-2 block text-xs text-[var(--color-muted)]">
+                      {p.published_at
+                        ? new Date(p.published_at).toLocaleDateString()
+                        : new Date(p.created_at).toLocaleDateString()}
+                    </span>
+                  </CardContent>
+                </Card>
+              </Link>
+            );
+          })
         )}
       </div>
     </div>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { getSql } from "@/lib/db";
 import { notFound } from "next/navigation";
 import { auth } from "@/lib/auth";
@@ -6,6 +7,7 @@ import { getDonationSettings } from "@/lib/donations";
 import { DonateButton } from "@/components/DonateButton";
 import sanitizeHtml from "sanitize-html";
 import { PostCommentSection } from "./PostCommentSection";
+import { normalizeSiteImageUrl } from "@/lib/site-content";
 
 export const dynamic = "force-dynamic";
 
@@ -20,6 +22,7 @@ export default async function NewsPostPage({
     title: string;
     slug: string;
     body: string;
+    cover_image_url: string | null;
     published_at: string | null;
     created_at: string;
     author_name: string | null;
@@ -35,7 +38,7 @@ export default async function NewsPostPage({
   try {
     const sql = getSql();
     const rows = await sql`
-      SELECT p.id, p.title, p.slug, p.body, p.published_at, p.created_at, u.name AS author_name
+      SELECT p.id, p.title, p.slug, p.body, p.cover_image_url, p.published_at, p.created_at, u.name AS author_name
       FROM posts p
       LEFT JOIN users u ON u.id = p.author_id
       WHERE p.slug = ${slug} AND p.published_at IS NOT NULL AND p.published_at <= NOW()
@@ -84,6 +87,19 @@ export default async function NewsPostPage({
           : new Date(post.created_at).toLocaleDateString()}
         {post.author_name && ` · ${post.author_name}`}
       </p>
+      
+      {post.cover_image_url && (
+        <div className="relative mt-8 h-64 w-full overflow-hidden rounded-xl border border-[var(--color-border)] sm:h-[400px]">
+          <Image
+            src={normalizeSiteImageUrl(post.cover_image_url)}
+            alt={post.title}
+            fill
+            className="object-cover"
+            priority
+          />
+        </div>
+      )}
+
       <div
         className="prose prose-lg mt-8 max-w-none text-[var(--foreground)] prose-p:text-[var(--foreground)] prose-headings:text-[var(--foreground)]"
         dangerouslySetInnerHTML={{ __html: safeHtml }}
