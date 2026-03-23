@@ -39,6 +39,12 @@ export async function Header() {
           </span>
         </Link>
         <nav className="flex flex-wrap items-center justify-end gap-x-4 gap-y-2 text-sm">
+          <Link
+            href="/"
+            className="font-medium text-[var(--foreground)] hover:text-[var(--color-primary)]"
+          >
+            Home
+          </Link>
           <NewsNav categories={newsCategories} />
           <Link
             href="/gallery"
