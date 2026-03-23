@@ -13,6 +13,8 @@ export default async function ForumPage() {
     post_count: number;
     last_post_at: string | null;
     last_post_author: string | null;
+    last_post_thread_id: string | null;
+    last_post_thread_title: string | null;
   };
   
   let areas: AreaRow[] = [];
@@ -36,7 +38,17 @@ export default async function ForumPage() {
          JOIN forum_threads lt ON lt.id = lp.thread_id 
          LEFT JOIN users lu ON lu.id = lp.author_id 
          WHERE lt.category_id = c.id 
-         ORDER BY lp.created_at DESC LIMIT 1) AS last_post_author
+         ORDER BY lp.created_at DESC LIMIT 1) AS last_post_author,
+        (SELECT lt.id
+         FROM forum_posts lp 
+         JOIN forum_threads lt ON lt.id = lp.thread_id 
+         WHERE lt.category_id = c.id 
+         ORDER BY lp.created_at DESC LIMIT 1) AS last_post_thread_id,
+        (SELECT lt.title
+         FROM forum_posts lp 
+         JOIN forum_threads lt ON lt.id = lp.thread_id 
+         WHERE lt.category_id = c.id 
+         ORDER BY lp.created_at DESC LIMIT 1) AS last_post_thread_title
       FROM forum_categories c
       ORDER BY c.sort_order ASC, c.name ASC
     `) as CatRow[];
@@ -105,9 +117,14 @@ export default async function ForumPage() {
                         <div className="hidden w-48 pl-4 text-xs text-[var(--color-muted)] sm:block">
                           {cat.last_post_author && cat.last_post_at ? (
                             <>
-                              by <span className="font-semibold text-[var(--foreground)]">{cat.last_post_author}</span>
+                              {cat.last_post_thread_id && cat.last_post_thread_title && (
+                                <Link href={`/forum/${area.slug}/${cat.slug}/${cat.last_post_thread_id}`} className="block font-semibold text-[#006699] hover:underline dark:text-[#4da6ff] truncate mb-0.5">
+                                  {cat.last_post_thread_title}
+                                </Link>
+                              )}
+                              by <span className="font-medium text-[var(--foreground)]">{cat.last_post_author}</span>
                               <br />
-                              {new Date(cat.last_post_at).toLocaleString()}
+                              {new Date(cat.last_post_at).toLocaleString('en-GB', { timeZone: 'Europe/London', dateStyle: 'short', timeStyle: 'short' })}
                             </>
                           ) : (
                             "No posts"
