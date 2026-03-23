@@ -3,6 +3,8 @@
 import { getSql } from "@/lib/db";
 import { auth } from "@/lib/auth";
 
+import { revalidatePath } from "next/cache";
+
 export async function saveForumProfile(
   username: string,
   town: string
@@ -23,6 +25,8 @@ export async function saveForumProfile(
       SET forum_username = ${u}, forum_town = ${t}, updated_at = NOW()
       WHERE id = ${userId}::uuid
     `;
+    revalidatePath("/forum");
+    revalidatePath("/forum/setup");
     return { ok: true };
   } catch (e) {
     console.error(e);

@@ -1,11 +1,9 @@
 "use client";
 
 import { useTransition, useState } from "react";
-import { useRouter } from "next/navigation";
 import { saveForumProfile } from "../actions/profile";
 
 export function ForumSetupForm({ redirectTo }: { redirectTo: string }) {
-  const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
@@ -22,7 +20,7 @@ export function ForumSetupForm({ redirectTo }: { redirectTo: string }) {
     startTransition(async () => {
       const result = await saveForumProfile(username, town);
       if (result.ok) {
-        router.replace(redirectTo);
+        window.location.href = redirectTo;
       } else {
         setError(result.error ?? "Failed to save.");
       }
