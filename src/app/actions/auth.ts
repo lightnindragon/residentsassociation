@@ -12,9 +12,10 @@ export async function signUp(
   const email = formData.get("email")?.toString()?.trim()?.toLowerCase();
   const password = formData.get("password")?.toString();
   const name = formData.get("name")?.toString()?.trim();
+  const address = formData.get("address")?.toString()?.trim();
 
-  if (!email || !password || !name) {
-    return { error: "Email, name and password are required." };
+  if (!email || !password || !name || !address) {
+    return { error: "Email, name, address and password are required." };
   }
   if (password.length < 8) {
     return { error: "Password must be at least 8 characters." };
@@ -31,8 +32,8 @@ export async function signUp(
     const notifyBlog = formData.get("notify_new_blog") === "1";
     const password_hash = await bcrypt.hash(password, 12);
     await sql`
-      INSERT INTO users (email, password_hash, name, role, approved, notify_new_blog)
-      VALUES (${email}, ${password_hash}, ${name}, 'user', false, ${notifyBlog})
+      INSERT INTO users (email, password_hash, name, role, approved, notify_new_blog, address)
+      VALUES (${email}, ${password_hash}, ${name}, 'user', false, ${notifyBlog}, ${address})
     `;
     return { pendingApproval: true };
   } catch (e) {

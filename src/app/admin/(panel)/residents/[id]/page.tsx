@@ -16,6 +16,7 @@ export default async function EditResidentPage({
     forum_username: string | null;
     forum_town: string | null;
     admin_notes: string | null;
+    address: string | null;
     approved: boolean;
     banned: boolean;
     banned_until: Date | null;
@@ -25,7 +26,7 @@ export default async function EditResidentPage({
   try {
     const sql = getSql();
     const rows = await sql`
-      SELECT id, name, email, forum_username, forum_town, admin_notes, approved, banned, banned_until, role
+      SELECT id, name, email, forum_username, forum_town, admin_notes, address, approved, banned, banned_until, role
       FROM users WHERE id = ${id}::uuid AND role = 'user' LIMIT 1
     `;
     user = (rows[0] as Row) ?? null;

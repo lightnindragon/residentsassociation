@@ -17,6 +17,7 @@ export async function updateAccountSettings(
   const forum_town = formData.get("forum_town")?.toString()?.trim() || null;
   const notify_new_blog = formData.get("notify_new_blog") === "1";
   const forum_emails_enabled = formData.get("forum_emails_enabled") === "1";
+  const address = formData.get("address")?.toString()?.trim() || null;
   const avatarFile = formData.get("avatar") as File | null;
 
   try {
@@ -49,6 +50,7 @@ export async function updateAccountSettings(
           notify_new_blog = ${notify_new_blog},
           forum_emails_enabled = ${forum_emails_enabled},
           avatar_url = ${avatarUrlStr},
+          address = COALESCE(${address}, address),
           updated_at = NOW()
         WHERE id = ${userId}::uuid
       `;
@@ -59,6 +61,7 @@ export async function updateAccountSettings(
           forum_town = ${forum_town},
           notify_new_blog = ${notify_new_blog},
           forum_emails_enabled = ${forum_emails_enabled},
+          address = COALESCE(${address}, address),
           updated_at = NOW()
         WHERE id = ${userId}::uuid
       `;

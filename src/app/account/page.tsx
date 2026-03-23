@@ -9,18 +9,20 @@ export default async function AccountPage() {
   if (!userId) redirect("/login?callbackUrl=/account");
 
   type Row = {
+    id: string;
     forum_username: string | null;
     forum_town: string | null;
     notify_new_blog: boolean;
     forum_emails_enabled: boolean;
     role: string;
     avatar_url: string | null;
+    address: string | null;
   };
   let row: Row | null = null;
   try {
     const sql = getSql();
     const rows = await sql`
-      SELECT forum_username, forum_town, notify_new_blog, forum_emails_enabled, role, avatar_url
+      SELECT id, forum_username, forum_town, notify_new_blog, forum_emails_enabled, role, avatar_url, address
       FROM users WHERE id = ${userId}::uuid LIMIT 1
     `;
     row = (rows[0] as Row) ?? null;

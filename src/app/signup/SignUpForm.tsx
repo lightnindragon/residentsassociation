@@ -36,6 +36,18 @@ export function SignUpForm() {
           placeholder="Your name"
           autoComplete="name"
         />
+        <div className="flex flex-col gap-1.5">
+          <label className="text-sm font-medium text-[var(--foreground)]">
+            Full Address <span className="text-xs text-[var(--color-muted)] font-normal">(For admin verification only)</span>
+          </label>
+          <textarea
+            name="address"
+            required
+            rows={3}
+            className="rounded-md border border-[var(--color-border)] bg-[var(--color-card)] px-3 py-2 text-sm text-[var(--foreground)] outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)]"
+            placeholder="Your full address"
+          />
+        </div>
         <Input
           label="Email"
           name="email"

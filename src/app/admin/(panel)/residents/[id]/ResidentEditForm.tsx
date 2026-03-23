@@ -16,6 +16,7 @@ export function ResidentEditForm({
     forum_username: string | null;
     forum_town: string | null;
     admin_notes: string | null;
+    address: string | null;
     banned: boolean;
     banned_until?: Date | null;
   };
@@ -35,6 +36,7 @@ export function ResidentEditForm({
         forum_username: String(fd.get("forum_username") ?? ""),
         forum_town: String(fd.get("forum_town") ?? ""),
         admin_notes: String(fd.get("admin_notes") ?? ""),
+        address: String(fd.get("address") ?? ""),
       });
       if (res.ok) {
         toast.success("Saved.");
@@ -48,6 +50,15 @@ export function ResidentEditForm({
       <form onSubmit={onSave} className="flex flex-col gap-3">
         <Input label="Name" name="name" defaultValue={user.name} required />
         <Input label="Email" name="email" type="email" defaultValue={user.email} required />
+        <div>
+          <label className="block text-sm font-medium">Full Address</label>
+          <textarea
+            name="address"
+            rows={3}
+            defaultValue={user.address ?? ""}
+            className="mt-1 w-full rounded border border-[var(--color-border)] bg-[var(--color-card)] px-3 py-2 text-sm"
+          />
+        </div>
         <Input
           label="Forum display name"
           name="forum_username"

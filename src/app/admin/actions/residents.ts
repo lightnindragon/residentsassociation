@@ -108,7 +108,7 @@ export async function approveResident(userId: string): Promise<{ ok: boolean }> 
 
 export async function updateResident(
   userId: string,
-  data: { name: string; email: string; forum_username: string; forum_town: string; admin_notes: string }
+  data: { name: string; email: string; forum_username: string; forum_town: string; admin_notes: string; address?: string }
 ): Promise<{ ok: boolean }> {
   try {
     await requireAdminRole();
@@ -120,6 +120,7 @@ export async function updateResident(
         forum_username = ${data.forum_username.trim() || null},
         forum_town = ${data.forum_town.trim() || null},
         admin_notes = ${data.admin_notes.trim() || null},
+        address = ${data.address?.trim() || null},
         updated_at = NOW()
       WHERE id = ${userId}::uuid AND role = 'user'
     `;
