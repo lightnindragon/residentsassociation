@@ -1,36 +1,62 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { createThread } from "@/app/forum/actions";
 import { RichTextEditor } from "@/components/RichTextEditor";
+import { Button } from "@/components/ui";
 
 export function CreateThreadForm({ categoryId }: { categoryId: string }) {
+  const [isOpen, setIsOpen] = useState(false);
   const [state, formAction] = useActionState(
     (prev: { error?: string } | null, formData: FormData) =>
       createThread(prev, formData),
     null
   );
+
+  if (!isOpen) {
+    return (
+      <div className="mt-6">
+        <Button onClick={() => setIsOpen(true)}>Post new thread</Button>
+      </div>
+    );
+  }
+
   return (
-    <form action={formAction} className="mt-6 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-4">
+    <form action={formAction} className="mt-6 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-4 shadow-sm">
       <input type="hidden" name="categoryId" value={categoryId} />
-      <label className="block text-sm font-medium text-[var(--foreground)] mb-2">New thread</label>
+      <div className="flex items-center justify-between mb-4">
+        <label className="block text-lg font-semibold text-[var(--foreground)]">Create a new thread</label>
+        <button
+          type="button"
+          onClick={() => setIsOpen(false)}
+          className="text-sm font-medium text-[var(--color-muted)] hover:text-[var(--foreground)]"
+        >
+          Cancel
+        </button>
+      </div>
       <input
         type="text"
         name="title"
         placeholder="Thread title"
         required
-        className="mb-4 w-full rounded-lg border border-[var(--color-border)] bg-[var(--background)] px-3 py-2"
+        className="mb-4 w-full rounded-lg border border-[var(--color-border)] bg-[var(--background)] px-3 py-2 outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)]"
       />
       <RichTextEditor name="body" initialHtml="" placeholder="Write your first post..." />
       {state?.error && (
-        <p className="mt-1 text-sm text-red-600">{state.error}</p>
+        <p className="mt-2 text-sm text-red-600">{state.error}</p>
       )}
-      <button
-        type="submit"
-        className="mt-3 rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-white hover:bg-[var(--color-primary-hover)]"
-      >
-        Post thread
-      </button>
+      <div className="mt-4 flex justify-end gap-3">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => setIsOpen(false)}
+        >
+          Cancel
+        </Button>
+        <Button type="submit">
+          Post thread
+        </Button>
+      </div>
     </form>
   );
 }
