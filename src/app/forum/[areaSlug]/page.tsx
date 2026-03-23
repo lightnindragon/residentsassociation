@@ -37,7 +37,7 @@ export default async function ForumAreaPage({
           (SELECT COUNT(*)::int FROM forum_threads WHERE category_id = c.id) AS thread_count,
           (SELECT COUNT(*)::int FROM forum_posts p JOIN forum_threads t ON t.id = p.thread_id WHERE t.category_id = c.id) AS post_count,
           (SELECT p2.created_at FROM forum_posts p2 JOIN forum_threads t2 ON t2.id = p2.thread_id WHERE t2.category_id = c.id ORDER BY p2.created_at DESC LIMIT 1) AS latest_post_date,
-          (SELECT CASE WHEN lu.role IN ('admin', 'dev') THEN 'Admin' ELSE COALESCE(lu.forum_username, lu.name) END 
+          (SELECT COALESCE(lu.forum_username, lu.name)
            FROM forum_posts lp 
            JOIN forum_threads lt ON lt.id = lp.thread_id 
            LEFT JOIN users lu ON lu.id = lp.author_id 

@@ -48,11 +48,10 @@ export default async function ForumCategoryPage({
       if (category) {
         const threadRows = await sql`
           SELECT t.id, t.title, t.created_at, t.pinned, t.locked,
-            CASE WHEN u.role IN ('admin', 'dev') THEN 'Admin'
-                 ELSE COALESCE(u.forum_username, u.name) END AS author_name,
+            COALESCE(u.forum_username, u.name) AS author_name,
             (SELECT COUNT(*)::int FROM forum_posts WHERE thread_id = t.id) AS reply_count,
             (SELECT MAX(created_at) FROM forum_posts WHERE thread_id = t.id) AS last_reply_at,
-            (SELECT CASE WHEN lu.role IN ('admin', 'dev') THEN 'Admin' ELSE COALESCE(lu.forum_username, lu.name) END 
+            (SELECT COALESCE(lu.forum_username, lu.name)
              FROM forum_posts lp 
              LEFT JOIN users lu ON lu.id = lp.author_id 
              WHERE lp.thread_id = t.id 

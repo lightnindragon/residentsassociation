@@ -78,9 +78,8 @@ export default async function ForumThreadPage({
       if (category) {
         const threadRows = await sql`
           SELECT t.id, t.title, t.created_at, t.locked, t.pinned, t.author_id, u.role AS author_role, u.avatar_url AS author_avatar,
-            CASE WHEN u.role IN ('admin', 'dev') THEN 'Admin'
-                 ELSE COALESCE(u.forum_username, u.name) END AS author_name,
-            CASE WHEN u.role IN ('admin', 'dev') THEN NULL ELSE u.forum_town END AS author_town
+            COALESCE(u.forum_username, u.name) AS author_name,
+            u.forum_town AS author_town
           FROM forum_threads t
           LEFT JOIN users u ON u.id = t.author_id
           WHERE t.id = ${threadId}::uuid AND t.category_id = ${category.id}
@@ -102,9 +101,8 @@ export default async function ForumThreadPage({
 
           const postRows = await sql`
             SELECT p.id, p.body, p.created_at, p.author_id, u.role AS author_role, u.avatar_url AS author_avatar,
-              CASE WHEN u.role IN ('admin', 'dev') THEN 'Admin'
-                   ELSE COALESCE(u.forum_username, u.name) END AS author_name,
-              CASE WHEN u.role IN ('admin', 'dev') THEN NULL ELSE u.forum_town END AS author_town,
+              COALESCE(u.forum_username, u.name) AS author_name,
+              u.forum_town AS author_town,
               (SELECT COUNT(*)::int FROM forum_post_likes WHERE post_id = p.id) AS like_count,
               EXISTS(SELECT 1 FROM forum_post_likes WHERE post_id = p.id AND user_id = ${session?.user?.id ? session.user.id : null}::uuid) AS user_liked
             FROM forum_posts p
@@ -154,14 +152,19 @@ export default async function ForumThreadPage({
               {thread.pinned && <Badge variant="warning">Pinned</Badge>}
               {thread.locked && <Badge variant="muted">Locked</Badge>}
             </div>
-            <p className="mt-2 text-sm text-[var(--color-muted)]">
+            <p className="mt-2 flex items-center flex-wrap gap-1.5 text-sm text-[var(--color-muted)]">
               Started by{" "}
               <span className="font-medium text-[var(--foreground)]">
                 {thread.author_name ?? "Unknown"}
               </span>
-              {thread.author_town && ` · ${thread.author_town}`}
-              {" · "}
-              {new Date(thread.created_at).toLocaleString()}
+              {(thread.author_role === "admin" || thread.author_role === "dev") && (
+                <span className="inline-flex items-center rounded bg-[#006699]/10 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#006699] dark:bg-[#4da6ff]/20 dark:text-[#4da6ff]">
+                  Admin
+                </span>
+              )}
+              {thread.author_town && <span>· {thread.author_town}</span>}
+              <span>·</span>
+              <span>{new Date(thread.created_at).toLocaleString()}</span>
             </p>
           </div>
           {session?.user?.id && (
@@ -208,6 +211,11 @@ export default async function ForumThreadPage({
                   <span className="font-semibold text-[var(--foreground)]">
                     {p.author_name ?? "Unknown"}
                   </span>
+                  {(p.author_role === "admin" || p.author_role === "dev") && (
+                    <span className="inline-flex items-center rounded bg-[#006699]/10 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#006699] dark:bg-[#4da6ff]/20 dark:text-[#4da6ff]">
+                      Admin
+                    </span>
+                  )}
                   {p.author_town && (
                     <span className="text-sm text-[var(--color-muted)]">{p.author_town}</span>
                   )}
