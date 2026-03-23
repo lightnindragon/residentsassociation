@@ -22,20 +22,21 @@ export async function Header() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-[var(--color-border)] bg-[var(--color-card)]/95 backdrop-blur supports-[backdrop-filter]:bg-[var(--color-card)]/80">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
+      <div className="mx-auto flex h-24 max-w-6xl items-center justify-between gap-4 px-4 sm:h-28 sm:px-6">
         <Link
           href="/"
-          className="flex shrink-0 items-center text-[var(--foreground)]"
+          className="flex shrink-0 items-center rounded-full outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--foreground)]"
         >
-          <Image
-            src={logoSrc}
-            alt="Culcheth &amp; Glazebury Residents Association"
-            width={200}
-            height={48}
-            className="h-9 w-auto max-h-9 max-w-[10.5rem] object-contain object-left sm:h-10 sm:max-h-10 sm:max-w-[12rem]"
-            sizes="(max-width: 640px) 168px, 192px"
-            priority
-          />
+          <span className="relative isolate h-[90px] w-[90px] shrink-0 overflow-hidden rounded-full border border-black/15 shadow-sm sm:h-[100px] sm:w-[100px]">
+            <Image
+              src={logoSrc}
+              alt="Culcheth &amp; Glazebury Residents Association"
+              fill
+              className="object-cover object-center"
+              sizes="100px"
+              priority
+            />
+          </span>
         </Link>
         <nav className="flex flex-wrap items-center justify-end gap-x-4 gap-y-2 text-sm">
           <NewsNav categories={newsCategories} />

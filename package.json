@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "eslint",
     "create-admin": "node --env-file=.env.local scripts/create-admin.js",
-    "upload-site-logo": "node --env-file=.env.local scripts/upload-site-logo.js"
+    "upload-site-logo": "node --env-file=.env.local scripts/upload-site-logo.js",
+    "seed-hero-image": "node --env-file=.env.local scripts/seed-hero-from-url.js",
+    "seed-gallery-image": "node --env-file=.env.local scripts/seed-gallery-from-url.js"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",

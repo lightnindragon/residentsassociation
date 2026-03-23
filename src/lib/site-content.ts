@@ -11,6 +11,18 @@ export type ContactContent = {
   labelSubmit: string;
 };
 
+/** Public homepage hero — set via site_content `home_hero_image_url` (e.g. seed script). */
+export async function getHomeHeroImageUrl(): Promise<string> {
+  try {
+    const sql = getSql();
+    const rows = await sql`SELECT value FROM site_content WHERE key = 'home_hero_image_url' LIMIT 1`;
+    const row = rows[0] as { value: string } | undefined;
+    return row?.value?.trim() ?? "";
+  } catch {
+    return "";
+  }
+}
+
 export async function getAboutIntro(): Promise<string> {
   try {
     const sql = getSql();

@@ -1,14 +1,31 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Button, Card, CardHeader, CardContent } from "@/components/ui";
 import { auth } from "@/lib/auth";
+import { getHomeHeroImageUrl } from "@/lib/site-content";
 
 export default async function HomePage() {
   const session = await auth();
+  const heroUrl = await getHomeHeroImageUrl();
 
   return (
     <div className="flex flex-col">
-      <section className="border-b border-[var(--color-border)] bg-[var(--color-card)] py-16 sm:py-24">
-        <div className="mx-auto max-w-3xl px-4 text-center sm:px-6">
+      <section className="border-b border-[var(--color-border)] bg-[var(--color-card)]">
+        {heroUrl ? (
+          <div className="relative mx-auto aspect-[21/9] max-h-[min(45vh,420px)] w-full max-w-6xl sm:aspect-[3/1] sm:max-h-[min(50vh,480px)]">
+            <Image
+              src={heroUrl}
+              alt="Culcheth area — community photograph"
+              fill
+              className="object-cover object-center"
+              sizes="(max-width: 1152px) 100vw, 1152px"
+              priority
+            />
+          </div>
+        ) : null}
+        <div
+          className={`mx-auto max-w-3xl px-4 text-center sm:px-6 ${heroUrl ? "py-12 sm:py-16" : "py-16 sm:py-24"}`}
+        >
           <h1 className="font-heading text-4xl font-semibold tracking-tight text-[var(--foreground)] sm:text-5xl">
             Culcheth & Glazebury
           </h1>
