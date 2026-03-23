@@ -56,7 +56,7 @@ export function BlogImageUpload({
         accept="image/*"
         onChange={handleFile}
         disabled={pending}
-        className="block w-full text-sm text-[var(--foreground)] file:mr-4 file:rounded file:border-0 file:bg-[var(--color-primary)] file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-[var(--color-primary-hover)] disabled:opacity-50"
+        className="block w-full cursor-pointer text-sm text-[var(--color-muted)] file:mr-4 file:cursor-pointer file:rounded-md file:border-0 file:bg-[var(--color-primary)]/10 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-[var(--color-primary)] hover:file:bg-[var(--color-primary)]/20 disabled:opacity-50"
       />
       <input type="hidden" name={name} value={url} />
       {pending && <p className="text-xs text-[var(--color-muted)]">Uploading…</p>}

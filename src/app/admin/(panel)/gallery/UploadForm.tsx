@@ -12,16 +12,16 @@ export function UploadForm() {
         <p className="mt-4 text-sm text-red-600">{state.error}</p>
       )}
       <form action={formAction} className="mt-6 flex max-w-md flex-col gap-4">
-        <label className="block text-sm font-medium">
-          Image file
+        <div className="flex-1">
+          <label className="mb-1 block text-sm font-medium text-[var(--foreground)]">Image file</label>
           <input
             type="file"
             name="file"
             accept="image/*"
             required
-            className="mt-1 block w-full text-sm"
+            className="block w-full cursor-pointer text-sm text-[var(--color-muted)] file:mr-4 file:cursor-pointer file:rounded-md file:border-0 file:bg-[var(--color-primary)]/10 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-[var(--color-primary)] hover:file:bg-[var(--color-primary)]/20"
           />
-        </label>
+        </div>
         <Input label="Caption" name="caption" placeholder="Optional caption" />
         <Button type="submit">Upload</Button>
       </form>

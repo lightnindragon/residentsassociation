@@ -64,7 +64,7 @@ export function CommitteeMemberEditForm({ member }: { member: Member }) {
         type="file"
         accept="image/*"
         onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-        className="text-xs"
+        className="w-full text-xs text-[var(--color-muted)] file:mr-2 file:cursor-pointer file:rounded-md file:border-0 file:bg-[var(--color-primary)]/10 file:px-2 file:py-1 file:text-xs file:font-semibold file:text-[var(--color-primary)] hover:file:bg-[var(--color-primary)]/20"
       />
       <button
         type="submit"

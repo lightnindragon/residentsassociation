@@ -60,7 +60,7 @@ export function CommitteeMemberForm() {
           type="file"
           accept="image/*"
           onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-          className="mt-0.5 block text-sm"
+          className="mt-0.5 block w-full text-sm text-[var(--color-muted)] file:mr-4 file:cursor-pointer file:rounded-md file:border-0 file:bg-[var(--color-primary)]/10 file:px-4 file:py-1.5 file:text-sm file:font-semibold file:text-[var(--color-primary)] hover:file:bg-[var(--color-primary)]/20"
         />
       </div>
       <button
