@@ -2,7 +2,7 @@
 
 import { auth } from "@/lib/auth";
 import { getSql } from "@/lib/db";
-import DOMPurify from "isomorphic-dompurify";
+import sanitizeHtml from "sanitize-html";
 import { getSmtpConfig } from "@/lib/email";
 import nodemailer from "nodemailer";
 import { getEmailTemplate, applyTemplate } from "@/lib/email-templates";
@@ -22,7 +22,7 @@ export async function addPostComment(
   if (!elevated && user.approved === false) return { error: "Your account is not approved yet." };
 
   const raw = formData.get("body")?.toString() ?? "";
-  const body = DOMPurify.sanitize(raw.trim());
+  const body = sanitizeHtml(raw.trim());
   if (!body.replace(/<[^>]+>/g, "").trim()) return { error: "Please write a comment." };
 
   try {

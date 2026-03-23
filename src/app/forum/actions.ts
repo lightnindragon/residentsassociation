@@ -4,7 +4,7 @@ import { getSql } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import { getCategoryForumPath, forumCategoryUrl, forumThreadUrl } from "@/lib/forum-paths";
-import DOMPurify from "isomorphic-dompurify";
+import sanitizeHtml from "sanitize-html";
 
 export async function createThread(
   _prev: { error?: string } | null,
@@ -19,7 +19,7 @@ export async function createThread(
   const rawBody = formData.get("body")?.toString()?.trim() || "";
   if (!categoryId || !title) return { error: "Title is required." };
   
-  const body = DOMPurify.sanitize(rawBody);
+  const body = sanitizeHtml(rawBody, { allowedTags: sanitizeHtml.defaults.allowedTags.concat([ 'img' ]) });
 
   try {
     const sql = getSql();
@@ -65,7 +65,7 @@ export async function createReply(
   const rawBody = formData.get("body")?.toString()?.trim();
   if (!threadId || !rawBody) return { error: "Message is required." };
 
-  const body = DOMPurify.sanitize(rawBody);
+  const body = sanitizeHtml(rawBody, { allowedTags: sanitizeHtml.defaults.allowedTags.concat([ 'img' ]) });
 
   try {
     const sql = getSql();

@@ -2,7 +2,7 @@
 
 import { getSql } from "@/lib/db";
 import { revalidatePath } from "next/cache";
-import DOMPurify from "isomorphic-dompurify";
+import sanitizeHtml from "sanitize-html";
 import { notifySubscribersNewPost } from "@/lib/notify-blog";
 
 function slugify(s: string): string {
@@ -19,7 +19,7 @@ export async function createPost(
   const title = formData.get("title")?.toString()?.trim();
   const excerpt = formData.get("excerpt")?.toString()?.trim() ?? null;
   const rawBody = formData.get("body")?.toString() ?? "";
-  const body = DOMPurify.sanitize(rawBody);
+  const body = sanitizeHtml(rawBody, { allowedTags: sanitizeHtml.defaults.allowedTags.concat([ 'img' ]) });
   const authorId = formData.get("authorId")?.toString();
   const publish = formData.get("published") === "1";
   const catRaw = formData.get("post_category_id")?.toString()?.trim();
@@ -63,7 +63,7 @@ export async function updatePost(
   const title = formData.get("title")?.toString()?.trim();
   const excerpt = formData.get("excerpt")?.toString()?.trim() ?? null;
   const rawBody = formData.get("body")?.toString() ?? "";
-  const body = DOMPurify.sanitize(rawBody);
+  const body = sanitizeHtml(rawBody, { allowedTags: sanitizeHtml.defaults.allowedTags.concat([ 'img' ]) });
   const publish = formData.get("published") === "1";
   const catRaw2 = formData.get("post_category_id")?.toString()?.trim();
   const catId = catRaw2 && catRaw2.length > 0 ? catRaw2 : null;

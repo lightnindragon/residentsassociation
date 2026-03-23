@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { getDonationSettings } from "@/lib/donations";
 import { DonateButton } from "@/components/DonateButton";
-import DOMPurify from "isomorphic-dompurify";
+import sanitizeHtml from "sanitize-html";
 import { PostCommentSection } from "./PostCommentSection";
 
 export const dynamic = "force-dynamic";
@@ -68,7 +68,7 @@ export default async function NewsPostPage({
       ? "Your account must be approved before you can comment."
       : undefined;
 
-  const safeHtml = DOMPurify.sanitize(post.body);
+  const safeHtml = sanitizeHtml(post.body, { allowedTags: sanitizeHtml.defaults.allowedTags.concat([ 'img' ]) });
   const donationSettings = await getDonationSettings();
   const showDonate = !!session?.user && donationSettings?.enabled === true;
 
