@@ -22,9 +22,17 @@ const extraHosts = [
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
+      // Legacy / docs example host (rare)
       {
         protocol: "https",
         hostname: "public.blob.vercel-storage.com",
+        pathname: "/**",
+      },
+      // Actual Vercel Blob URLs: https://<storeId>.public.blob.vercel-storage.com/...
+      // Without this, next/image returns 400 for optimized remote images.
+      {
+        protocol: "https",
+        hostname: "*.public.blob.vercel-storage.com",
         pathname: "/**",
       },
       ...extraHosts.map((hostname) => ({
