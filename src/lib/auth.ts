@@ -41,7 +41,7 @@ const nextAuth = NextAuth({
         try {
           const sql = getSql();
           const rows = await sql`
-            SELECT id, email, name, role, password_hash, approved, banned
+            SELECT id, email, name, role, password_hash, approved, banned, banned_until
             FROM users
             WHERE email = ${email}
             LIMIT 1
@@ -55,10 +55,21 @@ const nextAuth = NextAuth({
                 password_hash: string;
                 approved: boolean | null;
                 banned: boolean | null;
+                banned_until: Date | null;
               }
             | undefined;
           if (!user || !user.password_hash) return null;
-          if (user.banned === true) return null;
+          
+          if (user.banned === true) {
+            if (!user.banned_until || new Date() < new Date(user.banned_until)) {
+              return null;
+            } else {
+              // Ban has expired, unban them
+              await sql`UPDATE users SET banned = false, banned_until = null WHERE id = ${user.id}::uuid`;
+              user.banned = false;
+            }
+          }
+
           const valid = await bcrypt.compare(password, user.password_hash);
           if (!valid) return null;
           const role = user.role ?? "user";

@@ -18,13 +18,14 @@ export default async function EditResidentPage({
     admin_notes: string | null;
     approved: boolean;
     banned: boolean;
+    banned_until: Date | null;
     role: string;
   };
   let user: Row | null = null;
   try {
     const sql = getSql();
     const rows = await sql`
-      SELECT id, name, email, forum_username, forum_town, admin_notes, approved, banned, role
+      SELECT id, name, email, forum_username, forum_town, admin_notes, approved, banned, banned_until, role
       FROM users WHERE id = ${id}::uuid AND role = 'user' LIMIT 1
     `;
     user = (rows[0] as Row) ?? null;

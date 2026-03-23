@@ -14,16 +14,59 @@ async function requireAdminRole() {
   if (role !== "admin" && role !== "dev") throw new Error("Forbidden");
 }
 
-export async function setUserBanned(userId: string, banned: boolean): Promise<{ ok: boolean }> {
+export async function setUserBanned(userId: string, banned: boolean, bannedUntil?: Date | null): Promise<{ ok: boolean }> {
   try {
     await requireAdminRole();
     const sql = getSql();
-    await sql`UPDATE users SET banned = ${banned}, updated_at = NOW() WHERE id = ${userId}::uuid AND role = 'user'`;
+    await sql`UPDATE users SET banned = ${banned}, banned_until = ${bannedUntil || null}, updated_at = NOW() WHERE id = ${userId}::uuid AND role = 'user'`;
     revalidatePath("/forum");
     revalidatePath("/admin/residents");
     return { ok: true };
   } catch {
     return { ok: false };
+  }
+}
+
+export async function triggerPasswordReset(userId: string): Promise<{ ok: boolean; error?: string }> {
+  try {
+    await requireAdminRole();
+    const sql = getSql();
+    const [u] = await sql`SELECT email, name FROM users WHERE id = ${userId}::uuid LIMIT 1`;
+    if (!u) return { ok: false, error: "User not found" };
+
+    const token = crypto.randomUUID();
+    const expires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+    
+    await sql`
+      UPDATE users 
+      SET password_reset_token = ${token}, password_reset_expires = ${expires}
+      WHERE id = ${userId}::uuid
+    `;
+
+    const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+    const resetUrl = `${baseUrl}/reset-password?token=${token}`;
+    
+    const config = await getSmtpConfig();
+    if (config) {
+      const transport = nodemailer.createTransport({
+        host: config.host,
+        port: config.port,
+        secure: config.port === 465,
+        auth: config.user && config.password ? { user: config.user, pass: config.password } : undefined,
+      });
+      await transport.sendMail({
+        from: config.from_address || config.contact_inbox,
+        to: u.email as string,
+        subject: "Password Reset Request",
+        text: `Hi ${u.name},\n\nPlease reset your password by clicking the link below:\n${resetUrl}\n\nThis link will expire in 24 hours.`,
+        html: `<p>Hi ${u.name},</p><p>Please reset your password by clicking the link below:</p><p><a href="${resetUrl}">${resetUrl}</a></p><p>This link will expire in 24 hours.</p>`,
+      });
+    }
+
+    return { ok: true };
+  } catch (e) {
+    console.error(e);
+    return { ok: false, error: "Failed to send email." };
   }
 }
 
