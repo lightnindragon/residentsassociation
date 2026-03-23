@@ -59,7 +59,7 @@ export default async function ForumAreaPage({
   const followingArea = userId ? await isFollowing("area", area.id) : false;
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
+    <div className="py-2">
       <nav className="text-sm text-[var(--color-muted)]">
         <Link href="/forum" className="text-[#006699] hover:underline dark:text-[#4da6ff]">
           Forum

@@ -82,7 +82,7 @@ export default async function ForumCategoryPage({
   const followingCategory = userId ? await isFollowing("category", category.id) : false;
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
+    <div className="py-2 max-w-4xl">
       <nav className="text-sm text-[var(--color-muted)]">
         <Link href="/forum" className="text-[var(--color-primary)] hover:underline">
           Forum

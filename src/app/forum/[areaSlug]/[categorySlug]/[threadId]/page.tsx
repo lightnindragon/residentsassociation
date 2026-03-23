@@ -124,7 +124,7 @@ export default async function ForumThreadPage({
   const followingThread = session?.user?.id ? await isFollowing("thread", threadId) : false;
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
+    <div className="py-2 max-w-4xl">
       <nav className="text-sm text-[var(--color-muted)]">
         <Link href="/forum" className="text-[var(--color-primary)] hover:underline">
           Forum
