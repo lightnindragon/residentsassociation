@@ -2,6 +2,7 @@
 
 import { getSql } from "@/lib/db";
 import { sendContactEmail } from "@/lib/email";
+import { isTurnstileEnforced, verifyTurnstileToken } from "@/lib/turnstile";
 
 export type ContactResult = { success?: boolean; error?: string } | null;
 
@@ -13,9 +14,21 @@ export async function submitContact(
   const email = formData.get("email")?.toString()?.trim();
   const subject = formData.get("subject")?.toString()?.trim();
   const body = formData.get("body")?.toString()?.trim();
+  const turnstileToken = formData.get("cf-turnstile-response")?.toString();
 
   if (!name || !email || !subject || !body) {
     return { success: false, error: "All fields are required." };
+  }
+
+  if (isTurnstileEnforced()) {
+    const ok = await verifyTurnstileToken(turnstileToken);
+    if (!ok) {
+      return {
+        success: false,
+        error:
+          "Human verification failed or expired. Please complete the check below and try again.",
+      };
+    }
   }
 
   try {

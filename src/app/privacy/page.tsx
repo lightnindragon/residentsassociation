@@ -30,6 +30,23 @@ export default function PrivacyPage() {
           We use cookies for session and authentication. See our Cookie Policy
           for more detail.
         </p>
+        <h2 className="font-heading mt-6 text-xl font-medium">
+          Contact form verification
+        </h2>
+        <p>
+          The contact page may use Cloudflare Turnstile to reduce automated
+          spam. Turnstile runs in your browser and may process technical data
+          (such as device or network signals) as described in{" "}
+          <a
+            href="https://www.cloudflare.com/privacypolicy/"
+            className="underline"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Cloudflare’s privacy policy
+          </a>
+          .
+        </p>
         <h2 className="font-heading mt-6 text-xl font-medium">Your rights</h2>
         <p>
           You can request access to, correction or deletion of your personal
