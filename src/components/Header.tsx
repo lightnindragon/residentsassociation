@@ -21,7 +21,7 @@ export async function Header() {
   const logoSrc = getHeaderLogoSrc();
 
   return (
-    <header className="sticky top-0 z-50 border-b-2 border-teal-600/10 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80">
+    <header className="sticky top-0 z-50 border-t-[3px] border-t-[var(--color-primary)] border-b border-b-[var(--color-border)] bg-white/97 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-white/90">
       <div className="mx-auto flex h-24 max-w-6xl items-center justify-between gap-4 px-4 sm:h-28 sm:px-6">
         <Link
           href="/"
@@ -125,7 +125,7 @@ export async function Header() {
           )}
         </nav>
       </div>
-      <div className="mx-auto flex max-w-6xl justify-end border-t border-[var(--color-border)] px-4 py-2 sm:hidden">
+      <div className="mx-auto flex max-w-6xl justify-end border-t border-[var(--color-surface-strong)] px-4 py-2 sm:hidden">
         <SocialIconLinks settings={social} />
       </div>
     </header>

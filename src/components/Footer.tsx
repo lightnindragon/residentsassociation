@@ -16,7 +16,7 @@ export async function Footer() {
   const logoSrc = getHeaderLogoSrc();
 
   return (
-    <footer className="mt-auto border-t border-teal-100 bg-slate-50/50">
+    <footer className="mt-auto border-t border-[var(--color-surface-strong)] bg-[var(--color-surface)]">
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
         <div className="flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex flex-col gap-4 sm:max-w-sm">

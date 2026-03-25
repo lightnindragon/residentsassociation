@@ -1,16 +1,28 @@
 @import "tailwindcss";
 
 :root {
-  --background: #fdfefd;
-  --foreground: #0f172a;
-  --color-primary: #0f766e;
-  --color-primary-hover: #115e59;
-  --color-primary-muted: #ccfbf1;
-  --color-accent: #ea580c;
-  --color-accent-hover: #c2410c;
-  --color-muted: #64748b;
-  --color-border: #e2e8f0;
+  /* Base */
+  --background: #f7fcfb;
+  --foreground: #0d1f1c;
+
+  /* Brand */
+  --color-primary: #0d7060;
+  --color-primary-hover: #0a5c4e;
+  --color-primary-muted: #d5ede8;
+
+  /* Accent (warm amber – used sparingly) */
+  --color-accent: #c4622d;
+  --color-accent-hover: #a84f23;
+
+  /* Surfaces */
+  --color-surface: #eaf4f0;
+  --color-surface-strong: #d4e9e2;
   --color-card: #ffffff;
+
+  /* Text & chrome */
+  --color-muted: #546e69;
+  --color-border: #c6ddd8;
+
   --font-heading: var(--font-fraunces);
 }
 
