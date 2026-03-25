@@ -18,6 +18,98 @@ async function requireAdmin() {
   if (user?.role !== "admin" && user?.role !== "dev") throw new Error("Admin only");
 }
 
+export async function updateArea(
+  _prev: { error?: string } | null,
+  formData: FormData
+): Promise<{ error?: string } | null> {
+  try {
+    await requireAdmin();
+  } catch {
+    return { error: "Forbidden." };
+  }
+  const id = formData.get("id")?.toString()?.trim();
+  const name = formData.get("name")?.toString()?.trim();
+  const slugInput = formData.get("slug")?.toString()?.trim();
+  const description = formData.get("description")?.toString()?.trim() ?? null;
+  const sort_order = parseInt(formData.get("sort_order")?.toString() ?? "0", 10);
+  if (!id || !name) return { error: "Name is required." };
+  const slug = slugInput ? slugify(slugInput) : slugify(name);
+  try {
+    const sql = getSql();
+    await sql`
+      UPDATE forum_areas SET name = ${name}, slug = ${slug}, description = ${description}, sort_order = ${sort_order}
+      WHERE id = ${id}::uuid
+    `;
+    revalidatePath("/forum");
+    revalidatePath("/admin/forum");
+    return null;
+  } catch (e) {
+    console.error(e);
+    return { error: "Failed to update area (slug may be in use)." };
+  }
+}
+
+export async function deleteArea(id: string): Promise<{ error?: string }> {
+  try {
+    await requireAdmin();
+    const sql = getSql();
+    await sql`DELETE FROM forum_areas WHERE id = ${id}::uuid`;
+    revalidatePath("/forum");
+    revalidatePath("/admin/forum");
+    return {};
+  } catch (e) {
+    console.error(e);
+    return { error: "Failed to delete area. Make sure all categories are removed first." };
+  }
+}
+
+export async function updateCategory(
+  _prev: { error?: string } | null,
+  formData: FormData
+): Promise<{ error?: string } | null> {
+  try {
+    await requireAdmin();
+  } catch {
+    return { error: "Forbidden." };
+  }
+  const id = formData.get("id")?.toString()?.trim();
+  const name = formData.get("name")?.toString()?.trim();
+  const slugInput = formData.get("slug")?.toString()?.trim();
+  const description = formData.get("description")?.toString()?.trim() ?? null;
+  const sort_order = parseInt(formData.get("sort_order")?.toString() ?? "0", 10);
+  const areaId = formData.get("area_id")?.toString()?.trim();
+  if (!id || !name) return { error: "Name is required." };
+  if (!areaId) return { error: "Area is required." };
+  const slug = slugInput ? slugify(slugInput) : slugify(name);
+  try {
+    const sql = getSql();
+    await sql`
+      UPDATE forum_categories SET name = ${name}, slug = ${slug}, description = ${description}, sort_order = ${sort_order}, area_id = ${areaId}::uuid
+      WHERE id = ${id}::uuid
+    `;
+    revalidatePath("/forum");
+    revalidatePath("/admin/forum");
+    return null;
+  } catch (e) {
+    console.error(e);
+    return { error: "Failed to update category (slug may be in use)." };
+  }
+}
+
+export async function deleteCategory(id: string): Promise<{ error?: string }> {
+  try {
+    await requireAdmin();
+    const sql = getSql();
+    await sql`DELETE FROM forum_categories WHERE id = ${id}::uuid`;
+    revalidatePath("/forum");
+    revalidatePath("/admin/forum");
+    return {};
+  } catch (e) {
+    console.error(e);
+    return { error: "Failed to delete category. Make sure all threads are removed first." };
+  }
+}
+
 export async function addCategory(
   _prev: { error?: string } | null,
   formData: FormData
