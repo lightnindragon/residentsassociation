@@ -86,16 +86,16 @@ export async function getAboutIntro(): Promise<string> {
 }
 
 export async function getCommitteeMembers(): Promise<
-  Array<{ id: string; name: string; role: string; image_url: string | null; sort_order: number }>
+  Array<{ id: string; name: string; role: string; bio: string | null; image_url: string | null; sort_order: number }>
 > {
   try {
     const sql = getSql();
     const rows = await sql`
-      SELECT id, name, role, image_url, sort_order
+      SELECT id, name, role, bio, image_url, sort_order
       FROM committee_members
       ORDER BY sort_order ASC, name ASC
     `;
-    return rows as Array<{ id: string; name: string; role: string; image_url: string | null; sort_order: number }>;
+    return rows as Array<{ id: string; name: string; role: string; bio: string | null; image_url: string | null; sort_order: number }>;
   } catch {
     return [];
   }

@@ -115,28 +115,35 @@ export default async function AboutPage() {
           <h2 className="font-heading text-xl font-semibold text-[var(--foreground)]">
             Committee
           </h2>
-          <ul className="mt-6 grid gap-8 sm:grid-cols-2">
+          <ul className="mt-8 grid gap-8 sm:grid-cols-2">
             {members.map((m) => (
-              <li key={m.id} className="flex items-start gap-4">
-                <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-full bg-[var(--color-border)]">
-                  {m.image_url ? (
-                    <Image
-                      src={m.image_url}
-                      alt={m.name}
-                      fill
-                      className="object-cover"
-                      sizes="80px"
-                    />
-                  ) : (
-                    <span className="flex h-full w-full items-center justify-center text-2xl text-[var(--color-muted)]">
-                      ?
-                    </span>
-                  )}
+              <li key={m.id} className="flex flex-col gap-4 rounded-xl border border-teal-100 bg-white p-6 shadow-sm">
+                <div className="flex items-center gap-4">
+                  <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-full bg-[var(--color-border)] shadow-sm">
+                    {m.image_url ? (
+                      <Image
+                        src={m.image_url}
+                        alt={m.name}
+                        fill
+                        className="object-cover"
+                        sizes="80px"
+                      />
+                    ) : (
+                      <span className="flex h-full w-full items-center justify-center text-2xl text-[var(--color-muted)]">
+                        ?
+                      </span>
+                    )}
+                  </div>
+                  <div>
+                    <p className="font-heading text-lg font-semibold text-[var(--foreground)]">{m.name}</p>
+                    <p className="text-sm font-medium text-[var(--color-primary)]">{m.role || "—"}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="font-medium text-[var(--foreground)]">{m.name}</p>
-                  <p className="text-sm text-[var(--color-muted)]">{m.role || "—"}</p>
-                </div>
+                {m.bio && (
+                  <p className="text-sm leading-relaxed text-[var(--color-muted)] whitespace-pre-wrap">
+                    {m.bio}
+                  </p>
+                )}
               </li>
             ))}
           </ul>

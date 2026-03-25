@@ -9,6 +9,7 @@ type Member = {
   id: string;
   name: string;
   role: string;
+  bio: string | null;
   image_url: string | null;
   sort_order: number;
 };
@@ -19,6 +20,7 @@ function CommitteeMemberItem({ m }: { m: Member }) {
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(m.name);
   const [role, setRole] = useState(m.role);
+  const [bio, setBio] = useState(m.bio || "");
   const [file, setFile] = useState<File | null>(null);
 
   function handleDelete(id: string) {
@@ -35,6 +37,7 @@ function CommitteeMemberItem({ m }: { m: Member }) {
     formData.append("id", m.id);
     formData.append("name", name);
     formData.append("role", role);
+    formData.append("bio", bio);
     if (file) {
       formData.append("file", file);
     }
@@ -71,7 +74,8 @@ function CommitteeMemberItem({ m }: { m: Member }) {
         <>
           <div className="min-w-0 flex-1">
             <p className="font-medium text-[var(--foreground)]">{m.name}</p>
-            <p className="text-sm text-[var(--color-muted)]">{m.role || "—"}</p>
+            <p className="text-sm font-medium text-[var(--color-primary)]">{m.role || "—"}</p>
+            {m.bio && <p className="mt-2 text-sm text-[var(--color-muted)] whitespace-pre-wrap">{m.bio}</p>}
           </div>
           <div className="flex shrink-0 items-center gap-2">
             <button
@@ -110,6 +114,13 @@ function CommitteeMemberItem({ m }: { m: Member }) {
                 className="w-full rounded border border-[var(--color-border)] bg-[var(--background)] px-2 py-1.5 text-sm"
               />
             </div>
+            <textarea
+              value={bio}
+              onChange={(e) => setBio(e.target.value)}
+              placeholder="Bio (optional)"
+              rows={3}
+              className="w-full rounded border border-[var(--color-border)] bg-[var(--background)] px-2 py-1.5 text-sm"
+            />
             <input
               type="file"
               accept="image/*"
@@ -131,6 +142,7 @@ function CommitteeMemberItem({ m }: { m: Member }) {
                 setEditing(false);
                 setName(m.name);
                 setRole(m.role);
+                setBio(m.bio || "");
                 setFile(null);
               }}
               disabled={pending}

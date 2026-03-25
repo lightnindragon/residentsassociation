@@ -26,6 +26,7 @@ export async function addCommitteeMember(
   try {
     const name = formData.get("name")?.toString() || "";
     const role = formData.get("role")?.toString() || "";
+    const bio = formData.get("bio")?.toString() || "";
     const imageFile = formData.get("file") as File | null;
 
     const sql = getSql();
@@ -37,8 +38,8 @@ export async function addCommitteeMember(
     const maxOrder = await sql`SELECT COALESCE(MAX(sort_order), 0)::int AS m FROM committee_members`;
     const nextOrder = ((maxOrder[0] as { m: number })?.m ?? 0) + 1;
     await sql`
-      INSERT INTO committee_members (name, role, image_url, sort_order)
-      VALUES (${name.trim()}, ${(role ?? "").trim()}, ${imageUrl}, ${nextOrder})
+      INSERT INTO committee_members (name, role, bio, image_url, sort_order)
+      VALUES (${name.trim()}, ${(role ?? "").trim()}, ${(bio ?? "").trim()}, ${imageUrl}, ${nextOrder})
     `;
     revalidatePath("/about");
     revalidatePath("/admin/about");
@@ -56,6 +57,7 @@ export async function updateCommitteeMember(
     const id = formData.get("id")?.toString();
     const name = formData.get("name")?.toString() || "";
     const role = formData.get("role")?.toString() || "";
+    const bio = formData.get("bio")?.toString() || "";
     const imageFile = formData.get("file") as File | null;
 
     if (!id) return { ok: false, error: "ID missing" };
@@ -71,12 +73,12 @@ export async function updateCommitteeMember(
     }
     if (imageUrl !== undefined) {
       await sql`
-        UPDATE committee_members SET name = ${name.trim()}, role = ${(role ?? "").trim()}, image_url = COALESCE(${imageUrl}, image_url)
+        UPDATE committee_members SET name = ${name.trim()}, role = ${(role ?? "").trim()}, bio = ${(bio ?? "").trim()}, image_url = COALESCE(${imageUrl}, image_url)
         WHERE id = ${id}::uuid
       `;
     } else {
       await sql`
-        UPDATE committee_members SET name = ${name.trim()}, role = ${(role ?? "").trim()}
+        UPDATE committee_members SET name = ${name.trim()}, role = ${(role ?? "").trim()}, bio = ${(bio ?? "").trim()}
         WHERE id = ${id}::uuid
       `;
     }

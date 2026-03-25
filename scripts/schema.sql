@@ -137,6 +137,7 @@ CREATE TABLE IF NOT EXISTS committee_members (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   name TEXT NOT NULL,
   role TEXT NOT NULL DEFAULT '',
+  bio TEXT,
   image_url TEXT,
   sort_order INT NOT NULL DEFAULT 0,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()

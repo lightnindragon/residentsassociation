@@ -9,6 +9,7 @@ export function CommitteeMemberForm() {
   const [pending, startTransition] = useTransition();
   const [name, setName] = useState("");
   const [role, setRole] = useState("");
+  const [bio, setBio] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -23,6 +24,7 @@ export function CommitteeMemberForm() {
     const formData = new FormData();
     formData.append("name", name.trim());
     formData.append("role", role.trim());
+    formData.append("bio", bio.trim());
     if (file) {
       formData.append("file", file);
     }
@@ -32,6 +34,7 @@ export function CommitteeMemberForm() {
       if (result.ok) {
         setName("");
         setRole("");
+        setBio("");
         setFile(null);
         router.refresh();
       } else {
@@ -69,6 +72,16 @@ export function CommitteeMemberForm() {
           accept="image/*"
           onChange={(e) => setFile(e.target.files?.[0] ?? null)}
           className="mt-0.5 block w-full text-sm text-[var(--color-muted)] file:mr-4 file:cursor-pointer file:rounded-md file:border-0 file:bg-[var(--color-primary)]/10 file:px-4 file:py-1.5 file:text-sm file:font-semibold file:text-[var(--color-primary)] hover:file:bg-[var(--color-primary)]/20"
+        />
+      </div>
+      <div className="w-full">
+        <label className="block text-xs font-medium text-[var(--color-muted)]">About Me (Bio)</label>
+        <textarea
+          value={bio}
+          onChange={(e) => setBio(e.target.value)}
+          placeholder="A short biography..."
+          rows={3}
+          className="mt-0.5 w-full rounded border border-[var(--color-border)] bg-[var(--background)] px-2 py-1.5 text-sm"
         />
       </div>
       <button
