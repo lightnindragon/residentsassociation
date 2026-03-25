@@ -9,6 +9,7 @@ import { getSiteSettings } from "@/lib/site-settings";
 import { NewsNav } from "@/components/NewsNav";
 import { SocialIconLinks } from "@/components/SocialIconLinks";
 import { getHeaderLogoSrc } from "@/lib/branding";
+import { MobileNav } from "@/components/MobileNav";
 
 export async function Header() {
   const session = await auth();
@@ -20,25 +21,33 @@ export async function Header() {
   const social = await getSiteSettings();
   const logoSrc = getHeaderLogoSrc();
 
+  const signOutAction = async () => {
+    "use server";
+    await signOut({ redirectTo: "/" });
+  };
+
   return (
     <header className="sticky top-0 z-50 border-t-[3px] border-t-[var(--color-primary)] border-b border-b-[var(--color-border)] bg-white/97 backdrop-blur supports-[backdrop-filter]:bg-white/90">
-      <div className="mx-auto flex h-24 max-w-6xl items-center justify-between gap-4 px-4 sm:h-28 sm:px-6">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:h-20 md:h-24 md:px-6">
+        {/* Logo */}
         <Link
           href="/"
           className="flex shrink-0 items-center rounded-full outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--foreground)]"
         >
-          <span className="relative isolate h-[90px] w-[90px] shrink-0 overflow-hidden rounded-full border border-black/15 shadow-sm sm:h-[100px] sm:w-[100px]">
+          <span className="relative isolate h-[52px] w-[52px] shrink-0 overflow-hidden rounded-full border border-black/15 shadow-sm sm:h-[70px] sm:w-[70px] md:h-[84px] md:w-[84px]">
             <Image
               src={logoSrc}
               alt="Culcheth &amp; Glazebury Residents Association"
               fill
               className="object-cover object-center"
-              sizes="100px"
+              sizes="(max-width: 768px) 52px, (max-width: 1024px) 70px, 84px"
               priority
             />
           </span>
         </Link>
-        <nav className="flex flex-wrap items-center justify-end gap-x-4 gap-y-2 text-sm">
+
+        {/* Desktop nav — hidden on mobile */}
+        <nav className="hidden items-center justify-end gap-x-4 gap-y-2 text-sm md:flex md:flex-wrap">
           <Link
             href="/"
             className="font-medium text-[var(--foreground)] hover:text-[var(--color-primary)]"
@@ -64,7 +73,7 @@ export async function Header() {
           >
             About
           </Link>
-          <div className="hidden items-center gap-4 border-l border-[var(--color-border)] pl-4 sm:flex">
+          <div className="hidden items-center gap-4 border-l border-[var(--color-border)] pl-4 lg:flex">
             <SocialIconLinks settings={social} />
           </div>
           {session?.user ? (
@@ -100,12 +109,7 @@ export async function Header() {
                   Admin
                 </Link>
               )}
-              <form
-                action={async () => {
-                  "use server";
-                  await signOut({ redirectTo: "/" });
-                }}
-              >
+              <form action={signOutAction}>
                 <Button type="submit" variant="ghost" className="text-sm">
                   Sign out
                 </Button>
@@ -124,8 +128,18 @@ export async function Header() {
             </>
           )}
         </nav>
+
+        {/* Mobile hamburger — visible only on mobile */}
+        <MobileNav
+          isLoggedIn={!!session?.user}
+          isAdmin={isAdmin}
+          categories={newsCategories}
+          signOutAction={signOutAction}
+        />
       </div>
-      <div className="mx-auto flex max-w-6xl justify-end border-t border-[var(--color-surface-strong)] px-4 py-2 sm:hidden">
+
+      {/* Social icons strip — shown below header on mobile */}
+      <div className="mx-auto flex max-w-6xl justify-end border-t border-[var(--color-surface-strong)] px-4 py-1.5 md:hidden">
         <SocialIconLinks settings={social} />
       </div>
     </header>
