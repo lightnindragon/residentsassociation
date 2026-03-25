@@ -128,7 +128,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="border-t border-[var(--color-surface-strong)] bg-[var(--color-surface)]">
+      <section className="border-t border-[var(--color-border)] bg-[var(--background)]">
         <div className="mx-auto max-w-4xl px-4 py-16 sm:px-6">
           <h2 className="text-center font-heading text-2xl font-semibold text-[var(--foreground)]">
             Get involved
@@ -139,7 +139,7 @@ export default async function HomePage() {
           <div className="mt-8 grid gap-6 sm:grid-cols-2">
             {session?.user ? (
               <Link href="/forum">
-                <Card className="h-full bg-white transition-all hover:shadow-lg hover:-translate-y-1 hover:border-[var(--color-primary)]">
+                <Card className="h-full border-2 border-[var(--color-surface-strong)] bg-white transition-all hover:border-[var(--color-primary)] hover:shadow-lg hover:-translate-y-1">
                   <CardHeader>Residents forum</CardHeader>
                   <CardContent>
                     Join the conversation and take part in community discussions.
@@ -148,7 +148,7 @@ export default async function HomePage() {
               </Link>
             ) : (
               <Link href="/login?callbackUrl=/forum">
-                <Card className="h-full bg-white transition-all hover:shadow-lg hover:-translate-y-1 hover:border-[var(--color-primary)]">
+                <Card className="h-full border-2 border-[var(--color-surface-strong)] bg-white transition-all hover:border-[var(--color-primary)] hover:shadow-lg hover:-translate-y-1">
                   <CardHeader>Residents forum</CardHeader>
                   <CardContent>
                     Sign in to view and take part in community discussions.
@@ -157,7 +157,7 @@ export default async function HomePage() {
               </Link>
             )}
             <Link href="/gallery">
-              <Card className="h-full bg-white transition-all hover:shadow-lg hover:-translate-y-1 hover:border-[var(--color-primary)]">
+              <Card className="h-full border-2 border-[var(--color-surface-strong)] bg-white transition-all hover:border-[var(--color-primary)] hover:shadow-lg hover:-translate-y-1">
                 <CardHeader>Gallery</CardHeader>
                 <CardContent>
                   Browse photos from local events and the area.
