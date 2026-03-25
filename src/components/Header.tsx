@@ -21,7 +21,7 @@ export async function Header() {
   const logoSrc = getHeaderLogoSrc();
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[var(--color-border)] bg-[var(--color-card)]/95 backdrop-blur supports-[backdrop-filter]:bg-[var(--color-card)]/80">
+    <header className="sticky top-0 z-50 border-b-2 border-teal-600/10 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80">
       <div className="mx-auto flex h-24 max-w-6xl items-center justify-between gap-4 px-4 sm:h-28 sm:px-6">
         <Link
           href="/"

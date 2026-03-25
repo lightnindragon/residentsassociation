@@ -8,13 +8,13 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    "bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] focus-visible:ring-[var(--color-primary)]",
+    "shadow-sm bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] focus-visible:ring-[var(--color-primary)]",
   secondary:
-    "bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-hover)] focus-visible:ring-[var(--color-accent)]",
+    "shadow-sm bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-hover)] focus-visible:ring-[var(--color-accent)]",
   ghost:
-    "bg-transparent hover:bg-black/5 dark:hover:bg-white/5 focus-visible:ring-[var(--color-border)]",
+    "bg-transparent hover:bg-[var(--color-primary-muted)]/50 focus-visible:ring-[var(--color-border)]",
   outline:
-    "border-2 border-[var(--color-border)] bg-transparent hover:bg-black/5 dark:hover:bg-white/5 focus-visible:ring-[var(--color-border)]",
+    "border-2 border-[var(--color-border)] bg-transparent hover:border-[var(--color-primary)]/50 hover:bg-[var(--color-primary-muted)]/30 hover:text-[var(--color-primary-hover)] focus-visible:ring-[var(--color-border)] transition-colors",
 };
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(

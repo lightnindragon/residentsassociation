@@ -33,7 +33,7 @@ export default async function HomePage() {
 
   return (
     <div className="flex flex-col">
-      <section className="border-b border-[var(--color-border)] bg-[var(--color-card)]">
+      <section className="border-b border-teal-100 bg-gradient-to-b from-teal-50/50 to-[var(--background)]">
         {heroUrl ? (
           <div className="relative mx-auto aspect-[21/9] max-h-[min(45vh,420px)] w-full max-w-6xl sm:aspect-[3/1] sm:max-h-[min(50vh,480px)]">
             <Image
@@ -93,7 +93,7 @@ export default async function HomePage() {
             const imageUrl = normalizeSiteImageUrl(p.cover_image_url || "");
             return (
               <Link key={p.id} href={`/news/${p.slug}`}>
-                <Card className="h-full transition-shadow hover:shadow-md overflow-hidden flex flex-col">
+                <Card className="h-full transition-all hover:shadow-lg hover:border-teal-200 overflow-hidden flex flex-col">
                   {imageUrl && (
                     <div className="relative h-48 w-full shrink-0 border-b border-[var(--color-border)] bg-[var(--color-card)]">
                       <Image
@@ -124,13 +124,13 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="border-t border-[var(--color-border)] bg-[var(--color-card)]/50">
+      <section className="border-t border-teal-100 bg-teal-50/30">
         <div className="mx-auto max-w-4xl px-4 py-16 sm:px-6">
           <h2 className="font-heading text-2xl font-semibold text-[var(--foreground)] text-center">Get involved</h2>
           <div className="mt-8 grid gap-6 sm:grid-cols-2">
             {session?.user ? (
               <Link href="/forum">
-                <Card className="h-full bg-transparent transition-shadow hover:shadow-md">
+                <Card className="h-full bg-white/60 backdrop-blur-sm transition-all hover:shadow-lg hover:-translate-y-1 hover:border-teal-300">
                   <CardHeader>Residents forum</CardHeader>
                   <CardContent>
                     Join the conversation and take part in community discussions.
@@ -139,7 +139,7 @@ export default async function HomePage() {
               </Link>
             ) : (
               <Link href="/login?callbackUrl=/forum">
-                <Card className="h-full bg-transparent transition-shadow hover:shadow-md">
+                <Card className="h-full bg-white/60 backdrop-blur-sm transition-all hover:shadow-lg hover:-translate-y-1 hover:border-teal-300">
                   <CardHeader>Residents forum</CardHeader>
                   <CardContent>
                     Sign in to view and take part in community discussions.
