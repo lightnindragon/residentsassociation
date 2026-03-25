@@ -67,6 +67,7 @@ export function AdminSettingsForm({ initial }: { initial: Initial }) {
           type="text"
           defaultValue={initial?.host}
           placeholder="smtp.example.com"
+          required
         />
         <Input
           label="SMTP port"

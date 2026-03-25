@@ -19,8 +19,17 @@ export async function saveSmtpConfig(
   const contact_inbox =
     formData.get("contact_inbox")?.toString()?.trim() ?? "";
 
-  if (!host || !contact_inbox) {
-    return { error: "Host and contact inbox are required." };
+  if (!host) {
+    return {
+      error:
+        "SMTP host is required. For Proton, use smtp.protonmail.ch (not the grey example text — type the real host).",
+    };
+  }
+  if (!contact_inbox) {
+    return {
+      error:
+        "Contact inbox is required — the email address where contact form messages should be delivered.",
+    };
   }
 
   if (password && !getEncryptionKey()) {

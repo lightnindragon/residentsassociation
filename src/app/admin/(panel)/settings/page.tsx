@@ -33,6 +33,11 @@ export default async function AdminSettingsPage() {
         Configure SMTP so contact form messages are sent to your Proton Mail
         inbox. Leave password blank to keep the current one.
       </p>
+      <p className="mt-2 text-sm text-[var(--color-muted)]">
+        Grey hint text in the fields is not saved — enter your real SMTP host,
+        user, Proton SMTP token (password), from address, and inbox email, then
+        Save.
+      </p>
       <AdminSettingsForm initial={config} />
     </div>
   );
