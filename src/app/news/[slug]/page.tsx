@@ -5,9 +5,9 @@ import { notFound } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { getDonationSettings } from "@/lib/donations";
 import { DonateButton } from "@/components/DonateButton";
-import sanitizeHtml from "sanitize-html";
 import { PostCommentSection } from "./PostCommentSection";
 import { normalizeSiteImageUrl } from "@/lib/site-content";
+import { sanitizeRichHtml } from "@/lib/rich-text";
 
 export const dynamic = "force-dynamic";
 
@@ -71,7 +71,7 @@ export default async function NewsPostPage({
       ? "Your account must be approved before you can comment."
       : undefined;
 
-  const safeHtml = sanitizeHtml(post.body, { allowedTags: sanitizeHtml.defaults.allowedTags.concat([ 'img' ]) });
+  const safeHtml = sanitizeRichHtml(post.body);
   const donationSettings = await getDonationSettings();
   const showDonate = !!session?.user && donationSettings?.enabled === true;
 
@@ -101,7 +101,7 @@ export default async function NewsPostPage({
       )}
 
       <div
-        className="prose prose-lg mt-8 max-w-none text-[var(--foreground)] prose-p:text-[var(--foreground)] prose-headings:text-[var(--foreground)]"
+        className="rich-content mt-8"
         dangerouslySetInnerHTML={{ __html: safeHtml }}
       />
       <PostCommentSection

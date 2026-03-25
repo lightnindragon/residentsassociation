@@ -2,8 +2,10 @@
 
 import { getSql } from "@/lib/db";
 import { revalidatePath } from "next/cache";
-import sanitizeHtml from "sanitize-html";
 import { notifySubscribersNewPost } from "@/lib/notify-blog";
+import { sanitizeRichHtml } from "@/lib/rich-text";
+
+type PostActionResult = { ok?: boolean; error?: string } | null;
 
 function slugify(s: string): string {
   return s
@@ -15,11 +17,11 @@ function slugify(s: string): string {
 export async function createPost(
   _prev: unknown,
   formData: FormData
-): Promise<{ error?: string } | null> {
+): Promise<PostActionResult> {
   const title = formData.get("title")?.toString()?.trim();
   const excerpt = formData.get("excerpt")?.toString()?.trim() ?? null;
   const rawBody = formData.get("body")?.toString() ?? "";
-  const body = sanitizeHtml(rawBody, { allowedTags: sanitizeHtml.defaults.allowedTags.concat([ 'img' ]) });
+  const body = sanitizeRichHtml(rawBody);
   const authorId = formData.get("authorId")?.toString();
   const publish = formData.get("published") === "1";
   const catRaw = formData.get("post_category_id")?.toString()?.trim();
@@ -46,9 +48,10 @@ export async function createPost(
     if (publish) {
       void notifySubscribersNewPost({ title, slug });
     }
+    revalidatePath("/");
     revalidatePath("/news");
     revalidatePath("/admin/news");
-    return null;
+    return { ok: true };
   } catch (e) {
     console.error(e);
     return { error: "Failed to create post." };
@@ -59,11 +62,11 @@ export async function updatePost(
   id: string,
   _prev: unknown,
   formData: FormData
-): Promise<{ error?: string } | null> {
+): Promise<PostActionResult> {
   const title = formData.get("title")?.toString()?.trim();
   const excerpt = formData.get("excerpt")?.toString()?.trim() ?? null;
   const rawBody = formData.get("body")?.toString() ?? "";
-  const body = sanitizeHtml(rawBody, { allowedTags: sanitizeHtml.defaults.allowedTags.concat([ 'img' ]) });
+  const body = sanitizeRichHtml(rawBody);
   const publish = formData.get("published") === "1";
   const catRaw2 = formData.get("post_category_id")?.toString()?.trim();
   const catId = catRaw2 && catRaw2.length > 0 ? catRaw2 : null;
@@ -89,10 +92,11 @@ export async function updatePost(
     if (publish && !wasPublished && prev) {
       void notifySubscribersNewPost({ title, slug: prev.slug });
     }
+    revalidatePath("/");
     revalidatePath("/news");
     revalidatePath(`/news/${prev?.slug ?? ""}`);
     revalidatePath("/admin/news");
-    return null;
+    return { ok: true };
   } catch (e) {
     console.error(e);
     return { error: "Failed to update post." };

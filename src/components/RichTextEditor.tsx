@@ -23,7 +23,12 @@ export function RichTextEditor({ name, initialHtml, placeholder }: Props) {
   const editor = useEditor({
     extensions: [
       StarterKit.configure({ heading: { levels: [2, 3] } }),
-      Link.configure({ openOnClick: false }),
+      Link.configure({
+        openOnClick: false,
+        autolink: true,
+        linkOnPaste: true,
+        defaultProtocol: "https",
+      }),
       Placeholder.configure({ placeholder: placeholder ?? "Write your article…" }),
       Image,
     ],

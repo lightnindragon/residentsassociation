@@ -82,17 +82,24 @@ async function main() {
 
   const sql = neon(databaseUrl);
 
-  const title = "Meeting minutes published";
+  const title = "Meeting minutes published - 16 March";
   const slug = "meeting-minutes-published";
   const excerpt =
-    "The latest committee meeting minutes are available to read online. Open the shared document using the link below.";
+    "The minutes from the committee meeting held on 16 March are now available to read online.";
 
   const body = `
-<p>We have published the minutes from our recent committee meeting.</p>
-<p>You can <strong><a href="${MINUTES_DOC_URL}">read the minutes here on Google Docs</a></strong> (opens in a new tab).</p>
-<p>If you have trouble opening the link, copy and paste this address into your browser:</p>
-<p><code style="word-break: break-all;">${MINUTES_DOC_URL}</code></p>
-<img src="${imagePublicUrl}" alt="Meeting minutes announcement" style="max-width: 100%; height: auto; border-radius: 8px; margin-top: 1rem;" />
+<h2>Committee meeting minutes</h2>
+<p>The minutes from the committee meeting held on <strong>16 March</strong> have now been published and are available to read online.</p>
+<p>If you would like to view them, please use the link below:</p>
+<p><strong><a href="${MINUTES_DOC_URL}" target="_blank" rel="noopener noreferrer">Open the 16 March meeting minutes</a></strong></p>
+<p><strong>Direct link:</strong> <a href="${MINUTES_DOC_URL}" target="_blank" rel="noopener noreferrer">${MINUTES_DOC_URL}</a></p>
+<h3>What this includes</h3>
+<ul>
+  <li>Items discussed at the meeting</li>
+  <li>Key updates and decisions</li>
+  <li>Information shared with the committee</li>
+</ul>
+<p>If the document does not open immediately, please try opening the link in a new tab.</p>
 `;
 
   const existing = await sql`SELECT id FROM posts WHERE slug = ${slug}`;
