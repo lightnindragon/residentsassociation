@@ -67,20 +67,29 @@ export default async function ForumPage() {
 
     if (session?.user) {
       recentThreads = (await sql`
-        SELECT DISTINCT ON (t.id) 
-          t.id AS thread_id, 
-          t.title AS thread_title, 
-          c.slug AS category_slug, 
-          a.slug AS area_slug, 
-          p.created_at AS last_post_at, 
-          COALESCE(u.forum_username, u.name) AS last_post_author
+        SELECT
+          t.id AS thread_id,
+          t.title AS thread_title,
+          c.slug AS category_slug,
+          a.slug AS area_slug,
+          MAX(p.created_at) AS last_post_at,
+          COALESCE(
+            (SELECT COALESCE(u2.forum_username, u2.name)
+             FROM forum_posts p2
+             LEFT JOIN users u2 ON u2.id = p2.author_id
+             WHERE p2.thread_id = t.id
+             ORDER BY p2.created_at DESC
+             LIMIT 1),
+            ''
+          ) AS last_post_author
         FROM forum_threads t
         JOIN forum_categories c ON t.category_id = c.id
         JOIN forum_areas a ON c.area_id = a.id
         JOIN forum_posts p ON p.thread_id = t.id
-        LEFT JOIN users u ON u.id = p.author_id
-        ORDER BY t.id, p.created_at DESC
-      `).sort((a: any, b: any) => new Date(b.last_post_at).getTime() - new Date(a.last_post_at).getTime()).slice(0, 5) as RecentThreadRow[];
+        GROUP BY t.id, t.title, c.slug, a.slug
+        ORDER BY MAX(p.created_at) DESC
+        LIMIT 10
+      `) as RecentThreadRow[];
     }
   } catch {
     // no DB
@@ -96,30 +105,6 @@ export default async function ForumPage() {
           Browse by area, then pick a category to join the conversation.
         </p>
       </div>
-
-      {session?.user && recentThreads.length > 0 && (
-        <div className="mb-8">
-          <h2 className="mb-4 font-heading text-xl font-semibold text-[var(--foreground)]">Latest posts</h2>
-          <div className="overflow-hidden rounded-md border border-[var(--color-border)] bg-[var(--color-card)] shadow-sm">
-            <div className="divide-y divide-[var(--color-border)]">
-              {recentThreads.map((thread) => (
-                <div key={thread.thread_id} className="flex items-center px-4 py-3 transition-colors hover:bg-[var(--color-muted)]/5">
-                  <div className="min-w-0 flex-1">
-                    <Link href={`/forum/${thread.area_slug}/${thread.category_slug}/${thread.thread_id}`} className="text-sm font-semibold text-[#006699] hover:underline dark:text-[#4da6ff]">
-                      {thread.thread_title}
-                    </Link>
-                    <div className="mt-1 flex items-center gap-2 text-xs text-[var(--color-muted)]">
-                      <span>by <span className="font-medium text-[var(--foreground)]">{thread.last_post_author}</span></span>
-                      <span>·</span>
-                      <span>{new Date(thread.last_post_at).toLocaleString('en-GB', { timeZone: 'Europe/London', dateStyle: 'short', timeStyle: 'short' })}</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
 
       <div className="space-y-8">
         {areas.length === 0 ? (
@@ -193,6 +178,39 @@ export default async function ForumPage() {
           })
         )}
       </div>
+
+      {session?.user && recentThreads.length > 0 && (
+        <div className="mt-10">
+          <h2 className="mb-4 font-heading text-xl font-semibold text-[var(--foreground)]">Latest posts</h2>
+          <div className="overflow-hidden rounded-md border border-[var(--color-border)] bg-[var(--color-card)] shadow-sm">
+            <div className="divide-y divide-[var(--color-border)]">
+              {recentThreads.map((thread) => (
+                <div key={thread.thread_id} className="flex items-center px-4 py-3 transition-colors hover:bg-[var(--color-surface)]">
+                  <div className="min-w-0 flex-1">
+                    <Link
+                      href={`/forum/${thread.area_slug}/${thread.category_slug}/${thread.thread_id}`}
+                      className="text-sm font-semibold text-[#006699] hover:underline"
+                    >
+                      {thread.thread_title}
+                    </Link>
+                    <div className="mt-1 flex items-center gap-2 text-xs text-[var(--color-muted)]">
+                      <span>by <span className="font-medium text-[var(--foreground)]">{thread.last_post_author}</span></span>
+                      <span>·</span>
+                      <span>
+                        {new Date(thread.last_post_at).toLocaleString("en-GB", {
+                          timeZone: "Europe/London",
+                          dateStyle: "short",
+                          timeStyle: "short",
+                        })}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
