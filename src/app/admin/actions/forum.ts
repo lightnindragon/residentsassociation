@@ -130,6 +130,30 @@ export async function toggleThreadLocked(threadId: string, locked: boolean): Pro
   }
 }
 
+export async function toggleThreadAdminOnly(threadId: string, adminOnly: boolean): Promise<{ error?: string }> {
+  try {
+    await requireAdmin();
+    const sql = getSql();
+    const [row] = await sql`
+      SELECT category_id FROM forum_threads WHERE id = ${threadId}::uuid LIMIT 1
+    `;
+    const cat = row as { category_id: string } | undefined;
+    if (!cat) return { error: "Thread not found." };
+    await sql`
+      UPDATE forum_threads SET admin_only = ${adminOnly}, updated_at = NOW() WHERE id = ${threadId}::uuid
+    `;
+    const paths = await getCategoryForumPath(cat.category_id);
+    if (paths) {
+      revalidatePath(forumCategoryUrl(paths.areaSlug, paths.categorySlug));
+      revalidatePath(forumThreadUrl(paths.areaSlug, paths.categorySlug, threadId));
+    }
+    revalidatePath("/forum");
+    return {};
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Failed." };
+  }
+}
+
 export async function deleteForumPost(postId: string, threadId: string): Promise<{ error?: string }> {
   try {
     await requireAdmin();

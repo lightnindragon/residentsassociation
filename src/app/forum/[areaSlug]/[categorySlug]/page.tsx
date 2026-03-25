@@ -22,6 +22,7 @@ export default async function ForumCategoryPage({
     author_name: string | null;
     pinned: boolean;
     locked: boolean;
+    admin_only: boolean;
     reply_count: number;
     unread: boolean;
     last_reply_at: string | null;
@@ -32,7 +33,9 @@ export default async function ForumCategoryPage({
   let threads: ThreadRow[] = [];
   
   const session = await auth();
-  const userId = (session?.user as { id?: string })?.id ?? "";
+  const sessionUser = session?.user as { id?: string; role?: string } | undefined;
+  const userId = sessionUser?.id ?? "";
+  const isAdmin = sessionUser?.role === "admin" || sessionUser?.role === "dev";
 
   try {
     const sql = getSql();
@@ -47,7 +50,7 @@ export default async function ForumCategoryPage({
       category = (catRows[0] as CategoryRow) ?? null;
       if (category) {
         const threadRows = await sql`
-          SELECT t.id, t.title, t.created_at, t.pinned, t.locked,
+          SELECT t.id, t.title, t.created_at, t.pinned, t.locked, t.admin_only,
             COALESCE(u.forum_username, u.name) AS author_name,
             (SELECT COUNT(*)::int FROM forum_posts WHERE thread_id = t.id) AS reply_count,
             (SELECT MAX(created_at) FROM forum_posts WHERE thread_id = t.id) AS last_reply_at,
@@ -107,7 +110,7 @@ export default async function ForumCategoryPage({
           />
         </div>
       )}
-      <CreateThreadForm categoryId={category.id} />
+      <CreateThreadForm categoryId={category.id} isAdmin={isAdmin} />
       <div className="mt-8 overflow-hidden rounded-md border border-[#006699] bg-[var(--color-card)] shadow-sm">
         <div className="flex justify-between bg-[#006699] px-4 py-2 text-xs font-bold uppercase text-white">
           <div className="flex-1">TOPICS</div>
@@ -130,6 +133,7 @@ export default async function ForumCategoryPage({
                     {t.title}
                   </Link>
                   <div className="mt-0.5 flex items-center gap-2 text-xs text-[var(--color-muted)]">
+                    {t.admin_only && <Badge variant="info" className="px-1 py-0 text-[10px] uppercase">📢 Announcements</Badge>}
                     {t.pinned && <Badge variant="warning" className="px-1 py-0 text-[10px] uppercase">Pinned</Badge>}
                     {t.locked && <Badge variant="muted" className="px-1 py-0 text-[10px] uppercase">Locked</Badge>}
                     <span>by {t.author_name ?? "Unknown"}</span>

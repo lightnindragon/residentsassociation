@@ -17,19 +17,27 @@ export async function createThread(
   const categoryId = formData.get("categoryId")?.toString();
   const title = formData.get("title")?.toString()?.trim();
   const rawBody = formData.get("body")?.toString()?.trim() || "";
+  const adminOnlyFlag = formData.get("adminOnly") === "1";
   if (!categoryId || !title) return { error: "Title is required." };
-  
+
   const body = sanitizeHtml(rawBody, { allowedTags: sanitizeHtml.defaults.allowedTags.concat([ 'img' ]) });
+
+  // Verify admin if trying to set admin_only
+  let adminOnly = false;
+  if (adminOnlyFlag) {
+    const session2 = await auth();
+    const u2 = session2?.user as { role?: string } | undefined;
+    adminOnly = u2?.role === "admin" || u2?.role === "dev";
+  }
 
   try {
     const sql = getSql();
     const [urow] = await sql`SELECT banned FROM users WHERE id = ${user.id}::uuid LIMIT 1`;
     if ((urow as { banned?: boolean })?.banned) return { error: "Your account cannot post." };
-    
-    // Start transaction if possible, or just sequentially
+
     const [inserted] = await sql`
-      INSERT INTO forum_threads (category_id, title, author_id)
-      VALUES (${categoryId}::uuid, ${title}, ${user.id}::uuid)
+      INSERT INTO forum_threads (category_id, title, author_id, admin_only)
+      VALUES (${categoryId}::uuid, ${title}, ${user.id}::uuid, ${adminOnly})
       RETURNING id
     `;
     const newThreadId = (inserted as { id: string })?.id;
@@ -72,10 +80,18 @@ export async function createReply(
     const [urow] = await sql`SELECT banned FROM users WHERE id = ${user.id}::uuid LIMIT 1`;
     if ((urow as { banned?: boolean })?.banned) return { error: "Your account cannot post." };
     const [thread] = await sql`
-      SELECT locked, category_id FROM forum_threads WHERE id = ${threadId}::uuid LIMIT 1
+      SELECT locked, admin_only, category_id FROM forum_threads WHERE id = ${threadId}::uuid LIMIT 1
     `;
-    const t = thread as { locked: boolean; category_id: string } | undefined;
+    const t = thread as { locked: boolean; admin_only: boolean; category_id: string } | undefined;
     if (t?.locked) return { error: "This thread is locked." };
+
+    if (t?.admin_only) {
+      const session2 = await auth();
+      const poster = session2?.user as { role?: string } | undefined;
+      if (poster?.role !== "admin" && poster?.role !== "dev") {
+        return { error: "This is an announcements thread — only admins can post here." };
+      }
+    }
 
     await sql`
       INSERT INTO forum_posts (thread_id, author_id, body)

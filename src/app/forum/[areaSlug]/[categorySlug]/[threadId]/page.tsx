@@ -39,6 +39,7 @@ export default async function ForumThreadPage({
     created_at: string;
     locked: boolean;
     pinned: boolean;
+    admin_only: boolean;
     author_id: string;
     author_role: string | null;
     author_name: string | null;
@@ -77,7 +78,7 @@ export default async function ForumThreadPage({
       category = (catRows[0] as CategoryRow) ?? null;
       if (category) {
         const threadRows = await sql`
-          SELECT t.id, t.title, t.created_at, t.locked, t.pinned, t.author_id, u.role AS author_role, u.avatar_url AS author_avatar,
+          SELECT t.id, t.title, t.created_at, t.locked, t.pinned, t.admin_only, t.author_id, u.role AS author_role, u.avatar_url AS author_avatar,
             COALESCE(u.forum_username, u.name) AS author_name,
             u.forum_town AS author_town
           FROM forum_threads t
@@ -151,6 +152,11 @@ export default async function ForumThreadPage({
               </h1>
               {thread.pinned && <Badge variant="warning">Pinned</Badge>}
               {thread.locked && <Badge variant="muted">Locked</Badge>}
+              {thread.admin_only && (
+                <span className="inline-flex items-center gap-1 rounded bg-[#006699]/10 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider text-[#006699]">
+                  📢 Announcements
+                </span>
+              )}
             </div>
             <p className="mt-2 flex items-center flex-wrap gap-1.5 text-sm text-[var(--color-muted)]">
               Started by{" "}
@@ -178,7 +184,7 @@ export default async function ForumThreadPage({
         </div>
         {isAdmin && (
           <>
-            <ThreadModeration threadId={threadId} pinned={thread.pinned} locked={thread.locked} />
+            <ThreadModeration threadId={threadId} pinned={thread.pinned} locked={thread.locked} adminOnly={thread.admin_only} />
             {thread.author_role === "user" && (
               <BanUserButton targetUserId={thread.author_id} />
             )}
@@ -280,7 +286,15 @@ export default async function ForumThreadPage({
         </div>
       )}
 
-      {session?.user && !thread.locked && <ReplyForm threadId={threadId} />}
+      {session?.user && !thread.locked && (
+        thread.admin_only && !isAdmin ? (
+          <p className="mt-8 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] px-5 py-4 text-sm text-[var(--color-muted)]">
+            📢 This is an announcements thread — only admins can post here.
+          </p>
+        ) : (
+          <ReplyForm threadId={threadId} />
+        )
+      )}
     </div>
   );
 }
