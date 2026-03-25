@@ -2,26 +2,30 @@
 
 :root {
   /* Base */
-  --background: #f7fcfb;
+  --background: #f5fbf8;
   --foreground: #0d1f1c;
 
   /* Brand */
-  --color-primary: #0d7060;
-  --color-primary-hover: #0a5c4e;
-  --color-primary-muted: #d5ede8;
+  --color-primary: #0c6b58;
+  --color-primary-hover: #09533f;
+  --color-primary-muted: #b8ddd6;
 
   /* Accent (warm amber – used sparingly) */
   --color-accent: #c4622d;
   --color-accent-hover: #a84f23;
 
-  /* Surfaces */
-  --color-surface: #eaf4f0;
-  --color-surface-strong: #d4e9e2;
+  /* Surfaces — noticeably teal, not just a hint */
+  --color-surface: #bde0d6;
+  --color-surface-strong: #7fbcae;
   --color-card: #ffffff;
 
+  /* Footer */
+  --color-footer-bg: #0b3830;
+  --color-footer-border: #0e4439;
+
   /* Text & chrome */
-  --color-muted: #546e69;
-  --color-border: #c6ddd8;
+  --color-muted: #456860;
+  --color-border: #9eccc2;
 
   --font-heading: var(--font-fraunces);
 }

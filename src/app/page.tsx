@@ -83,9 +83,13 @@ export default async function HomePage() {
 
       <section className="mx-auto max-w-5xl px-4 py-16 sm:px-6">
         <div className="flex items-center justify-between">
-          <h2 className="font-heading text-2xl font-semibold text-[var(--foreground)]">Latest News</h2>
+          <h2 className="font-heading text-2xl font-semibold text-[var(--foreground)]">
+            Latest News
+          </h2>
           <Link href="/news">
-            <Button variant="outline" className="px-3 py-1.5 text-sm h-auto">View all news</Button>
+            <Button variant="outline" className="h-auto px-3 py-1.5 text-sm">
+              View all news
+            </Button>
           </Link>
         </div>
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -93,7 +97,7 @@ export default async function HomePage() {
             const imageUrl = normalizeSiteImageUrl(p.cover_image_url || "");
             return (
               <Link key={p.id} href={`/news/${p.slug}`}>
-                <Card className="h-full transition-all hover:shadow-lg hover:border-[var(--color-primary-muted)] overflow-hidden flex flex-col">
+                <Card className="flex h-full flex-col overflow-hidden border-t-[3px] border-t-[var(--color-primary)] transition-all hover:shadow-lg hover:-translate-y-0.5">
                   {imageUrl && (
                     <div className="relative h-48 w-full shrink-0 border-b border-[var(--color-border)] bg-[var(--color-card)]">
                       <Image
@@ -104,9 +108,9 @@ export default async function HomePage() {
                       />
                     </div>
                   )}
-                  <div className="flex flex-col flex-1">
+                  <div className="flex flex-1 flex-col">
                     <CardHeader className="flex-none pb-2">{p.title}</CardHeader>
-                    <CardContent className="flex-1 flex flex-col justify-between">
+                    <CardContent className="flex flex-1 flex-col justify-between">
                       <p className="line-clamp-3 text-sm text-[var(--color-muted)]">
                         {p.excerpt || "No excerpt."}
                       </p>
@@ -124,13 +128,18 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="border-t border-[var(--color-surface-strong)] bg-[var(--color-surface)]">
+      <section className="bg-[var(--color-primary)]">
         <div className="mx-auto max-w-4xl px-4 py-16 sm:px-6">
-          <h2 className="font-heading text-2xl font-semibold text-[var(--foreground)] text-center">Get involved</h2>
+          <h2 className="text-center font-heading text-2xl font-semibold text-white">
+            Get involved
+          </h2>
+          <p className="mt-2 text-center text-sm text-white/70">
+            Connect with your community
+          </p>
           <div className="mt-8 grid gap-6 sm:grid-cols-2">
             {session?.user ? (
               <Link href="/forum">
-                <Card className="h-full bg-white transition-all hover:shadow-lg hover:-translate-y-1 hover:border-[var(--color-primary)]">
+                <Card className="h-full bg-white transition-all hover:shadow-xl hover:-translate-y-1 hover:border-[var(--color-surface-strong)]">
                   <CardHeader>Residents forum</CardHeader>
                   <CardContent>
                     Join the conversation and take part in community discussions.
@@ -139,7 +148,7 @@ export default async function HomePage() {
               </Link>
             ) : (
               <Link href="/login?callbackUrl=/forum">
-                <Card className="h-full bg-white transition-all hover:shadow-lg hover:-translate-y-1 hover:border-[var(--color-primary)]">
+                <Card className="h-full bg-white transition-all hover:shadow-xl hover:-translate-y-1 hover:border-[var(--color-surface-strong)]">
                   <CardHeader>Residents forum</CardHeader>
                   <CardContent>
                     Sign in to view and take part in community discussions.
@@ -148,9 +157,11 @@ export default async function HomePage() {
               </Link>
             )}
             <Link href="/gallery">
-              <Card className="h-full bg-white transition-all hover:shadow-lg hover:-translate-y-1 hover:border-[var(--color-primary)]">
+              <Card className="h-full bg-white transition-all hover:shadow-xl hover:-translate-y-1 hover:border-[var(--color-surface-strong)]">
                 <CardHeader>Gallery</CardHeader>
-                <CardContent>Browse photos from local events and the area.</CardContent>
+                <CardContent>
+                  Browse photos from local events and the area.
+                </CardContent>
               </Card>
             </Link>
           </div>

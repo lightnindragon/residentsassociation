@@ -29,13 +29,15 @@ export default async function NewsPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
-      <h1 className="font-heading text-3xl font-semibold text-[var(--foreground)]">
-        Latest news
-      </h1>
-      <p className="mt-2 text-[var(--color-muted)]">
-        Community updates and announcements from the residents association.
-      </p>
-      <div className="mt-10 flex flex-col gap-6">
+      <div className="mb-10 border-l-4 border-[var(--color-primary)] pl-4">
+        <h1 className="font-heading text-3xl font-semibold text-[var(--foreground)]">
+          Latest news
+        </h1>
+        <p className="mt-2 text-[var(--color-muted)]">
+          Community updates and announcements from the residents association.
+        </p>
+      </div>
+      <div className="flex flex-col gap-6">
         {posts.length === 0 ? (
           <p className="text-[var(--color-muted)]">No news posts yet.</p>
         ) : (
@@ -43,7 +45,7 @@ export default async function NewsPage() {
             const imageUrl = normalizeSiteImageUrl(p.cover_image_url || "");
             return (
               <Link key={p.id} href={`/news/${p.slug}`}>
-                <Card className="transition-shadow hover:shadow-md overflow-hidden">
+                <Card className="overflow-hidden border-t-[3px] border-t-[var(--color-primary)] transition-all hover:shadow-md hover:-translate-y-0.5">
                   {imageUrl && (
                     <div className="relative h-48 w-full border-b border-[var(--color-border)] bg-[var(--color-card)] sm:h-64">
                       <Image
