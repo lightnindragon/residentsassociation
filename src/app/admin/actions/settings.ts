@@ -22,6 +22,13 @@ export async function saveSmtpConfig(
     return { error: "Host and contact inbox are required." };
   }
 
+  if (password && !process.env.ENCRYPTION_KEY?.trim()) {
+    return {
+      error:
+        "ENCRYPTION_KEY is not set on the server. Add a long random string: locally in .env.local, or in Vercel under Project → Settings → Environment Variables (Production), then redeploy.",
+    };
+  }
+
   try {
     const sql = getSql();
     const existingRows = await sql`
@@ -55,6 +62,16 @@ export async function saveSmtpConfig(
     return { ok: true };
   } catch (e) {
     console.error(e);
-    return { error: "Failed to save. Check ENCRYPTION_KEY is set." };
+    const msg = e instanceof Error ? e.message : "";
+    if (msg.includes("ENCRYPTION_KEY")) {
+      return {
+        error:
+          "ENCRYPTION_KEY is not set on the server. Add it to environment variables and redeploy (Vercel) or restart dev (local .env.local).",
+      };
+    }
+    return {
+      error:
+        "Failed to save SMTP settings. Check the database connection and server logs. If you just set ENCRYPTION_KEY, redeploy so the server sees it.",
+    };
   }
 }
