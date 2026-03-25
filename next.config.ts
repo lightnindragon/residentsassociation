@@ -20,6 +20,9 @@ const extraHosts = [
 ];
 
 const nextConfig: NextConfig = {
+  serverActions: {
+    bodySizeLimit: "10mb",
+  },
   images: {
     remotePatterns: [
       // Legacy / docs example host (rare)
