@@ -1,10 +1,11 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useRef } from "react";
 import { createPost, updatePost } from "@/app/admin/actions/news";
 import { Input, Button } from "@/components/ui";
 import { RichTextEditor } from "@/components/RichTextEditor";
 import { BlogImageUpload } from "@/components/BlogImageUpload";
+import { toast } from "sonner";
 
 function updatePostBound(id: string) {
   return (prev: unknown, formData: FormData) => updatePost(id, prev, formData);
@@ -38,6 +39,21 @@ export function NewsPostForm({
       : createPost,
     null
   );
+  const lastStateRef = useRef<typeof state>(null);
+
+  useEffect(() => {
+    if (!state || state === lastStateRef.current) return;
+    lastStateRef.current = state;
+
+    if (state.ok) {
+      toast.success(isEdit ? "News article updated." : "News article created.");
+      return;
+    }
+
+    if (state.error) {
+      toast.error(state.error);
+    }
+  }, [isEdit, state]);
 
   return (
     <>
