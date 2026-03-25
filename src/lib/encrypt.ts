@@ -1,11 +1,12 @@
 import { createCipheriv, createDecipheriv, createHash, randomBytes } from "crypto";
+import { getEncryptionKey } from "@/lib/server-env";
 
 const ALGO = "aes-256-gcm";
 const IV_LEN = 12;
 const AUTH_TAG_LEN = 16;
 
 function getKey(): Buffer {
-  const secret = process.env.ENCRYPTION_KEY;
+  const secret = getEncryptionKey();
   if (!secret) {
     throw new Error("ENCRYPTION_KEY is not set.");
   }

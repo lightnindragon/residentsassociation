@@ -1,6 +1,7 @@
 import nodemailer from "nodemailer";
 import { getSql } from "@/lib/db";
 import { decrypt } from "@/lib/encrypt";
+import { getEncryptionKey } from "@/lib/server-env";
 import { applyTemplate, getEmailTemplate } from "@/lib/email-templates";
 
 export type SmtpConfig = {
@@ -32,7 +33,7 @@ export async function getSmtpConfig(): Promise<SmtpConfig | null> {
       | undefined;
     if (!row?.host || !row.contact_inbox) return null;
     const password =
-      process.env.ENCRYPTION_KEY && row.password_encrypted
+      getEncryptionKey() && row.password_encrypted
         ? decrypt(row.password_encrypted)
         : "";
     return {

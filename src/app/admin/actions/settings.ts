@@ -2,6 +2,7 @@
 
 import { getSql } from "@/lib/db";
 import { encrypt } from "@/lib/encrypt";
+import { getEncryptionKey } from "@/lib/server-env";
 
 export type SettingsResult = { ok?: boolean; error?: string };
 
@@ -22,7 +23,7 @@ export async function saveSmtpConfig(
     return { error: "Host and contact inbox are required." };
   }
 
-  if (password && !process.env.ENCRYPTION_KEY?.trim()) {
+  if (password && !getEncryptionKey()) {
     return {
       error:
         "ENCRYPTION_KEY is not set on the server. Add a long random string: locally in .env.local, or in Vercel under Project → Settings → Environment Variables (Production), then redeploy.",
