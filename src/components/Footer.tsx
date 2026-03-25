@@ -62,9 +62,20 @@ export async function Footer() {
           </nav>
         </div>
 
-        <div className="mt-8 border-t border-white/10 pt-6">
+        <div className="mt-8 flex flex-col gap-1 border-t border-white/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-xs text-white/40">
             © {new Date().getFullYear()} Culcheth & Glazebury Residents Association. All rights reserved.
+          </p>
+          <p className="text-xs text-white/40">
+            Custom designed by{" "}
+            <a
+              href="https://webdesigns-uk.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white/60 underline underline-offset-2 hover:text-white transition-colors"
+            >
+              Web Designs UK
+            </a>
           </p>
         </div>
       </div>
