@@ -135,7 +135,7 @@ export default async function AboutPage() {
           </h2>
           <ul className="grid gap-8 sm:grid-cols-2 lg:grid-cols-2">
             {members.map((m) => (
-              <li key={m.id} className="flex flex-col gap-6 rounded-2xl border border-teal-100/50 bg-white p-6 md:p-8 shadow-sm transition hover:shadow-md">
+              <li key={m.id} className="flex flex-col gap-6 rounded-2xl border-2 border-[var(--color-primary-muted)] bg-white p-6 md:p-8 shadow-sm transition hover:shadow-md hover:border-[var(--color-surface-strong)]">
                 <div className="flex items-center gap-5">
                   <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-full border-4 border-white bg-[var(--color-border)] shadow-md">
                     {m.image_url ? (
@@ -154,7 +154,7 @@ export default async function AboutPage() {
                   </div>
                   <div>
                     <p className="font-heading text-xl font-semibold text-[var(--foreground)]">{m.name}</p>
-                    <p className="text-base font-medium text-teal-700 mt-1">{m.role || "—"}</p>
+                    <p className="text-base font-medium text-[var(--color-primary)] mt-1">{m.role || "—"}</p>
                   </div>
                 </div>
                 {m.bio && (

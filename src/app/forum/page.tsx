@@ -114,8 +114,8 @@ export default async function ForumPage() {
           areas.map((area) => {
             const areaCats = categories.filter(c => c.area_id === area.id);
             return (
-              <div key={area.id} className="overflow-hidden rounded-md border border-[#006699] bg-[var(--color-card)] shadow-sm">
-                <div className="flex justify-between bg-[#006699] px-4 py-2 text-xs font-bold uppercase text-white">
+              <div key={area.id} className="overflow-hidden rounded-md border border-[var(--color-primary)] bg-[var(--color-card)] shadow-sm">
+                <div className="flex justify-between bg-[var(--color-primary)] px-4 py-2 text-xs font-bold uppercase text-white">
                   <div className="flex-1">
                     <Link href={`/forum/${area.slug}`} className="hover:underline">
                       {area.name}
@@ -130,9 +130,9 @@ export default async function ForumPage() {
                     <div className="px-4 py-4 text-sm text-[var(--color-muted)]">No categories in this area.</div>
                   ) : (
                     areaCats.map(cat => (
-                      <div key={cat.id} className="flex items-center bg-[#fffdf0] px-4 py-3 transition-colors hover:bg-[#fff9e6] dark:bg-[var(--color-card)] dark:hover:bg-[var(--color-muted)]/10">
+                      <div key={cat.id} className="flex items-center bg-[var(--color-primary-muted)]/25 px-4 py-3 transition-colors hover:bg-[var(--color-primary-muted)]/45 dark:bg-[var(--color-card)] dark:hover:bg-[var(--color-muted)]/10">
                         <div className="mr-3 flex shrink-0 items-center justify-center">
-                          <svg className="h-8 w-8 text-[#006699] opacity-70 dark:text-[#4da6ff]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                          <svg className="h-8 w-8 text-[var(--color-primary)] opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10l6 6v10a2 2 0 01-2 2z" />
                             <path strokeLinecap="round" strokeLinejoin="round" d="M13 2v6h6" />
                             <path strokeLinecap="round" strokeLinejoin="round" d="M9 14h6" />
@@ -141,7 +141,7 @@ export default async function ForumPage() {
                           </svg>
                         </div>
                         <div className="min-w-0 flex-1">
-                          <Link href={`/forum/${area.slug}/${cat.slug}`} className="text-base font-bold text-[#006699] hover:underline dark:text-[#4da6ff]">
+                          <Link href={`/forum/${area.slug}/${cat.slug}`} className="text-base font-bold text-[var(--color-primary)] hover:underline">
                             {cat.name}
                           </Link>
                           {cat.description && (
@@ -158,7 +158,7 @@ export default async function ForumPage() {
                           {cat.last_post_author && cat.last_post_at ? (
                             <>
                               {cat.last_post_thread_id && cat.last_post_thread_title && (
-                                <Link href={`/forum/${area.slug}/${cat.slug}/${cat.last_post_thread_id}`} className="block font-semibold text-[#006699] hover:underline dark:text-[#4da6ff] truncate mb-0.5">
+                                <Link href={`/forum/${area.slug}/${cat.slug}/${cat.last_post_thread_id}`} className="block font-semibold text-[var(--color-primary)] hover:underline truncate mb-0.5">
                                   {cat.last_post_thread_title}
                                 </Link>
                               )}
@@ -190,7 +190,7 @@ export default async function ForumPage() {
                   <div className="min-w-0 flex-1">
                     <Link
                       href={`/forum/${thread.area_slug}/${thread.category_slug}/${thread.thread_id}`}
-                      className="text-sm font-semibold text-[#006699] hover:underline"
+                      className="text-sm font-semibold text-[var(--color-primary)] hover:underline"
                     >
                       {thread.thread_title}
                     </Link>

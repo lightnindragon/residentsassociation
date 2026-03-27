@@ -112,8 +112,8 @@ export default async function ForumCategoryPage({
         </div>
       )}
       <CreateThreadForm categoryId={category.id} isAdmin={isAdmin} />
-      <div className="mt-8 overflow-hidden rounded-md border border-[#006699] bg-[var(--color-card)] shadow-sm">
-        <div className="flex justify-between bg-[#006699] px-4 py-2 text-xs font-bold uppercase text-white">
+      <div className="mt-8 overflow-hidden rounded-md border border-[var(--color-primary)] bg-[var(--color-card)] shadow-sm">
+        <div className="flex justify-between bg-[var(--color-primary)] px-4 py-2 text-xs font-bold uppercase text-white">
           <div className="flex-1">TOPICS</div>
           <div className="hidden w-20 text-center sm:block">REPLIES</div>
           <div className="hidden w-48 pl-4 sm:block">LAST POST</div>
@@ -123,14 +123,14 @@ export default async function ForumCategoryPage({
             <div className="px-4 py-8 text-center text-sm text-[var(--color-muted)]">No threads yet — start the first one above.</div>
           ) : (
             threads.map((t) => (
-              <div key={t.id} className={`flex items-center px-4 py-3 transition-colors hover:bg-[#fff9e6] dark:hover:bg-[var(--color-muted)]/10 ${t.unread ? "bg-[#fffdf0] dark:bg-[var(--color-card)]" : "bg-white dark:bg-[var(--background)]"}`}>
+              <div key={t.id} className={`flex items-center px-4 py-3 transition-colors hover:bg-[var(--color-primary-muted)]/40 dark:hover:bg-[var(--color-muted)]/10 ${t.unread ? "bg-[var(--color-accent)]/10 dark:bg-[var(--color-card)]" : "bg-white dark:bg-[var(--background)]"}`}>
                 <div className="mr-3 flex shrink-0 items-center justify-center">
-                  <svg className={`h-8 w-8 ${t.unread ? "text-red-500" : "text-[#006699] opacity-70 dark:text-[#4da6ff]"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <svg className={`h-8 w-8 ${t.unread ? "text-red-500" : "text-[var(--color-primary)] opacity-80"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                   </svg>
                 </div>
                 <div className="min-w-0 flex-1">
-                  <Link href={`/forum/${areaSlug}/${categorySlug}/${t.id}`} className={`text-base font-bold hover:underline ${t.unread ? "text-red-600 dark:text-red-400" : "text-[#006699] dark:text-[#4da6ff]"}`}>
+                  <Link href={`/forum/${areaSlug}/${categorySlug}/${t.id}`} className={`text-base font-bold hover:underline ${t.unread ? "text-red-600 dark:text-red-400" : "text-[var(--color-primary)]"}`}>
                     {t.title}
                   </Link>
                   <div className="mt-0.5 flex items-center gap-2 text-xs text-[var(--color-muted)]">

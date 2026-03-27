@@ -154,7 +154,7 @@ export default async function ForumThreadPage({
               {thread.pinned && <Badge variant="warning">Pinned</Badge>}
               {thread.locked && <Badge variant="muted">Locked</Badge>}
               {thread.admin_only && (
-                <span className="inline-flex items-center gap-1 rounded bg-[#006699]/10 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider text-[#006699]">
+                <span className="inline-flex items-center gap-1 rounded bg-[var(--color-primary)]/10 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider text-[var(--color-primary)]">
                   📢 Announcements
                 </span>
               )}
@@ -165,7 +165,7 @@ export default async function ForumThreadPage({
                 {thread.author_name ?? "Unknown"}
               </span>
               {(thread.author_role === "admin" || thread.author_role === "dev") && (
-                <span className="inline-flex items-center rounded bg-[#006699]/10 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#006699] dark:bg-[#4da6ff]/20 dark:text-[#4da6ff]">
+                <span className="inline-flex items-center rounded bg-[var(--color-primary)]/10 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[var(--color-primary)]">
                   Admin
                 </span>
               )}
@@ -219,7 +219,7 @@ export default async function ForumThreadPage({
                     {p.author_name ?? "Unknown"}
                   </span>
                   {(p.author_role === "admin" || p.author_role === "dev") && (
-                    <span className="inline-flex items-center rounded bg-[#006699]/10 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#006699] dark:bg-[#4da6ff]/20 dark:text-[#4da6ff]">
+                    <span className="inline-flex items-center rounded bg-[var(--color-primary)]/10 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[var(--color-primary)]">
                       Admin
                     </span>
                   )}

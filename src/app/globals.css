@@ -1,31 +1,31 @@
 @import "tailwindcss";
 
 :root {
-  /* Base */
-  --background: #f5fbf8;
-  --foreground: #0d1f1c;
+  /* Base — clean white with a fresh mint wash */
+  --background: #f6fffb;
+  --foreground: #042f2e;
 
-  /* Brand */
-  --color-primary: #0c6b58;
-  --color-primary-hover: #09533f;
-  --color-primary-muted: #b8ddd6;
+  /* Brand — vivid emerald (readable, clearly “green”) */
+  --color-primary: #059669;
+  --color-primary-hover: #047857;
+  --color-primary-muted: #a7f3d0;
 
-  /* Accent (warm amber – used sparingly) */
-  --color-accent: #c4622d;
-  --color-accent-hover: #a84f23;
+  /* Accent — warm sunny amber for CTAs / highlights */
+  --color-accent: #f59e0b;
+  --color-accent-hover: #d97706;
 
-  /* Surfaces — noticeably teal, not just a hint */
-  --color-surface: #bde0d6;
-  --color-surface-strong: #7fbcae;
+  /* Surfaces — bright mint bands & cards */
+  --color-surface: #ccfbf1;
+  --color-surface-strong: #2dd4bf;
   --color-card: #ffffff;
 
-  /* Footer */
-  --color-footer-bg: #1a5c4e;
-  --color-footer-border: #1e6b5a;
+  /* Footer — rich jewel teal */
+  --color-footer-bg: #0f766e;
+  --color-footer-border: #14b8a6;
 
   /* Text & chrome */
-  --color-muted: #456860;
-  --color-border: #9eccc2;
+  --color-muted: #115e59;
+  --color-border: #5eead4;
 
   --font-heading: var(--font-fraunces);
 }
