@@ -1,4 +1,4 @@
-/** Standard Facebook mark, drawn small inside a square tile. */
+/** Standard Facebook mark — white on blue square. */
 function FacebookMark({ className }: { className?: string }) {
   return (
     <svg
@@ -13,10 +13,12 @@ function FacebookMark({ className }: { className?: string }) {
   );
 }
 
-/** `light` — yellow/white page chrome (default header & footer). `onDark` — dark bars only. */
-type Variant = "onDark" | "light";
+/** `blue` — official-style blue square (header & footer). `light` / `onDark` — alternate surfaces. */
+type Variant = "blue" | "light" | "onDark";
 
 const variantClasses: Record<Variant, string> = {
+  blue:
+    "inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-[#1877F2] text-white shadow-sm transition-colors hover:bg-[#166fe5] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1877F2]",
   light:
     "inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-black/15 bg-white/85 text-[var(--color-chrome-muted)] shadow-sm transition-colors hover:border-[#1877F2] hover:bg-[#1877F2] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary)]",
   onDark:
@@ -29,15 +31,16 @@ export function FacebookIconLink({
   className = "",
 }: {
   href: string;
-  variant: Variant;
+  variant?: Variant;
   className?: string;
 }) {
+  const v = variant ?? "blue";
   return (
     <a
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className={`${variantClasses[variant]} ${className}`.trim()}
+      className={`${variantClasses[v]} ${className}`.trim()}
       aria-label="Culcheth & Glazebury Residents Association on Facebook"
     >
       <FacebookMark className="h-3.5 w-3.5" />

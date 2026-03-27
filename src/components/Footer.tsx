@@ -42,7 +42,7 @@ export async function Footer() {
             </Link>
             <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2">
               {social.facebook_url && (
-                <FacebookIconLink href={social.facebook_url} variant="light" />
+                <FacebookIconLink href={social.facebook_url} variant="blue" />
               )}
               <SocialIconLinks settings={social} />
             </div>
