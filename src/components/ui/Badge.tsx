@@ -7,7 +7,8 @@ export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
 const variantClasses: Record<BadgeProps["variant"] & string, string> = {
   default:
     "bg-[var(--color-primary-muted)] text-[var(--color-primary)] dark:bg-[var(--color-primary-muted)] dark:text-[var(--color-primary)]",
-  success: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
+  success:
+    "bg-[var(--color-primary-muted)] text-[var(--color-primary-hover)] dark:bg-[var(--color-primary-muted)] dark:text-[var(--color-primary-hover)]",
   warning: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400",
   muted: "bg-[var(--color-border)] text-[var(--color-muted)]",
   info: "bg-[var(--color-primary)]/15 text-[var(--color-primary-hover)]",

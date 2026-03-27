@@ -29,7 +29,7 @@ export function AdminSettingsForm({ initial }: { initial: Initial }) {
   return (
     <>
       {state?.ok && (
-        <p className="mt-4 rounded-lg bg-green-100 px-3 py-2 text-sm text-green-800 dark:bg-green-900/30 dark:text-green-400">
+        <p className="mt-4 rounded-lg bg-[var(--color-primary-muted)] px-3 py-2 text-sm text-[var(--color-primary-hover)]">
           Settings saved.
         </p>
       )}
@@ -42,7 +42,7 @@ export function AdminSettingsForm({ initial }: { initial: Initial }) {
         <p
           className={`mt-4 rounded-lg px-3 py-2 text-sm ${
             connectionResult.ok
-              ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
+              ? "bg-[var(--color-primary-muted)] text-[var(--color-primary-hover)]"
               : "bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400"
           }`}
         >
@@ -53,7 +53,7 @@ export function AdminSettingsForm({ initial }: { initial: Initial }) {
         <p
           className={`mt-4 rounded-lg px-3 py-2 text-sm ${
             testResult.ok
-              ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
+              ? "bg-[var(--color-primary-muted)] text-[var(--color-primary-hover)]"
               : "bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400"
           }`}
         >

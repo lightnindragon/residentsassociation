@@ -1,31 +1,31 @@
 @import "tailwindcss";
 
 :root {
-  /* Base — clean white with a fresh mint wash */
-  --background: #f6fffb;
-  --foreground: #042f2e;
+  /* Base — soft neutral page (no green cast) */
+  --background: #f4f6fb;
+  --foreground: #0f172a;
 
-  /* Brand — vivid emerald (readable, clearly “green”) */
-  --color-primary: #059669;
-  --color-primary-hover: #047857;
-  --color-primary-muted: #a7f3d0;
+  /* Brand — confident blue (civic / trustworthy) */
+  --color-primary: #2563eb;
+  --color-primary-hover: #1d4ed8;
+  --color-primary-muted: #dbeafe;
 
-  /* Accent — warm sunny amber for CTAs / highlights */
+  /* Accent — warm amber for CTAs / highlights */
   --color-accent: #f59e0b;
   --color-accent-hover: #d97706;
 
-  /* Surfaces — bright mint bands & cards */
-  --color-surface: #ccfbf1;
-  --color-surface-strong: #2dd4bf;
+  /* Surfaces — cool gray bands & hovers */
+  --color-surface: #e2e8f0;
+  --color-surface-strong: #64748b;
   --color-card: #ffffff;
 
-  /* Footer — rich jewel teal */
-  --color-footer-bg: #0f766e;
-  --color-footer-border: #14b8a6;
+  /* Footer — deep slate */
+  --color-footer-bg: #0f172a;
+  --color-footer-border: #334155;
 
   /* Text & chrome */
-  --color-muted: #115e59;
-  --color-border: #5eead4;
+  --color-muted: #475569;
+  --color-border: #cbd5e1;
 
   --font-heading: var(--font-fraunces);
 }

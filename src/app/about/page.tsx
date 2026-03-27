@@ -1,4 +1,9 @@
-import { getAboutIntro, getCommitteeMembers, getConstitutionPdfUrl } from "@/lib/site-content";
+import {
+  getAboutIntro,
+  getCodeOfConductPdfUrl,
+  getCommitteeMembers,
+  getConstitutionPdfUrl,
+} from "@/lib/site-content";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -24,45 +29,12 @@ We encourage everyone to take part — whether by sharing ideas, joining discuss
 • Transparency and trust
 We communicate openly and work with integrity, always putting the interests of residents first.`;
 
-/** From `RA docs/Code of Conduct for Committee Members Finalise.docx` (wording and structure). */
-const CODE_OF_CONDUCT_TEXT = `Code of Conduct for Committee Members
-
-Culcheth & Glazebury Residents Association
-
-1. Act in the Best Interests of the Community
-• Represent all residents fairly and respectfully.
-• Prioritise projects that improve communication, tidiness, and local connections.
-
-2. Communicate Clearly and Responsively
-• Share updates promptly and accurately.
-• Listen actively to feedback from residents and fellow committee members.
-• Use respectful, inclusive language in all communications.
-
-3. Collaborate and Support Each Other
-• Work constructively with fellow committee members, sub-groups, and volunteers.
-• Respect differing views and seek consensus where possible.
-• Support partnerships with local businesses and organisations.
-
-4. Be Transparent and Accountable
-• Keep accurate records of meetings, decisions, and finances.
-• Declare any conflicts of interest and avoid personal gain.
-• Follow agreed procedures for decision-making and voting.
-
-5. Uphold Integrity and Respect
-• Treat all residents with dignity, regardless of background or belief.
-• Maintain confidentiality where appropriate.
-• Challenge discrimination or inappropriate behaviour if it arises.
-
-6. Commit to Active Participation
-• Attend meetings regularly and contribute to the work of the Association.
-• Take responsibility for assigned tasks and follow through.
-• Step aside if unable to fulfil duties consistently.`;
-
 export default async function AboutPage() {
-  const [intro, members, constitutionPdfUrl] = await Promise.all([
+  const [intro, members, constitutionPdfUrl, codeOfConductPdfUrl] = await Promise.all([
     getAboutIntro(),
     getCommitteeMembers(),
     getConstitutionPdfUrl(),
+    getCodeOfConductPdfUrl(),
   ]);
 
   return (
@@ -98,13 +70,24 @@ export default async function AboutPage() {
           </div>
         </section>
 
-        <section
-          className="mt-14 border-t border-[var(--color-border)] pt-14"
-          aria-label="Code of conduct for committee members"
-        >
-          <div className="whitespace-pre-wrap text-[var(--foreground)] leading-relaxed">
-            {CODE_OF_CONDUCT_TEXT}
-          </div>
+        <section className="mt-14 border-t border-[var(--color-border)] pt-14">
+          <h2 className="font-heading text-2xl font-semibold text-[var(--foreground)]">
+            Code of conduct
+          </h2>
+          <p className="mt-4 leading-relaxed text-[var(--foreground)]">
+            Expectations for committee members are set out in our code of conduct. You can read or
+            download it below.
+          </p>
+          <p className="mt-4">
+            <Link
+              href={codeOfConductPdfUrl}
+              className="font-medium text-[var(--foreground)] underline decoration-[var(--color-border)] underline-offset-4 transition hover:decoration-[var(--foreground)]"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Open code of conduct (PDF)
+            </Link>
+          </p>
         </section>
 
         <section className="mt-14 border-t border-[var(--color-border)] pt-14">

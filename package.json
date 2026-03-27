@@ -12,6 +12,8 @@
     "upload-home-hero-blob": "node --env-file=.env.local scripts/upload-home-hero-blob.js",
     "strip-constitution-pdf": "python scripts/strip-constitution-signatures.py",
     "upload-constitution-blob": "node --env-file=.env.local scripts/upload-constitution-blob.js",
+    "generate-code-of-conduct-pdf": "node scripts/generate-code-of-conduct-pdf.js",
+    "upload-code-of-conduct-blob": "node --env-file=.env.local scripts/upload-code-of-conduct-blob.js",
     "seed-hero-image": "node --env-file=.env.local scripts/seed-hero-from-url.js",
     "seed-gallery-image": "node --env-file=.env.local scripts/seed-gallery-from-url.js",
     "dedupe-gallery": "node --env-file=.env.local scripts/dedupe-gallery-images.js"
@@ -45,6 +47,7 @@
     "@types/sanitize-html": "^2.16.1",
     "eslint": "^9",
     "eslint-config-next": "16.1.7",
+    "pdfkit": "^0.18.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

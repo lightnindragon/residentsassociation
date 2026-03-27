@@ -68,7 +68,7 @@ export default async function AdminResidentsPage() {
                   <td className="py-2">{u.forum_town ?? "—"}</td>
                   <td className="py-2">
                     {u.approved ? (
-                      <span className="text-green-600 dark:text-green-400">Approved</span>
+                      <span className="text-[var(--color-primary)]">Approved</span>
                     ) : (
                       <span className="text-amber-600 dark:text-amber-400">Pending</span>
                     )}

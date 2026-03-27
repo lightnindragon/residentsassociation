@@ -10,7 +10,7 @@ export function ResetPasswordForm({ token }: { token: string }) {
   if (state?.ok) {
     return (
       <div className="mt-8 rounded-lg bg-[var(--color-card)] p-6 text-center shadow-sm border border-[var(--color-border)]">
-        <p className="font-medium text-green-600">Password has been reset successfully.</p>
+        <p className="font-medium text-[var(--color-primary)]">Password has been reset successfully.</p>
         <div className="mt-4">
           <a href="/login" className="text-sm font-medium text-[var(--color-primary)] hover:underline">
             Go to login

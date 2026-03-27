@@ -7,7 +7,8 @@ import { DonateButton } from "@/components/DonateButton";
 import { getHeaderNewsCategories } from "@/lib/news-nav";
 import { getSiteSettings } from "@/lib/site-settings";
 import { NewsNav } from "@/components/NewsNav";
-import { SocialIconLinks } from "@/components/SocialIconLinks";
+import { FacebookIconLink } from "@/components/FacebookIconLink";
+import { hasNonFacebookSocialLinks, SocialIconLinks } from "@/components/SocialIconLinks";
 import { getHeaderLogoSrc } from "@/lib/branding";
 import { MobileNav } from "@/components/MobileNav";
 
@@ -48,105 +49,119 @@ export async function Header() {
           </span>
         </Link>
 
-        {/* Desktop nav + mobile menu — right side */}
-        <div className="ml-auto flex items-center gap-2 md:gap-0">
-        {/* Desktop nav — hidden on mobile */}
-        <nav className="hidden items-center justify-end gap-x-4 gap-y-2 text-sm md:flex md:flex-wrap">
-          <Link
-            href="/"
-            className="font-medium text-[var(--foreground)] hover:text-[var(--color-primary)]"
-          >
-            Home
-          </Link>
-          <NewsNav categories={newsCategories} />
-          <Link
-            href="/gallery"
-            className="font-medium text-[var(--foreground)] hover:text-[var(--color-primary)]"
-          >
-            Gallery
-          </Link>
-          <Link
-            href="/contact"
-            className="font-medium text-[var(--foreground)] hover:text-[var(--color-primary)]"
-          >
-            Contact
-          </Link>
-          <Link
-            href="/about"
-            className="font-medium text-[var(--foreground)] hover:text-[var(--color-primary)]"
-          >
-            About
-          </Link>
-          <div className="hidden items-center gap-4 border-l border-[var(--color-border)] pl-4 lg:flex">
-            <SocialIconLinks settings={social} />
-          </div>
-          {session?.user ? (
-            <>
-              {showDonate && donationSettings && (
-                <DonateButton
-                  variant="nav"
-                  details={{
-                    bankName: donationSettings.bankName,
-                    sortCode: donationSettings.sortCode,
-                    accountNumber: donationSettings.accountNumber,
-                    accountName: donationSettings.accountName,
-                  }}
-                />
-              )}
-              <Link
-                href="/account"
-                className="font-medium text-[var(--foreground)] hover:text-[var(--color-primary)]"
-              >
-                Account
-              </Link>
-              <Link
-                href="/forum"
-                className="font-medium text-[var(--foreground)] hover:text-[var(--color-primary)]"
-              >
-                Forum
-              </Link>
-              {isAdmin && (
-                <Link
-                  href="/admin"
-                  className="font-medium text-[var(--color-primary)] hover:underline"
-                >
-                  Admin
-                </Link>
-              )}
-              <form action={signOutAction}>
-                <Button type="submit" variant="ghost" className="text-sm">
-                  Sign out
-                </Button>
-              </form>
-            </>
-          ) : (
-            <>
-              <Link href="/login">
-                <Button variant="ghost" className="text-sm">
-                  Sign in
-                </Button>
-              </Link>
-              <Link href="/signup">
-                <Button className="text-sm">Sign up</Button>
-              </Link>
-            </>
+        {/* Desktop nav + mobile menu — right side; Facebook icon above nav on desktop, inline on mobile */}
+        <div className="ml-auto flex flex-col items-end gap-2">
+          {social.facebook_url && (
+            <div className="hidden md:block">
+              <FacebookIconLink href={social.facebook_url} variant="header" />
+            </div>
           )}
-        </nav>
+          <div className="flex items-center gap-2 md:gap-0">
+            {social.facebook_url && (
+              <div className="md:hidden">
+                <FacebookIconLink href={social.facebook_url} variant="header" />
+              </div>
+            )}
+            {/* Desktop nav — hidden on mobile */}
+            <nav className="hidden items-center justify-end gap-x-4 gap-y-2 text-sm md:flex md:flex-wrap">
+              <Link
+                href="/"
+                className="font-medium text-[var(--foreground)] hover:text-[var(--color-primary)]"
+              >
+                Home
+              </Link>
+              <NewsNav categories={newsCategories} />
+              <Link
+                href="/gallery"
+                className="font-medium text-[var(--foreground)] hover:text-[var(--color-primary)]"
+              >
+                Gallery
+              </Link>
+              <Link
+                href="/contact"
+                className="font-medium text-[var(--foreground)] hover:text-[var(--color-primary)]"
+              >
+                Contact
+              </Link>
+              <Link
+                href="/about"
+                className="font-medium text-[var(--foreground)] hover:text-[var(--color-primary)]"
+              >
+                About
+              </Link>
+              <div className="hidden items-center gap-4 border-l border-[var(--color-border)] pl-4 lg:flex">
+                <SocialIconLinks settings={social} />
+              </div>
+              {session?.user ? (
+                <>
+                  {showDonate && donationSettings && (
+                    <DonateButton
+                      variant="nav"
+                      details={{
+                        bankName: donationSettings.bankName,
+                        sortCode: donationSettings.sortCode,
+                        accountNumber: donationSettings.accountNumber,
+                        accountName: donationSettings.accountName,
+                      }}
+                    />
+                  )}
+                  <Link
+                    href="/account"
+                    className="font-medium text-[var(--foreground)] hover:text-[var(--color-primary)]"
+                  >
+                    Account
+                  </Link>
+                  <Link
+                    href="/forum"
+                    className="font-medium text-[var(--foreground)] hover:text-[var(--color-primary)]"
+                  >
+                    Forum
+                  </Link>
+                  {isAdmin && (
+                    <Link
+                      href="/admin"
+                      className="font-medium text-[var(--color-primary)] hover:underline"
+                    >
+                      Admin
+                    </Link>
+                  )}
+                  <form action={signOutAction}>
+                    <Button type="submit" variant="ghost" className="text-sm">
+                      Sign out
+                    </Button>
+                  </form>
+                </>
+              ) : (
+                <>
+                  <Link href="/login">
+                    <Button variant="ghost" className="text-sm">
+                      Sign in
+                    </Button>
+                  </Link>
+                  <Link href="/signup">
+                    <Button className="text-sm">Sign up</Button>
+                  </Link>
+                </>
+              )}
+            </nav>
 
-        {/* Mobile hamburger — visible only on mobile */}
-        <MobileNav
-          isLoggedIn={!!session?.user}
-          isAdmin={isAdmin}
-          categories={newsCategories}
-          signOutAction={signOutAction}
-        />
+            {/* Mobile hamburger — visible only on mobile */}
+            <MobileNav
+              isLoggedIn={!!session?.user}
+              isAdmin={isAdmin}
+              categories={newsCategories}
+              signOutAction={signOutAction}
+            />
+          </div>
         </div>
       </div>
 
-      {/* Social icons strip — shown below header on mobile */}
-      <div className="mx-auto flex max-w-6xl justify-end border-t border-[var(--color-surface-strong)] px-4 py-1.5 md:hidden">
-        <SocialIconLinks settings={social} />
-      </div>
+      {/* Other social links — mobile only strip when configured */}
+      {hasNonFacebookSocialLinks(social) && (
+        <div className="mx-auto flex max-w-6xl justify-end border-t border-[var(--color-surface-strong)] px-4 py-2 md:hidden">
+          <SocialIconLinks settings={social} />
+        </div>
+      )}
     </header>
   );
 }

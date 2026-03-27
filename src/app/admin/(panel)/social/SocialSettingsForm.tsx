@@ -15,7 +15,7 @@ export function SocialSettingsForm({ settings }: { settings: SiteSettings }) {
       <Input label="YouTube URL" name="youtube_url" defaultValue={settings.youtube_url ?? ""} />
       <Input label="LinkedIn URL" name="linkedin_url" defaultValue={settings.linkedin_url ?? ""} />
       {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
-      {state?.ok && <p className="text-sm text-green-600">Saved.</p>}
+      {state?.ok && <p className="text-sm text-[var(--color-primary)]">Saved.</p>}
       <Button type="submit">Save</Button>
     </form>
   );

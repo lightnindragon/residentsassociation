@@ -75,6 +75,7 @@ export async function getHomeHeroImageUrl(): Promise<string> {
 }
 
 const DEFAULT_CONSTITUTION_PDF = "/documents/culcheth-glazebury-ra-constitution.pdf";
+const DEFAULT_CODE_OF_CONDUCT_PDF = "/documents/culcheth-glazebury-ra-code-of-conduct.pdf";
 
 /** Constitution PDF — `site_content.constitution_pdf_url` (Vercel Blob) or local /public fallback. */
 export async function getConstitutionPdfUrl(): Promise<string> {
@@ -86,6 +87,19 @@ export async function getConstitutionPdfUrl(): Promise<string> {
     return fromDb || DEFAULT_CONSTITUTION_PDF;
   } catch {
     return DEFAULT_CONSTITUTION_PDF;
+  }
+}
+
+/** Code of conduct PDF — `site_content.code_of_conduct_pdf_url` (Vercel Blob) or local /public fallback. */
+export async function getCodeOfConductPdfUrl(): Promise<string> {
+  try {
+    const sql = getSql();
+    const rows = await sql`SELECT value FROM site_content WHERE key = 'code_of_conduct_pdf_url' LIMIT 1`;
+    const row = rows[0] as { value: string } | undefined;
+    const fromDb = normalizeSiteImageUrl(row?.value ?? "");
+    return fromDb || DEFAULT_CODE_OF_CONDUCT_PDF;
+  } catch {
+    return DEFAULT_CODE_OF_CONDUCT_PDF;
   }
 }
 

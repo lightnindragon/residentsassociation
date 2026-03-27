@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth";
 import { getDonationSettings } from "@/lib/donations";
 import { DonateButton } from "@/components/DonateButton";
 import { getSiteSettings } from "@/lib/site-settings";
+import { FacebookIconLink } from "@/components/FacebookIconLink";
 import { SocialIconLinks } from "@/components/SocialIconLinks";
 import { getHeaderLogoSrc } from "@/lib/branding";
 
@@ -37,8 +38,11 @@ export async function Footer() {
                 Culcheth & Glazebury<br />Residents Association
               </p>
             </Link>
-            <div className="mt-1">
-              <SocialIconLinks settings={social} />
+            <div className="mt-2 flex flex-col items-start gap-4">
+              {social.facebook_url && (
+                <FacebookIconLink href={social.facebook_url} variant="footer" />
+              )}
+              <SocialIconLinks settings={social} variant="footer" />
             </div>
           </div>
 

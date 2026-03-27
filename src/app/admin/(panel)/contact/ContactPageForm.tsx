@@ -118,7 +118,7 @@ export function ContactPageForm({ initial }: { initial: ContactContent }) {
           {pending ? "Saving…" : "Save"}
         </button>
         {message === "saved" && (
-          <span className="text-sm text-green-600 dark:text-green-400">Saved.</span>
+          <span className="text-sm text-[var(--color-primary)]">Saved.</span>
         )}
         {message === "error" && (
           <span className="text-sm text-red-600 dark:text-red-400">Failed to save.</span>

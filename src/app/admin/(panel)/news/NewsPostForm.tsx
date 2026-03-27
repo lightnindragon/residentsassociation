@@ -58,7 +58,7 @@ export function NewsPostForm({
   return (
     <>
       {state?.ok && (
-        <p className="mt-4 rounded-lg bg-green-100 px-3 py-2 text-sm text-green-800">
+        <p className="mt-4 rounded-lg bg-[var(--color-primary-muted)] px-3 py-2 text-sm text-[var(--color-primary-hover)]">
           {isEdit ? "Post updated." : "Post created."}
         </p>
       )}

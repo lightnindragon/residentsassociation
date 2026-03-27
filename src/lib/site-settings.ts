@@ -1,6 +1,6 @@
 import { getSql } from "@/lib/db";
 
-/** Official residents Facebook group — shown in header & footer when DB value is empty. */
+/** Official residents Facebook URL — icon in header & footer when DB value is empty. */
 export const DEFAULT_FACEBOOK_GROUP_URL =
   "https://www.facebook.com/groups/879646087959298";
 
