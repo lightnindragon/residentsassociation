@@ -4,6 +4,28 @@ import Link from "next/link";
 
 const CONSTITUTION_PDF = "/documents/culcheth-glazebury-ra-constitution.pdf";
 
+/** Matches `RA docs/Mission statement .txt` (line breaks and wording). */
+const MISSION_STATEMENT_TEXT = `Mission statement 
+
+Culcheth and Glazebury Residents Association
+
+Our Mission
+
+We work to protect, enhance, and celebrate the unique character of Culcheth and Glazebury. Our mission is to represent the interests of local residents, strengthen community life, and help shape a safe, sustainable, and thriving future for our villages.
+
+What We Stand For
+
+• A strong community voice
+We listen to residents and speak up on their behalf, ensuring local views are heard by councils, developers and decision‑makers.
+• Protecting our environment
+We champion our rural identity and village heritage, promoting thoughtful development that respects our surroundings.
+• A safe and connected place to live
+We support initiatives that improve safety, wellbeing, and neighbourliness across both villages.
+• Open, inclusive involvement
+We encourage everyone to take part — whether by sharing ideas, joining discussions, or helping with community projects.
+• Transparency and trust
+We communicate openly and work with integrity, always putting the interests of residents first.`;
+
 export default async function AboutPage() {
   const [intro, members] = await Promise.all([getAboutIntro(), getCommitteeMembers()]);
 
@@ -31,64 +53,13 @@ export default async function AboutPage() {
           )}
         </div>
 
-        <section className="mt-14 border-t border-[var(--color-border)] pt-14">
-          <h2 className="font-heading text-2xl font-semibold text-[var(--foreground)]">
-            Mission statement
-          </h2>
-          <p className="mt-2 text-sm font-medium text-[var(--color-muted)]">
-            Culcheth and Glazebury Residents Association
-          </p>
-          <h3 className="mt-8 font-heading text-lg font-semibold text-[var(--foreground)]">
-            Our mission
-          </h3>
-          <p className="mt-3 leading-relaxed text-[var(--foreground)]">
-            We work to protect, enhance, and celebrate the unique character of Culcheth and
-            Glazebury. Our mission is to represent the interests of local residents, strengthen
-            community life, and help shape a safe, sustainable, and thriving future for our
-            villages.
-          </p>
-          <h3 className="mt-10 font-heading text-lg font-semibold text-[var(--foreground)]">
-            What we stand for
-          </h3>
-          <ul className="mt-4 space-y-5 text-[var(--foreground)]">
-            <li>
-              <p className="font-medium text-[var(--foreground)]">A strong community voice</p>
-              <p className="mt-1 leading-relaxed text-[var(--color-muted)]">
-                We listen to residents and speak up on their behalf, ensuring local views are
-                heard by councils, developers and decision-makers.
-              </p>
-            </li>
-            <li>
-              <p className="font-medium text-[var(--foreground)]">Protecting our environment</p>
-              <p className="mt-1 leading-relaxed text-[var(--color-muted)]">
-                We champion our rural identity and village heritage, promoting thoughtful
-                development that respects our surroundings.
-              </p>
-            </li>
-            <li>
-              <p className="font-medium text-[var(--foreground)]">
-                A safe and connected place to live
-              </p>
-              <p className="mt-1 leading-relaxed text-[var(--color-muted)]">
-                We support initiatives that improve safety, wellbeing, and neighbourliness across
-                both villages.
-              </p>
-            </li>
-            <li>
-              <p className="font-medium text-[var(--foreground)]">Open, inclusive involvement</p>
-              <p className="mt-1 leading-relaxed text-[var(--color-muted)]">
-                We encourage everyone to take part — whether by sharing ideas, joining
-                discussions, or helping with community projects.
-              </p>
-            </li>
-            <li>
-              <p className="font-medium text-[var(--foreground)]">Transparency and trust</p>
-              <p className="mt-1 leading-relaxed text-[var(--color-muted)]">
-                We communicate openly and work with integrity, always putting the interests of
-                residents first.
-              </p>
-            </li>
-          </ul>
+        <section
+          className="mt-14 border-t border-[var(--color-border)] pt-14"
+          aria-label="Mission statement"
+        >
+          <div className="whitespace-pre-wrap text-[var(--foreground)] leading-relaxed">
+            {MISSION_STATEMENT_TEXT}
+          </div>
         </section>
 
         <section className="mt-14 border-t border-[var(--color-border)] pt-14">
