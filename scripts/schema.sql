@@ -159,7 +159,7 @@ CREATE TABLE IF NOT EXISTS donation_settings (
 -- Extended fields & tables (see scripts/migrate-full-plan.js for incremental ALTERs on existing DBs)
 ALTER TABLE users ADD COLUMN IF NOT EXISTS approved BOOLEAN NOT NULL DEFAULT true;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS banned BOOLEAN NOT NULL DEFAULT false;
-ALTER TABLE users ADD COLUMN IF NOT EXISTS notify_new_blog BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS notify_new_blog BOOLEAN NOT NULL DEFAULT true;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS admin_notes TEXT;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS address TEXT;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS forum_emails_enabled BOOLEAN NOT NULL DEFAULT true;

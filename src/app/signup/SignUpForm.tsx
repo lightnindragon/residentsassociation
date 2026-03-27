@@ -66,8 +66,17 @@ export function SignUpForm() {
           autoComplete="new-password"
         />
         <label className="flex cursor-pointer items-start gap-2 text-sm text-[var(--foreground)]">
-          <input type="checkbox" name="notify_new_blog" value="1" className="mt-1" />
-          <span>Email me when a new blog article is published</span>
+          <input
+            type="checkbox"
+            name="notify_new_blog"
+            value="1"
+            defaultChecked
+            className="mt-1 rounded border-[var(--color-border)]"
+          />
+          <span>
+            Receive news and updates by email{" "}
+            <span className="text-[var(--color-muted)]">(untick to opt out)</span>
+          </span>
         </label>
         <Button type="submit" className="w-full">
           Sign up

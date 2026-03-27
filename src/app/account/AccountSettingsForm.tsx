@@ -69,12 +69,19 @@ export function AccountSettingsForm({
           />
         </div>
       )}
-      {isResident && (
-        <label className="flex items-center gap-2 text-sm">
-          <input type="checkbox" name="notify_new_blog" value="1" defaultChecked={initial.notify_new_blog} />
-          Email me when a new blog article is published
-        </label>
-      )}
+      <label className="flex cursor-pointer items-start gap-2 text-sm text-[var(--foreground)]">
+        <input
+          type="checkbox"
+          name="notify_new_blog"
+          value="1"
+          defaultChecked={initial.notify_new_blog}
+          className="mt-0.5 rounded border-[var(--color-border)]"
+        />
+        <span>
+          Receive news and updates by email{" "}
+          <span className="text-[var(--color-muted)]">(untick to opt out)</span>
+        </span>
+      </label>
       <label className="flex items-center gap-2 text-sm">
         <input
           type="checkbox"
