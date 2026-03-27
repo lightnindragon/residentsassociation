@@ -83,7 +83,7 @@ export default async function HomePage() {
             ) : null}
             {showDonate && donationSettings && (
               <DonateButton
-                variant="signature"
+                variant="hero"
                 details={{
                   bankName: donationSettings.bankName,
                   sortCode: donationSettings.sortCode,

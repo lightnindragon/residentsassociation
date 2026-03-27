@@ -11,8 +11,8 @@ export type DonateDetails = {
 
 type Props = {
   details: DonateDetails;
-  /** "nav" = header/footer link style; "signature" = blog post block */
-  variant?: "nav" | "signature";
+  /** "nav" = header/footer link style; "signature" = blog post block; "hero" = homepage button */
+  variant?: "nav" | "signature" | "hero";
 };
 
 export function DonateButton({ details, variant = "nav" }: Props) {
@@ -39,9 +39,11 @@ export function DonateButton({ details, variant = "nav" }: Props) {
   }
 
   const btnClass =
-    variant === "signature"
-      ? "inline-flex items-center gap-1.5 rounded-md border border-[var(--color-border)] bg-[var(--color-card)] px-3 py-1.5 text-sm font-medium text-[var(--foreground)] shadow-sm transition hover:border-[var(--color-primary)]/40 hover:bg-[var(--color-primary)]/5"
-      : "text-sm font-medium text-[var(--color-muted)] underline-offset-4 transition hover:text-[var(--color-primary)] hover:underline";
+    variant === "hero"
+      ? "min-w-[140px] inline-flex items-center justify-center rounded-md border border-[var(--color-primary)] bg-transparent px-4 py-2 text-sm font-medium text-[var(--color-primary)] transition hover:bg-[var(--color-primary)] hover:text-white"
+      : variant === "signature"
+        ? "inline-flex items-center gap-1.5 rounded-md border border-[var(--color-border)] bg-[var(--color-card)] px-3 py-1.5 text-sm font-medium text-[var(--foreground)] shadow-sm transition hover:border-[var(--color-primary)]/40 hover:bg-[var(--color-primary)]/5"
+        : "text-sm font-medium text-[var(--color-muted)] underline-offset-4 transition hover:text-[var(--color-primary)] hover:underline";
 
   return (
     <>
