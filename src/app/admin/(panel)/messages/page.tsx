@@ -3,8 +3,17 @@ import { getSql } from "@/lib/db";
 import { Badge } from "@/components/ui";
 import { AssignForm } from "./AssignForm";
 import { StatusForm } from "./StatusForm";
+import { MessageFilters } from "./Filters";
 
-export default async function AdminMessagesPage() {
+export default async function AdminMessagesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const resolvedParams = await searchParams;
+  const statusFilter = typeof resolvedParams.status === "string" ? resolvedParams.status : null;
+  const assigneeFilter = typeof resolvedParams.assignee === "string" ? resolvedParams.assignee : null;
+
   let messages: Array<{
     id: string;
     name: string;
@@ -19,19 +28,31 @@ export default async function AdminMessagesPage() {
   let admins: Array<{ id: string; name: string; email: string }> = [];
   try {
     const sql = getSql();
+    
+    // Construct the dynamic query based on filters
+    // Using simple conditional push for safe query building
     messages = (await sql`
       SELECT m.id, m.name, m.email, m.subject, m.body, m.status, m.created_at, m.assigned_to_id,
              u.name AS assignee_name
       FROM contact_messages m
       LEFT JOIN users u ON u.id = m.assigned_to_id
+      WHERE 
+        (${statusFilter}::text IS NULL OR m.status = ${statusFilter})
+        AND (
+          ${assigneeFilter}::text IS NULL 
+          OR (${assigneeFilter} = 'unassigned' AND m.assigned_to_id IS NULL)
+          OR (m.assigned_to_id = ${assigneeFilter !== 'unassigned' ? assigneeFilter : null}::uuid)
+        )
       ORDER BY m.created_at DESC
       LIMIT 100
     `) as typeof messages;
+
     admins = (await sql`
       SELECT id, name, email FROM users WHERE role IN ('admin', 'dev') ORDER BY name
     `) as typeof admins;
-  } catch {
+  } catch (e) {
     // no DB
+    console.error(e);
   }
 
   return (
@@ -42,6 +63,9 @@ export default async function AdminMessagesPage() {
       <p className="mt-1 text-[var(--color-muted)]">
         Assign messages to admins; they will receive an email notification.
       </p>
+
+      <MessageFilters admins={admins} />
+
       <div className="mt-6 overflow-x-auto">
         <table className="w-full min-w-[600px] border-collapse text-sm">
           <thead>

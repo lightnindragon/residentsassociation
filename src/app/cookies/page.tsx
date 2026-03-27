@@ -4,25 +4,154 @@ export default function CookiesPage() {
       <h1 className="font-heading text-3xl font-semibold text-[var(--foreground)]">
         Cookie Policy
       </h1>
-      <div className="prose mt-8 max-w-none text-[var(--foreground)]">
+      <p className="mt-2 text-sm text-[var(--color-muted)]">
+        Last updated: 27 March 2026
+      </p>
+      <div className="prose mt-8 max-w-none text-[var(--foreground)] [&_h2]:font-heading [&_h2]:mt-10 [&_h2]:mb-3 [&_h2]:text-xl [&_h2]:font-semibold [&_p]:leading-relaxed [&_p+p]:mt-4 [&_ul]:mt-3 [&_ul]:space-y-2 [&_li]:leading-relaxed">
         <p>
-          This site uses cookies to provide core functionality and to keep you
-          signed in.
+          This Cookie Policy explains what cookies are, how the Culcheth &amp;
+          Glazebury Residents Association (&ldquo;we&rdquo;, &ldquo;us&rdquo;,
+          &ldquo;our&rdquo;) uses them on this website (<strong>cagra.co.uk</strong>),
+          and your choices regarding cookies.
         </p>
-        <h2 className="font-heading mt-6 text-xl font-medium">What we use</h2>
+
+        <h2>1. What are cookies?</h2>
         <p>
-          <strong>Session / authentication cookies:</strong> When you sign in,
-          we set a cookie so the site can recognise you on future visits. These
-          are essential for the forum and admin areas to work.
+          Cookies are small text files that are placed on your device (computer,
+          phone or tablet) when you visit a website. They are widely used to make
+          websites work efficiently and to provide information to the site owners.
+        </p>
+
+        <h2>2. Cookies we use</h2>
+        <p>
+          We only use cookies that are <strong>strictly necessary</strong> for the
+          site to function. We do not use any advertising, analytics or tracking
+          cookies.
+        </p>
+
+        <div className="mt-6 overflow-x-auto">
+          <table className="w-full border-collapse text-sm">
+            <thead>
+              <tr className="border-b border-[var(--color-border)]">
+                <th className="py-2 pr-4 text-left font-semibold">Cookie name</th>
+                <th className="py-2 pr-4 text-left font-semibold">Purpose</th>
+                <th className="py-2 pr-4 text-left font-semibold">Duration</th>
+                <th className="py-2 text-left font-semibold">Type</th>
+              </tr>
+            </thead>
+            <tbody className="text-[var(--color-muted)]">
+              <tr className="border-b border-[var(--color-border)]">
+                <td className="py-2 pr-4 font-mono text-xs">authjs.session-token</td>
+                <td className="py-2 pr-4">Keeps you signed in after logging in. Required for the forum, account area and admin panel to work.</td>
+                <td className="py-2 pr-4">30 days</td>
+                <td className="py-2">Essential</td>
+              </tr>
+              <tr className="border-b border-[var(--color-border)]">
+                <td className="py-2 pr-4 font-mono text-xs">authjs.csrf-token</td>
+                <td className="py-2 pr-4">Protects against cross-site request forgery (CSRF) attacks when submitting forms.</td>
+                <td className="py-2 pr-4">Session</td>
+                <td className="py-2">Essential</td>
+              </tr>
+              <tr className="border-b border-[var(--color-border)]">
+                <td className="py-2 pr-4 font-mono text-xs">authjs.callback-url</td>
+                <td className="py-2 pr-4">Remembers which page to return you to after signing in.</td>
+                <td className="py-2 pr-4">Session</td>
+                <td className="py-2">Essential</td>
+              </tr>
+              <tr className="border-b border-[var(--color-border)]">
+                <td className="py-2 pr-4 font-mono text-xs">cf_clearance</td>
+                <td className="py-2 pr-4">Set by Cloudflare Turnstile after completing the human verification on the contact form. Prevents you from having to verify repeatedly.</td>
+                <td className="py-2 pr-4">Up to 30 mins</td>
+                <td className="py-2">Essential</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2>3. Third-party cookies</h2>
+        <p>
+          We do <strong>not</strong> use any third-party advertising or analytics
+          cookies. The only third-party cookies that may be set are by
+          Cloudflare, as part of the Turnstile human verification on the contact
+          form. These are strictly functional and are governed by{" "}
+          <a
+            href="https://www.cloudflare.com/privacypolicy/"
+            className="underline underline-offset-2"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Cloudflare&rsquo;s privacy policy
+          </a>
+          .
+        </p>
+
+        <h2>4. Managing cookies</h2>
+        <p>
+          Since we only use essential cookies, there is no cookie consent banner
+          on this site &mdash; essential cookies are exempt from consent requirements
+          under UK cookie law (the Privacy and Electronic Communications
+          Regulations 2003).
         </p>
         <p>
-          We do not use third-party advertising or tracking cookies. We only
-          use cookies that are necessary for the operation of the site.
+          You can still control cookies through your browser settings. Most
+          browsers allow you to:
         </p>
-        <h2 className="font-heading mt-6 text-xl font-medium">Managing cookies</h2>
+        <ul className="list-disc pl-6">
+          <li>View what cookies are stored and delete them individually.</li>
+          <li>Block all cookies or only third-party cookies.</li>
+          <li>Clear all cookies when you close the browser.</li>
+        </ul>
         <p>
-          You can disable or delete cookies in your browser settings. If you
-          do, you may not be able to sign in or use certain features.
+          Please note that if you block or delete the authentication cookies, you
+          will not be able to sign in to your account, use the forum, or access
+          the admin panel.
+        </p>
+        <p>
+          Here are links to cookie management instructions for common browsers:
+        </p>
+        <ul className="list-disc pl-6">
+          <li>
+            <a href="https://support.google.com/chrome/answer/95647" className="underline underline-offset-2" target="_blank" rel="noopener noreferrer">
+              Google Chrome
+            </a>
+          </li>
+          <li>
+            <a href="https://support.mozilla.org/en-US/kb/enhanced-tracking-protection-firefox-desktop" className="underline underline-offset-2" target="_blank" rel="noopener noreferrer">
+              Mozilla Firefox
+            </a>
+          </li>
+          <li>
+            <a href="https://support.apple.com/en-gb/guide/safari/sfri11471/mac" className="underline underline-offset-2" target="_blank" rel="noopener noreferrer">
+              Safari
+            </a>
+          </li>
+          <li>
+            <a href="https://support.microsoft.com/en-us/microsoft-edge/delete-cookies-in-microsoft-edge-63947406-40ac-c3b8-57b9-2a946a29ae09" className="underline underline-offset-2" target="_blank" rel="noopener noreferrer">
+              Microsoft Edge
+            </a>
+          </li>
+        </ul>
+
+        <h2>5. Changes to this policy</h2>
+        <p>
+          We may update this Cookie Policy from time to time. The &ldquo;Last
+          updated&rdquo; date at the top of this page will be revised accordingly.
+          If we start using any new types of cookies, we will update this page
+          before doing so.
+        </p>
+
+        <h2>6. More information</h2>
+        <p>
+          For more details on how we handle your personal data, please see our{" "}
+          <a href="/privacy" className="underline underline-offset-2">
+            Privacy Policy
+          </a>
+          . If you have any questions about our use of cookies, please get in
+          touch via the{" "}
+          <a href="/contact" className="underline underline-offset-2">
+            Contact page
+          </a>
+          .
         </p>
       </div>
     </div>

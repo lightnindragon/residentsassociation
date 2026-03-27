@@ -4,10 +4,14 @@ import { Button, Card, CardHeader, CardContent } from "@/components/ui";
 import { auth } from "@/lib/auth";
 import { getHomeHeroImageUrl, normalizeSiteImageUrl } from "@/lib/site-content";
 import { getSql } from "@/lib/db";
+import { getDonationSettings } from "@/lib/donations";
+import { DonateButton } from "@/components/DonateButton";
 
 export default async function HomePage() {
   const session = await auth();
   const heroUrl = await getHomeHeroImageUrl();
+  const donationSettings = await getDonationSettings();
+  const showDonate = !!session?.user && donationSettings?.enabled === true;
 
   let latestNews: Array<{
     id: string;
@@ -77,6 +81,17 @@ export default async function HomePage() {
                 </Button>
               </Link>
             ) : null}
+            {showDonate && donationSettings && (
+              <DonateButton
+                variant="signature"
+                details={{
+                  bankName: donationSettings.bankName,
+                  sortCode: donationSettings.sortCode,
+                  accountNumber: donationSettings.accountNumber,
+                  accountName: donationSettings.accountName,
+                }}
+              />
+            )}
           </div>
         </div>
       </section>

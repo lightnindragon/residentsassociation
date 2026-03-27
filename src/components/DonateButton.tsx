@@ -50,7 +50,7 @@ export function DonateButton({ details, variant = "nav" }: Props) {
       </button>
       <dialog
         ref={dialogRef}
-        className="max-w-md rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-0 text-[var(--foreground)] shadow-xl backdrop:bg-black/40"
+        className="fixed inset-0 m-auto h-fit w-[calc(100%-2rem)] max-w-md rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-0 text-[var(--foreground)] shadow-xl backdrop:bg-black/40"
         onClick={(e) => {
           if (e.target === dialogRef.current) close();
         }}
