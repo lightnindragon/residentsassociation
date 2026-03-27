@@ -13,12 +13,12 @@ function FacebookMark({ className }: { className?: string }) {
   );
 }
 
-/** `onDark` — header & footer slate bar; `light` — pale backgrounds only */
+/** `light` — yellow/white page chrome (default header & footer). `onDark` — dark bars only. */
 type Variant = "onDark" | "light";
 
 const variantClasses: Record<Variant, string> = {
   light:
-    "inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-[var(--color-border)] bg-[var(--color-card)] text-[var(--color-muted)] transition-colors hover:border-[#1877F2] hover:bg-[#1877F2] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary)]",
+    "inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-black/15 bg-white/85 text-[var(--color-chrome-muted)] shadow-sm transition-colors hover:border-[#1877F2] hover:bg-[#1877F2] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary)]",
   onDark:
     "inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-white/20 bg-white/5 text-white/60 transition-colors hover:border-[#1877F2] hover:bg-[#1877F2] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white",
 };

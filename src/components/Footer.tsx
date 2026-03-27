@@ -8,24 +8,26 @@ import { FacebookIconLink } from "@/components/FacebookIconLink";
 import { SocialIconLinks } from "@/components/SocialIconLinks";
 import { getHeaderLogoSrc } from "@/lib/branding";
 
+const footLink =
+  "transition-colors text-[var(--color-chrome-muted)] hover:text-[var(--color-chrome-foreground)]";
+
 export async function Footer() {
   const session = await auth();
   const donationSettings = await getDonationSettings();
-  const showDonate =
-    !!session?.user && donationSettings?.enabled === true;
+  const showDonate = !!session?.user && donationSettings?.enabled === true;
   const social = await getSiteSettings();
   const logoSrc = getHeaderLogoSrc();
 
   return (
-    <footer className="mt-auto border-t-2 border-[var(--color-footer-border)] bg-[var(--color-footer-bg)] text-white/80">
+    <footer className="mt-auto border-t-2 border-[var(--color-footer-border)] bg-[var(--color-footer-bg)] text-[var(--color-chrome-foreground)]">
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
         <div className="flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex flex-col gap-4 sm:max-w-sm">
             <Link
               href="/"
-              className="flex items-center gap-3 outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
+              className="flex items-center gap-3 outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--color-chrome-foreground)]"
             >
-              <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full border border-white/20 shadow-md">
+              <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full border border-black/15 shadow-sm ring-1 ring-black/10">
                 <Image
                   src={logoSrc}
                   alt="Culcheth &amp; Glazebury Residents Association logo"
@@ -34,28 +36,37 @@ export async function Footer() {
                   sizes="48px"
                 />
               </span>
-              <p className="font-heading text-sm font-medium leading-tight text-white">
+              <p className="font-heading text-sm font-medium leading-tight text-[var(--color-chrome-foreground)]">
                 Culcheth & Glazebury<br />Residents Association
               </p>
             </Link>
             <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2">
               {social.facebook_url && (
-                <FacebookIconLink href={social.facebook_url} variant="onDark" />
+                <FacebookIconLink href={social.facebook_url} variant="light" />
               )}
-              <SocialIconLinks settings={social} variant="footer" />
+              <SocialIconLinks settings={social} />
             </div>
           </div>
 
-          <nav className="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-white/60">
-            <Link href="/about" className="hover:text-white transition-colors">About us</Link>
-            <Link href="/terms" className="hover:text-white transition-colors">Terms & Conditions</Link>
-            <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
-            <Link href="/cookies" className="hover:text-white transition-colors">Cookies</Link>
-            <Link href="/contact" className="hover:text-white transition-colors">Contact</Link>
+          <nav className="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm">
+            <Link href="/about" className={footLink}>
+              About us
+            </Link>
+            <Link href="/terms" className={footLink}>
+              Terms & Conditions
+            </Link>
+            <Link href="/privacy" className={footLink}>
+              Privacy
+            </Link>
+            <Link href="/cookies" className={footLink}>
+              Cookies
+            </Link>
+            <Link href="/contact" className={footLink}>
+              Contact
+            </Link>
             {showDonate && donationSettings && (
               <DonateButton
                 variant="nav"
-                onDarkChrome
                 details={{
                   bankName: donationSettings.bankName,
                   sortCode: donationSettings.sortCode,
@@ -67,17 +78,17 @@ export async function Footer() {
           </nav>
         </div>
 
-        <div className="mt-8 flex flex-col gap-1 border-t border-white/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-xs text-white/40">
+        <div className="mt-8 flex flex-col gap-1 border-t border-black/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-xs text-[var(--color-chrome-muted)]">
             © {new Date().getFullYear()} Culcheth & Glazebury Residents Association. All rights reserved.
           </p>
-          <p className="text-xs text-white/40">
+          <p className="text-xs text-[var(--color-chrome-muted)]">
             Custom designed by{" "}
             <a
               href="https://webdesigns-uk.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-white/60 underline underline-offset-2 hover:text-white transition-colors"
+              className="text-[var(--color-chrome-foreground)]/80 underline underline-offset-2 hover:text-[var(--color-primary)] transition-colors"
             >
               Web Designs UK
             </a>

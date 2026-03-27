@@ -19,11 +19,16 @@
   --color-surface-strong: #64748b;
   --color-card: #ffffff;
 
-  /* Header & footer — same deep slate chrome */
-  --color-footer-bg: #0f172a;
-  --color-footer-border: #334155;
-  --color-header-bg: var(--color-footer-bg);
-  --color-header-border: var(--color-footer-border);
+  /* Header & footer — logo yellow (black art on bright yellow in site-logo) */
+  --color-brand-chrome-bg: #ffdd00;
+  --color-brand-chrome-border: #ca8a04;
+  --color-footer-bg: var(--color-brand-chrome-bg);
+  --color-footer-border: var(--color-brand-chrome-border);
+  --color-header-bg: var(--color-brand-chrome-bg);
+  --color-header-border: var(--color-brand-chrome-border);
+  /* Readable text on yellow chrome (nav, footer links) */
+  --color-chrome-foreground: #171717;
+  --color-chrome-muted: #44403c;
 
   /* Text & chrome */
   --color-muted: #475569;
