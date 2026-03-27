@@ -1,8 +1,6 @@
-import { getAboutIntro, getCommitteeMembers } from "@/lib/site-content";
+import { getAboutIntro, getCommitteeMembers, getConstitutionPdfUrl } from "@/lib/site-content";
 import Image from "next/image";
 import Link from "next/link";
-
-const CONSTITUTION_PDF = "/documents/culcheth-glazebury-ra-constitution.pdf";
 
 /** Matches `RA docs/Mission statement .txt` (line breaks and wording). */
 const MISSION_STATEMENT_TEXT = `Mission statement 
@@ -61,7 +59,11 @@ Culcheth & Glazebury Residents Association
 • Step aside if unable to fulfil duties consistently.`;
 
 export default async function AboutPage() {
-  const [intro, members] = await Promise.all([getAboutIntro(), getCommitteeMembers()]);
+  const [intro, members, constitutionPdfUrl] = await Promise.all([
+    getAboutIntro(),
+    getCommitteeMembers(),
+    getConstitutionPdfUrl(),
+  ]);
 
   return (
     <div className="py-16">
@@ -115,7 +117,7 @@ export default async function AboutPage() {
           </p>
           <p className="mt-4">
             <Link
-              href={CONSTITUTION_PDF}
+              href={constitutionPdfUrl}
               className="font-medium text-[var(--foreground)] underline decoration-[var(--color-border)] underline-offset-4 transition hover:decoration-[var(--foreground)]"
               target="_blank"
               rel="noopener noreferrer"

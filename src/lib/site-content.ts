@@ -74,6 +74,21 @@ export async function getHomeHeroImageUrl(): Promise<string> {
   }
 }
 
+const DEFAULT_CONSTITUTION_PDF = "/documents/culcheth-glazebury-ra-constitution.pdf";
+
+/** Constitution PDF — `site_content.constitution_pdf_url` (Vercel Blob) or local /public fallback. */
+export async function getConstitutionPdfUrl(): Promise<string> {
+  try {
+    const sql = getSql();
+    const rows = await sql`SELECT value FROM site_content WHERE key = 'constitution_pdf_url' LIMIT 1`;
+    const row = rows[0] as { value: string } | undefined;
+    const fromDb = normalizeSiteImageUrl(row?.value ?? "");
+    return fromDb || DEFAULT_CONSTITUTION_PDF;
+  } catch {
+    return DEFAULT_CONSTITUTION_PDF;
+  }
+}
+
 export async function getAboutIntro(): Promise<string> {
   try {
     const sql = getSql();
