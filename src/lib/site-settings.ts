@@ -1,5 +1,9 @@
 import { getSql } from "@/lib/db";
 
+/** Official residents Facebook group — shown in header & footer when DB value is empty. */
+export const DEFAULT_FACEBOOK_GROUP_URL =
+  "https://www.facebook.com/groups/879646087959298";
+
 export type SiteSettings = {
   facebook_url: string | null;
   twitter_url: string | null;
@@ -16,6 +20,11 @@ const empty: SiteSettings = {
   linkedin_url: null,
 };
 
+function normalizeOptionalUrl(v: string | null | undefined): string | null {
+  const t = v?.trim();
+  return t || null;
+}
+
 export async function getSiteSettings(): Promise<SiteSettings> {
   try {
     const sql = getSql();
@@ -24,8 +33,23 @@ export async function getSiteSettings(): Promise<SiteSettings> {
       FROM site_settings WHERE id = 1 LIMIT 1
     `;
     const r = rows[0] as SiteSettings | undefined;
-    return r ?? empty;
+    if (!r) {
+      return {
+        ...empty,
+        facebook_url: DEFAULT_FACEBOOK_GROUP_URL,
+      };
+    }
+    return {
+      facebook_url: normalizeOptionalUrl(r.facebook_url) ?? DEFAULT_FACEBOOK_GROUP_URL,
+      twitter_url: normalizeOptionalUrl(r.twitter_url),
+      instagram_url: normalizeOptionalUrl(r.instagram_url),
+      youtube_url: normalizeOptionalUrl(r.youtube_url),
+      linkedin_url: normalizeOptionalUrl(r.linkedin_url),
+    };
   } catch {
-    return empty;
+    return {
+      ...empty,
+      facebook_url: DEFAULT_FACEBOOK_GROUP_URL,
+    };
   }
 }

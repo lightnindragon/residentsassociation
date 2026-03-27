@@ -5,7 +5,8 @@ const linkClass =
 
 export function SocialIconLinks({ settings }: { settings: SiteSettings }) {
   const items: Array<{ href: string; label: string }> = [];
-  if (settings.facebook_url) items.push({ href: settings.facebook_url, label: "Facebook" });
+  if (settings.facebook_url)
+    items.push({ href: settings.facebook_url, label: "Facebook group" });
   if (settings.twitter_url) items.push({ href: settings.twitter_url, label: "X (Twitter)" });
   if (settings.instagram_url) items.push({ href: settings.instagram_url, label: "Instagram" });
   if (settings.youtube_url) items.push({ href: settings.youtube_url, label: "YouTube" });
