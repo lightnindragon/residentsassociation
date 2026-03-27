@@ -9,7 +9,7 @@ async function run() {
     { name: "Gill Stott", email: "gillmstott@gmail.com", role: "admin" },
     { name: "Joy Cooper-Crippin", email: "Joyful2020@hotmail.com", role: "admin" },
     { name: "Marian Kay", email: "mariankay9@aol.com", role: "admin" },
-    { name: "Gayle Day", email: "gday1064@hotmail.co.uk", role: "admin" },
+    { name: "Gayle Munroe", email: "gday1064@hotmail.co.uk", role: "admin" },
     { name: "Gordon Stirling", email: "Whiston1954@gmail.com", role: "admin" }
   ];
 
@@ -26,7 +26,7 @@ async function run() {
     { name: "Gill Stott", role: "Chair" },
     { name: "Joy Cooper-Crippin", role: "Secretary" },
     { name: "Marian Kay", role: "Treasurer" },
-    { name: "Gayle Day", role: "Community Liaison" },
+    { name: "Gayle Munroe", role: "Community Liaison" },
     { name: "Gordon Stirling", role: "Community Liaison" }
   ];
 

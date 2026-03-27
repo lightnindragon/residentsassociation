@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getSql } from "@/lib/db";
 import { Badge } from "@/components/ui";
 import { AssignForm } from "./AssignForm";
+import { StatusForm } from "./StatusForm";
 
 export default async function AdminMessagesPage() {
   let messages: Array<{
@@ -81,19 +82,7 @@ export default async function AdminMessagesPage() {
                     </Link>
                   </td>
                   <td className="py-3">
-                    <Badge
-                      variant={
-                        m.status === "closed"
-                          ? "success"
-                          : m.status === "replied"
-                            ? "default"
-                            : m.status === "open"
-                              ? "warning"
-                              : "muted"
-                      }
-                    >
-                      {m.status}
-                    </Badge>
+                    <StatusForm messageId={m.id} currentStatus={m.status} />
                   </td>
                   <td className="py-3">{m.assignee_name ?? "General"}</td>
                   <td className="py-3 text-[var(--color-muted)]">

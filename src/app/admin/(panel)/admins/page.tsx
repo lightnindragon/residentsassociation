@@ -1,6 +1,6 @@
 import { getSql } from "@/lib/db";
 import { AddAdminForm } from "./AddAdminForm";
-import { ResetAdminPasswordForm } from "./ResetAdminPasswordForm";
+import { AdminRow } from "./AdminRow";
 
 export default async function AdminAdminsPage() {
   type Row = { id: string; name: string; email: string; role: string };
@@ -25,18 +25,7 @@ export default async function AdminAdminsPage() {
       <AddAdminForm />
       <ul className="mt-8 space-y-4">
         {admins.map((a) => (
-          <li
-            key={a.id}
-            className="flex flex-col gap-2 rounded-lg border border-[var(--color-border)] p-4 sm:flex-row sm:items-center sm:justify-between"
-          >
-            <div>
-              <p className="font-medium">{a.name}</p>
-              <p className="text-sm text-[var(--color-muted)]">
-                {a.email} · {a.role}
-              </p>
-            </div>
-            <ResetAdminPasswordForm userId={a.id} />
-          </li>
+          <AdminRow key={a.id} admin={a} />
         ))}
       </ul>
     </div>
