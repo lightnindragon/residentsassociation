@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Input, Button } from "@/components/ui";
 import { updateResident, resetResidentPassword, setUserBanned, triggerPasswordReset } from "@/app/admin/actions/residents";
+import { formatUkDateTime } from "@/lib/date-format";
 
 export function ResidentEditForm({
   user,
@@ -128,7 +129,7 @@ export function ResidentEditForm({
         <h2 className="font-heading text-sm font-semibold">Forum / site access</h2>
         {user.banned && user.banned_until ? (
           <p className="mt-1 text-xs text-red-500 mb-3">
-            Banned until: {new Date(user.banned_until).toLocaleString()}
+            Banned until: {formatUkDateTime(user.banned_until)}
           </p>
         ) : user.banned ? (
           <p className="mt-1 text-xs text-red-500 mb-3">Permanently banned</p>

@@ -6,6 +6,7 @@ import { getHomeHeroImageUrl, normalizeSiteImageUrl } from "@/lib/site-content";
 import { getSql } from "@/lib/db";
 import { getDonationSettings } from "@/lib/donations";
 import { DonateButton } from "@/components/DonateButton";
+import { formatUkDate } from "@/lib/date-format";
 
 export default async function HomePage() {
   const session = await auth();
@@ -131,8 +132,8 @@ export default async function HomePage() {
                       </p>
                       <span className="mt-4 block text-xs font-medium text-[var(--color-primary)]">
                         {p.published_at
-                          ? new Date(p.published_at).toLocaleDateString()
-                          : new Date(p.created_at).toLocaleDateString()}
+                          ? formatUkDate(p.published_at)
+                          : formatUkDate(p.created_at)}
                       </span>
                     </CardContent>
                   </div>

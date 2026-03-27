@@ -3,6 +3,7 @@ import Image from "next/image";
 import { getSql } from "@/lib/db";
 import { Card, CardHeader, CardContent } from "@/components/ui";
 import { normalizeSiteImageUrl } from "@/lib/site-content";
+import { formatUkDate } from "@/lib/date-format";
 
 export default async function NewsPage() {
   let posts: Array<{
@@ -61,8 +62,8 @@ export default async function NewsPage() {
                     {p.excerpt || "No excerpt."}
                     <span className="mt-2 block text-xs text-[var(--color-muted)]">
                       {p.published_at
-                        ? new Date(p.published_at).toLocaleDateString()
-                        : new Date(p.created_at).toLocaleDateString()}
+                        ? formatUkDate(p.published_at)
+                        : formatUkDate(p.created_at)}
                     </span>
                   </CardContent>
                 </Card>

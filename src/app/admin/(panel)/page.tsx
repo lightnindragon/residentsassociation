@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getSql } from "@/lib/db";
+import { formatUkDate } from "@/lib/date-format";
 
 export default async function AdminDashboardPage() {
   let messageCount = 0;
@@ -117,7 +118,7 @@ export default async function AdminDashboardPage() {
                   </Link>
                   <span className="ml-2 text-xs text-[var(--color-muted)]">
                     {n.published_at
-                      ? new Date(n.published_at).toLocaleDateString()
+                      ? formatUkDate(n.published_at)
                       : "Draft"}
                   </span>
                 </li>
@@ -142,7 +143,7 @@ export default async function AdminDashboardPage() {
                     {t.title}
                   </Link>
                   <span className="ml-2 text-xs text-[var(--color-muted)]">
-                    {new Date(t.created_at).toLocaleDateString()}
+                    {formatUkDate(t.created_at)}
                   </span>
                 </li>
               ))

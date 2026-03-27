@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui";
 import { AssignForm } from "./AssignForm";
 import { StatusForm } from "./StatusForm";
 import { MessageFilters } from "./Filters";
+import { formatUkDate } from "@/lib/date-format";
 
 export default async function AdminMessagesPage({
   searchParams,
@@ -110,7 +111,7 @@ export default async function AdminMessagesPage({
                   </td>
                   <td className="py-3">{m.assignee_name ?? "General"}</td>
                   <td className="py-3 text-[var(--color-muted)]">
-                    {new Date(m.created_at).toLocaleDateString()}
+                    {formatUkDate(m.created_at)}
                   </td>
                   <td className="py-3 text-right">
                     <AssignForm

@@ -11,6 +11,7 @@ import { QuoteButton } from "./QuoteButton";
 import { LikeButton } from "./LikeButton";
 import { ForumFollowButton } from "@/components/ForumFollowButton";
 import { isFollowing } from "@/app/forum/actions/follow";
+import { formatUkDateTime } from "@/lib/date-format";
 
 import Image from "next/image";
 
@@ -170,7 +171,7 @@ export default async function ForumThreadPage({
               )}
               {thread.author_town && <span>· {thread.author_town}</span>}
               <span>·</span>
-              <span>{new Date(thread.created_at).toLocaleString()}</span>
+              <span>{formatUkDateTime(thread.created_at)}</span>
             </p>
           </div>
           {session?.user?.id && (
@@ -232,7 +233,7 @@ export default async function ForumThreadPage({
                   )}
                 </div>
                 <p className="mt-0.5 text-xs text-[var(--color-muted)]">
-                  {new Date(p.created_at).toLocaleString()}
+                  {formatUkDateTime(p.created_at)}
                 </p>
                 <div className="mt-3 whitespace-pre-wrap text-[var(--foreground)] leading-relaxed prose prose-sm max-w-none dark:prose-invert"
                   dangerouslySetInnerHTML={{ __html: p.body }}

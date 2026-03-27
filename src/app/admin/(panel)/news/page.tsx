@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getSql } from "@/lib/db";
 import { DeletePostButton } from "./DeletePostButton";
+import { formatUkDate } from "@/lib/date-format";
 
 export default async function AdminNewsPage() {
   let posts: Array<{
@@ -81,7 +82,7 @@ export default async function AdminNewsPage() {
                     {p.published_at ? "Published" : "Draft"}
                   </td>
                   <td className="py-3 text-[var(--color-muted)]">
-                    {new Date(p.created_at).toLocaleDateString()}
+                    {formatUkDate(p.created_at)}
                   </td>
                   <td className="py-3 text-right">
                     <Link

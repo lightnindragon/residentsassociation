@@ -6,6 +6,7 @@ import { CreateThreadForm } from "./CreateThreadForm";
 import { auth } from "@/lib/auth";
 import { isFollowing } from "@/app/forum/actions/follow";
 import { ForumFollowButton } from "@/components/ForumFollowButton";
+import { formatUkDateTime } from "@/lib/date-format";
 
 export default async function ForumCategoryPage({
   params,
@@ -147,13 +148,13 @@ export default async function ForumCategoryPage({
                     <>
                       by <span className="font-semibold text-[var(--foreground)]">{t.last_reply_author}</span>
                       <br />
-                      {new Date(t.last_reply_at).toLocaleString()}
+                      {formatUkDateTime(t.last_reply_at)}
                     </>
                   ) : (
                     <>
                       by <span className="font-semibold text-[var(--foreground)]">{t.author_name ?? "Unknown"}</span>
                       <br />
-                      {new Date(t.created_at).toLocaleString()}
+                      {formatUkDateTime(t.created_at)}
                     </>
                   )}
                 </div>

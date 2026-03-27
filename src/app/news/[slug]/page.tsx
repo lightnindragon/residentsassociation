@@ -8,6 +8,7 @@ import { DonateButton } from "@/components/DonateButton";
 import { PostCommentSection } from "./PostCommentSection";
 import { normalizeSiteImageUrl } from "@/lib/site-content";
 import { sanitizeRichHtml } from "@/lib/rich-text";
+import { formatUkDate } from "@/lib/date-format";
 
 export const dynamic = "force-dynamic";
 
@@ -83,8 +84,8 @@ export default async function NewsPostPage({
       <h1 className="mt-4 font-heading text-3xl font-semibold text-[var(--foreground)]">{post.title}</h1>
       <p className="mt-2 text-sm text-[var(--color-muted)]">
         {post.published_at
-          ? new Date(post.published_at).toLocaleDateString()
-          : new Date(post.created_at).toLocaleDateString()}
+          ? formatUkDate(post.published_at)
+          : formatUkDate(post.created_at)}
         {post.author_name && ` · ${post.author_name}`}
       </p>
       

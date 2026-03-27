@@ -28,24 +28,28 @@ export async function Header() {
 
   return (
     <header className="sticky top-0 z-50 border-t-[3px] border-t-[var(--color-primary)] border-b border-b-[var(--color-border)] bg-white/97 backdrop-blur supports-[backdrop-filter]:bg-white/90">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:h-20 md:h-24 md:px-6">
-        {/* Logo */}
+      <div className="relative mx-auto flex min-h-20 max-w-6xl items-center gap-4 px-4 sm:min-h-24 md:min-h-28 md:px-6">
+        {/* Mobile: spacer matches hamburger width so logo can sit true centre */}
+        <div className="w-10 shrink-0 md:hidden" aria-hidden />
+        {/* Logo — centred on mobile (absolute), left-aligned from md */}
         <Link
           href="/"
-          className="flex shrink-0 items-center rounded-full outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--foreground)]"
+          className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 shrink-0 items-center rounded-full outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--foreground)] md:static md:left-auto md:top-auto md:translate-x-0 md:translate-y-0"
         >
-          <span className="relative isolate h-[52px] w-[52px] shrink-0 overflow-hidden rounded-full border border-black/15 shadow-sm sm:h-[70px] sm:w-[70px] md:h-[84px] md:w-[84px]">
+          <span className="relative isolate h-[65px] w-[65px] shrink-0 overflow-hidden rounded-full border border-black/15 shadow-sm sm:h-[88px] sm:w-[88px] md:h-[105px] md:w-[105px]">
             <Image
               src={logoSrc}
               alt="Culcheth &amp; Glazebury Residents Association"
               fill
               className="object-cover object-center"
-              sizes="(max-width: 768px) 52px, (max-width: 1024px) 70px, 84px"
+              sizes="(max-width: 768px) 65px, (max-width: 1024px) 88px, 105px"
               priority
             />
           </span>
         </Link>
 
+        {/* Desktop nav + mobile menu — right side */}
+        <div className="ml-auto flex items-center gap-2 md:gap-0">
         {/* Desktop nav — hidden on mobile */}
         <nav className="hidden items-center justify-end gap-x-4 gap-y-2 text-sm md:flex md:flex-wrap">
           <Link
@@ -136,6 +140,7 @@ export async function Header() {
           categories={newsCategories}
           signOutAction={signOutAction}
         />
+        </div>
       </div>
 
       {/* Social icons strip — shown below header on mobile */}

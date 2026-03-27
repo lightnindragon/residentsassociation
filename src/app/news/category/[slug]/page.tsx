@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getSql } from "@/lib/db";
 import { notFound } from "next/navigation";
+import { formatUkDate } from "@/lib/date-format";
 
 export const dynamic = "force-dynamic";
 
@@ -51,7 +52,7 @@ export default async function NewsCategoryPage({
                 <span className="font-medium text-[var(--foreground)]">{p.title}</span>
                 {p.excerpt && <p className="mt-1 text-sm text-[var(--color-muted)]">{p.excerpt}</p>}
                 <p className="mt-2 text-xs text-[var(--color-muted)]">
-                  {p.published_at ? new Date(p.published_at).toLocaleDateString() : ""}
+                  {p.published_at ? formatUkDate(p.published_at) : ""}
                 </p>
               </Link>
             </li>

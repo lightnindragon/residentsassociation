@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { AssignForm } from "../AssignForm";
 import { StatusForm } from "../StatusForm";
 import { ReplyForm } from "../ReplyForm";
+import { formatUkDateTime } from "@/lib/date-format";
 
 export default async function AdminMessageDetailPage({
   params,
@@ -84,7 +85,7 @@ export default async function AdminMessageDetailPage({
         </div>
         <p className="mt-2 text-sm text-[var(--color-muted)]">
           From {message.name} &lt;{message.email}&gt; ·{" "}
-          {new Date(message.created_at).toLocaleString()}
+          {formatUkDateTime(message.created_at)}
         </p>
         <p className="mt-2 text-sm text-[var(--color-muted)]">
           Assigned to:{" "}
@@ -119,7 +120,7 @@ export default async function AdminMessageDetailPage({
                 >
                   <p className="text-xs text-[var(--color-muted)]">
                     {r.from_side === "admin" ? "Admin" : "Resident"} ·{" "}
-                    {new Date(r.created_at).toLocaleString()}
+                    {formatUkDateTime(r.created_at)}
                   </p>
                   <div className="mt-1 whitespace-pre-wrap">{r.body}</div>
                 </li>

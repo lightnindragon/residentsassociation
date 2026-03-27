@@ -1,5 +1,6 @@
 import { getSql } from "@/lib/db";
 import { normalizeSiteImageUrl } from "@/lib/site-content";
+import { formatUkDate } from "@/lib/date-format";
 import Image from "next/image";
 
 export default async function GalleryPage() {
@@ -54,7 +55,7 @@ export default async function GalleryPage() {
                 <figcaption className="p-3 text-sm text-[var(--color-muted)]">
                   {img.caption}
                   <span className="block text-xs">
-                    {new Date(img.uploaded_at).toLocaleDateString()}
+                    {formatUkDate(img.uploaded_at)}
                   </span>
                 </figcaption>
               )}

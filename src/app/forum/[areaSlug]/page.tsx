@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { isFollowing } from "@/app/forum/actions/follow";
 import { ForumFollowButton } from "@/components/ForumFollowButton";
+import { formatUkDateTime } from "@/lib/date-format";
 
 export default async function ForumAreaPage({
   params,
@@ -145,7 +146,7 @@ export default async function ForumAreaPage({
                       )}
                       by <span className="font-medium text-[var(--foreground)]">{c.latest_post_author}</span>
                       <br />
-                      {new Date(c.latest_post_date).toLocaleString('en-GB', { timeZone: 'Europe/London', dateStyle: 'short', timeStyle: 'short' })}
+                      {formatUkDateTime(c.latest_post_date)}
                     </>
                   ) : (
                     "No posts"

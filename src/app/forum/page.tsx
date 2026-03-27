@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getSql } from "@/lib/db";
 import { auth } from "@/lib/auth";
+import { formatUkDateTime } from "@/lib/date-format";
 
 export default async function ForumPage() {
   const session = await auth();
@@ -163,7 +164,7 @@ export default async function ForumPage() {
                               )}
                               by <span className="font-medium text-[var(--foreground)]">{cat.last_post_author}</span>
                               <br />
-                              {new Date(cat.last_post_at).toLocaleString('en-GB', { timeZone: 'Europe/London', dateStyle: 'short', timeStyle: 'short' })}
+                              {formatUkDateTime(cat.last_post_at)}
                             </>
                           ) : (
                             "No posts"
@@ -197,11 +198,7 @@ export default async function ForumPage() {
                       <span>by <span className="font-medium text-[var(--foreground)]">{thread.last_post_author}</span></span>
                       <span>·</span>
                       <span>
-                        {new Date(thread.last_post_at).toLocaleString("en-GB", {
-                          timeZone: "Europe/London",
-                          dateStyle: "short",
-                          timeStyle: "short",
-                        })}
+                        {formatUkDateTime(thread.last_post_at)}
                       </span>
                     </div>
                   </div>

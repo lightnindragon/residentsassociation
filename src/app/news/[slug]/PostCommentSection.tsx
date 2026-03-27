@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { addPostComment } from "@/app/actions/post-comments";
 import { Button } from "@/components/ui";
+import { formatUkDateTime } from "@/lib/date-format";
 
 type CommentRow = {
   id: string;
@@ -47,7 +48,7 @@ export function PostCommentSection({
               className="rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] p-4"
             >
               <p className="text-xs text-[var(--color-muted)]">
-                {c.display_name ?? "Resident"} · {new Date(c.created_at).toLocaleString()}
+                {c.display_name ?? "Resident"} · {formatUkDateTime(c.created_at)}
               </p>
               <div
                 className="prose prose-sm mt-2 max-w-none text-[var(--foreground)]"
