@@ -43,6 +43,7 @@ export default async function NewsPostPage({
       FROM posts p
       LEFT JOIN users u ON u.id = p.author_id
       WHERE p.slug = ${slug} AND p.published_at IS NOT NULL AND p.published_at <= NOW()
+        AND p.archived_at IS NULL
       LIMIT 1
     `;
     post = (rows[0] as PostRow) ?? null;

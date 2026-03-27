@@ -27,6 +27,7 @@ export default async function NewsCategoryPage({
         FROM posts
         WHERE post_category_id = ${cat.id}::uuid
           AND published_at IS NOT NULL AND published_at <= NOW()
+          AND archived_at IS NULL
         ORDER BY published_at DESC
         LIMIT 100
       `) as Post[];

@@ -28,7 +28,7 @@ export default async function HomePage() {
     latestNews = (await sql`
       SELECT id, title, slug, excerpt, cover_image_url, published_at, created_at
       FROM posts
-      WHERE published_at IS NOT NULL AND published_at <= NOW()
+      WHERE published_at IS NOT NULL AND published_at <= NOW() AND archived_at IS NULL
       ORDER BY published_at DESC
       LIMIT 3
     `) as typeof latestNews;

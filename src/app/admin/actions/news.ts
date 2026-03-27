@@ -107,10 +107,50 @@ export async function deletePost(id: string): Promise<{ ok: boolean }> {
   try {
     const sql = getSql();
     await sql`DELETE FROM posts WHERE id = ${id}::uuid`;
+    revalidatePath("/");
     revalidatePath("/news");
     revalidatePath("/admin/news");
     return { ok: true };
   } catch {
     return { ok: false };
+  }
+}
+
+function revalidatePostPaths(slug: string | null) {
+  revalidatePath("/");
+  revalidatePath("/news");
+  revalidatePath("/admin/news");
+  if (slug) revalidatePath(`/news/${slug}`);
+}
+
+export async function archivePost(postId: string): Promise<{ ok: boolean; error?: string }> {
+  try {
+    const sql = getSql();
+    const [row] = await sql`SELECT slug FROM posts WHERE id = ${postId}::uuid LIMIT 1`;
+    const slug = (row as { slug: string } | undefined)?.slug ?? null;
+    await sql`
+      UPDATE posts SET archived_at = NOW(), updated_at = NOW() WHERE id = ${postId}::uuid
+    `;
+    revalidatePostPaths(slug);
+    return { ok: true };
+  } catch (e) {
+    console.error(e);
+    return { ok: false, error: "Failed to archive." };
+  }
+}
+
+export async function unarchivePost(postId: string): Promise<{ ok: boolean; error?: string }> {
+  try {
+    const sql = getSql();
+    const [row] = await sql`SELECT slug FROM posts WHERE id = ${postId}::uuid LIMIT 1`;
+    const slug = (row as { slug: string } | undefined)?.slug ?? null;
+    await sql`
+      UPDATE posts SET archived_at = NULL, updated_at = NOW() WHERE id = ${postId}::uuid
+    `;
+    revalidatePostPaths(slug);
+    return { ok: true };
+  } catch (e) {
+    console.error(e);
+    return { ok: false, error: "Failed to unarchive." };
   }
 }
