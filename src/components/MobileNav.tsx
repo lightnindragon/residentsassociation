@@ -9,6 +9,8 @@ type MobileNavProps = {
   isAdmin: boolean;
   categories: HeaderNewsCategory[];
   signOutAction: () => Promise<void>;
+  /** `dark` — hamburger on slate header */
+  tone?: "light" | "dark";
 };
 
 export function MobileNav({
@@ -16,7 +18,10 @@ export function MobileNav({
   isAdmin,
   categories,
   signOutAction,
+  tone = "light",
 }: MobileNavProps) {
+  const bar = tone === "dark" ? "bg-white" : "bg-[var(--foreground)]";
+  const hit = tone === "dark" ? "hover:bg-white/10" : "hover:bg-[var(--color-surface)]";
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -34,22 +39,22 @@ export function MobileNav({
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="flex h-10 w-10 flex-col items-center justify-center gap-[5px] rounded-lg hover:bg-[var(--color-surface)]"
+        className={`flex h-10 w-10 flex-col items-center justify-center gap-[5px] rounded-lg ${hit}`}
         aria-label={open ? "Close menu" : "Open menu"}
         aria-expanded={open}
       >
         <span
-          className={`block h-0.5 w-5 rounded-full bg-[var(--foreground)] transition-all duration-200 ${
+          className={`block h-0.5 w-5 rounded-full ${bar} transition-all duration-200 ${
             open ? "translate-y-[7px] rotate-45" : ""
           }`}
         />
         <span
-          className={`block h-0.5 w-5 rounded-full bg-[var(--foreground)] transition-all duration-200 ${
+          className={`block h-0.5 w-5 rounded-full ${bar} transition-all duration-200 ${
             open ? "opacity-0" : ""
           }`}
         />
         <span
-          className={`block h-0.5 w-5 rounded-full bg-[var(--foreground)] transition-all duration-200 ${
+          className={`block h-0.5 w-5 rounded-full ${bar} transition-all duration-200 ${
             open ? "-translate-y-[7px] -rotate-45" : ""
           }`}
         />

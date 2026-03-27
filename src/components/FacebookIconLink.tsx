@@ -1,4 +1,4 @@
-/** Official Facebook “f” mark — prominent CTA in header & footer. */
+/** Standard Facebook mark, drawn small inside a square tile. */
 function FacebookMark({ className }: { className?: string }) {
   return (
     <svg
@@ -13,41 +13,34 @@ function FacebookMark({ className }: { className?: string }) {
   );
 }
 
-type Variant = "header" | "footer";
+/** `onDark` — header & footer slate bar; `light` — pale backgrounds only */
+type Variant = "onDark" | "light";
 
-const variantClasses: Record<
-  Variant,
-  { wrap: string; icon: string }
-> = {
-  header: {
-    wrap:
-      "flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#1877F2] text-white shadow-md ring-2 ring-[#1877F2]/30 transition hover:bg-[#166fe5] hover:ring-[#1877F2]/50 hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1877F2] sm:h-14 sm:w-14",
-    icon: "h-7 w-7 sm:h-8 sm:w-8",
-  },
-  footer: {
-    wrap:
-      "flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#1877F2] text-white shadow-lg ring-2 ring-white/25 transition hover:bg-[#166fe5] hover:ring-white/40 hover:shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white",
-    icon: "h-8 w-8",
-  },
+const variantClasses: Record<Variant, string> = {
+  light:
+    "inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-[var(--color-border)] bg-[var(--color-card)] text-[var(--color-muted)] transition-colors hover:border-[#1877F2] hover:bg-[#1877F2] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary)]",
+  onDark:
+    "inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-white/20 bg-white/5 text-white/60 transition-colors hover:border-[#1877F2] hover:bg-[#1877F2] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white",
 };
 
 export function FacebookIconLink({
   href,
   variant,
+  className = "",
 }: {
   href: string;
   variant: Variant;
+  className?: string;
 }) {
-  const v = variantClasses[variant];
   return (
     <a
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className={v.wrap}
+      className={`${variantClasses[variant]} ${className}`.trim()}
       aria-label="Culcheth & Glazebury Residents Association on Facebook"
     >
-      <FacebookMark className={v.icon} />
+      <FacebookMark className="h-3.5 w-3.5" />
     </a>
   );
 }

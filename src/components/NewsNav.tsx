@@ -4,7 +4,18 @@ import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
 import type { HeaderNewsCategory } from "@/lib/news-nav";
 
-export function NewsNav({ categories }: { categories: HeaderNewsCategory[] }) {
+export function NewsNav({
+  categories,
+  tone = "light",
+}: {
+  categories: HeaderNewsCategory[];
+  /** `dark` — light text on slate header */
+  tone?: "light" | "dark";
+}) {
+  const linkBtn =
+    tone === "dark"
+      ? "text-sm font-medium text-white/90 transition-colors hover:text-[var(--color-primary-muted)]"
+      : "text-sm font-medium text-[var(--foreground)] hover:text-[var(--color-primary)]";
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -18,10 +29,7 @@ export function NewsNav({ categories }: { categories: HeaderNewsCategory[] }) {
 
   if (!categories.length) {
     return (
-      <Link
-        href="/news"
-        className="text-sm font-medium text-[var(--foreground)] hover:text-[var(--color-primary)]"
-      >
+      <Link href="/news" className={linkBtn}>
         News
       </Link>
     );
@@ -32,7 +40,7 @@ export function NewsNav({ categories }: { categories: HeaderNewsCategory[] }) {
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-0.5 text-sm font-medium text-[var(--foreground)] hover:text-[var(--color-primary)]"
+        className={`flex items-center gap-0.5 ${linkBtn}`}
         aria-expanded={open}
         aria-haspopup="true"
       >

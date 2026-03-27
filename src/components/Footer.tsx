@@ -38,9 +38,9 @@ export async function Footer() {
                 Culcheth & Glazebury<br />Residents Association
               </p>
             </Link>
-            <div className="mt-2 flex flex-col items-start gap-4">
+            <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2">
               {social.facebook_url && (
-                <FacebookIconLink href={social.facebook_url} variant="footer" />
+                <FacebookIconLink href={social.facebook_url} variant="onDark" />
               )}
               <SocialIconLinks settings={social} variant="footer" />
             </div>
@@ -55,6 +55,7 @@ export async function Footer() {
             {showDonate && donationSettings && (
               <DonateButton
                 variant="nav"
+                onDarkChrome
                 details={{
                   bankName: donationSettings.bankName,
                   sortCode: donationSettings.sortCode,

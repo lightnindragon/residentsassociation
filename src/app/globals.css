@@ -19,9 +19,11 @@
   --color-surface-strong: #64748b;
   --color-card: #ffffff;
 
-  /* Footer — deep slate */
+  /* Header & footer — same deep slate chrome */
   --color-footer-bg: #0f172a;
   --color-footer-border: #334155;
+  --color-header-bg: var(--color-footer-bg);
+  --color-header-border: var(--color-footer-border);
 
   /* Text & chrome */
   --color-muted: #475569;

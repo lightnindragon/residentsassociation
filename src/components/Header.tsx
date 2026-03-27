@@ -28,16 +28,16 @@ export async function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 border-t-[3px] border-t-[var(--color-primary)] border-b border-b-[var(--color-border)] bg-white/97 backdrop-blur supports-[backdrop-filter]:bg-white/90">
+    <header className="sticky top-0 z-50 border-b-2 border-b-[var(--color-header-border)] bg-[var(--color-header-bg)] text-white/90 shadow-md">
       <div className="relative mx-auto flex min-h-20 max-w-6xl items-center gap-4 px-4 sm:min-h-24 md:min-h-28 md:px-6">
         {/* Mobile: spacer matches hamburger width so logo can sit true centre */}
         <div className="w-10 shrink-0 md:hidden" aria-hidden />
         {/* Logo — centred on mobile (absolute), left-aligned from md */}
         <Link
           href="/"
-          className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 shrink-0 items-center rounded-full outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--foreground)] md:static md:left-auto md:top-auto md:translate-x-0 md:translate-y-0"
+          className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 shrink-0 items-center rounded-full outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white md:static md:left-auto md:top-auto md:translate-x-0 md:translate-y-0"
         >
-          <span className="relative isolate h-[65px] w-[65px] shrink-0 overflow-hidden rounded-full border border-black/15 shadow-sm sm:h-[88px] sm:w-[88px] md:h-[105px] md:w-[105px]">
+          <span className="relative isolate h-[65px] w-[65px] shrink-0 overflow-hidden rounded-full border border-white/25 shadow-md ring-1 ring-black/20 sm:h-[88px] sm:w-[88px] md:h-[105px] md:w-[105px]">
             <Image
               src={logoSrc}
               alt="Culcheth &amp; Glazebury Residents Association"
@@ -49,54 +49,52 @@ export async function Header() {
           </span>
         </Link>
 
-        {/* Desktop nav + mobile menu — right side; Facebook icon above nav on desktop, inline on mobile */}
-        <div className="ml-auto flex flex-col items-end gap-2">
+        {/* Desktop nav + mobile menu — Facebook: small square, inline with nav on desktop */}
+        <div className="ml-auto flex items-center gap-2 md:gap-0">
           {social.facebook_url && (
-            <div className="hidden md:block">
-              <FacebookIconLink href={social.facebook_url} variant="header" />
+            <div className="md:hidden">
+              <FacebookIconLink href={social.facebook_url} variant="onDark" />
             </div>
           )}
-          <div className="flex items-center gap-2 md:gap-0">
-            {social.facebook_url && (
-              <div className="md:hidden">
-                <FacebookIconLink href={social.facebook_url} variant="header" />
-              </div>
-            )}
-            {/* Desktop nav — hidden on mobile */}
-            <nav className="hidden items-center justify-end gap-x-4 gap-y-2 text-sm md:flex md:flex-wrap">
+          {/* Desktop nav — hidden on mobile */}
+          <nav className="hidden items-center justify-end gap-x-4 gap-y-2 text-sm md:flex md:flex-wrap">
               <Link
                 href="/"
-                className="font-medium text-[var(--foreground)] hover:text-[var(--color-primary)]"
+                className="font-medium text-white/90 transition-colors hover:text-white"
               >
                 Home
               </Link>
-              <NewsNav categories={newsCategories} />
+              <NewsNav categories={newsCategories} tone="dark" />
               <Link
                 href="/gallery"
-                className="font-medium text-[var(--foreground)] hover:text-[var(--color-primary)]"
+                className="font-medium text-white/90 transition-colors hover:text-white"
               >
                 Gallery
               </Link>
               <Link
                 href="/contact"
-                className="font-medium text-[var(--foreground)] hover:text-[var(--color-primary)]"
+                className="font-medium text-white/90 transition-colors hover:text-white"
               >
                 Contact
               </Link>
               <Link
                 href="/about"
-                className="font-medium text-[var(--foreground)] hover:text-[var(--color-primary)]"
+                className="font-medium text-white/90 transition-colors hover:text-white"
               >
                 About
               </Link>
-              <div className="hidden items-center gap-4 border-l border-[var(--color-border)] pl-4 lg:flex">
-                <SocialIconLinks settings={social} />
+              {social.facebook_url && (
+                <FacebookIconLink href={social.facebook_url} variant="onDark" />
+              )}
+              <div className="hidden items-center gap-4 border-l border-white/20 pl-4 lg:flex">
+                <SocialIconLinks settings={social} variant="footer" />
               </div>
               {session?.user ? (
                 <>
                   {showDonate && donationSettings && (
                     <DonateButton
                       variant="nav"
+                      onDarkChrome
                       details={{
                         bankName: donationSettings.bankName,
                         sortCode: donationSettings.sortCode,
@@ -107,26 +105,30 @@ export async function Header() {
                   )}
                   <Link
                     href="/account"
-                    className="font-medium text-[var(--foreground)] hover:text-[var(--color-primary)]"
+                    className="font-medium text-white/90 transition-colors hover:text-white"
                   >
                     Account
                   </Link>
                   <Link
                     href="/forum"
-                    className="font-medium text-[var(--foreground)] hover:text-[var(--color-primary)]"
+                    className="font-medium text-white/90 transition-colors hover:text-white"
                   >
                     Forum
                   </Link>
                   {isAdmin && (
                     <Link
                       href="/admin"
-                      className="font-medium text-[var(--color-primary)] hover:underline"
+                      className="font-medium text-[var(--color-primary-muted)] hover:text-white hover:underline"
                     >
                       Admin
                     </Link>
                   )}
                   <form action={signOutAction}>
-                    <Button type="submit" variant="ghost" className="text-sm">
+                    <Button
+                      type="submit"
+                      variant="ghost"
+                      className="text-sm text-white/85 hover:bg-white/10 hover:text-white"
+                    >
                       Sign out
                     </Button>
                   </form>
@@ -134,32 +136,35 @@ export async function Header() {
               ) : (
                 <>
                   <Link href="/login">
-                    <Button variant="ghost" className="text-sm">
+                    <Button
+                      variant="ghost"
+                      className="text-sm text-white/85 hover:bg-white/10 hover:text-white"
+                    >
                       Sign in
                     </Button>
                   </Link>
                   <Link href="/signup">
-                    <Button className="text-sm">Sign up</Button>
+                    <Button className="text-sm shadow-sm">Sign up</Button>
                   </Link>
                 </>
               )}
-            </nav>
+          </nav>
 
-            {/* Mobile hamburger — visible only on mobile */}
-            <MobileNav
-              isLoggedIn={!!session?.user}
-              isAdmin={isAdmin}
-              categories={newsCategories}
-              signOutAction={signOutAction}
-            />
-          </div>
+          {/* Mobile hamburger — visible only on mobile */}
+          <MobileNav
+            isLoggedIn={!!session?.user}
+            isAdmin={isAdmin}
+            categories={newsCategories}
+            signOutAction={signOutAction}
+            tone="dark"
+          />
         </div>
       </div>
 
       {/* Other social links — mobile only strip when configured */}
       {hasNonFacebookSocialLinks(social) && (
-        <div className="mx-auto flex max-w-6xl justify-end border-t border-[var(--color-surface-strong)] px-4 py-2 md:hidden">
-          <SocialIconLinks settings={social} />
+        <div className="mx-auto flex max-w-6xl justify-end border-t border-white/10 bg-[var(--color-header-bg)] px-4 py-2 md:hidden">
+          <SocialIconLinks settings={social} variant="footer" />
         </div>
       )}
     </header>
