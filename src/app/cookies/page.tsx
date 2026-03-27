@@ -60,7 +60,7 @@ export default function CookiesPage() {
               </tr>
               <tr className="border-b border-[var(--color-border)]">
                 <td className="py-2 pr-4 font-mono text-xs">cf_clearance</td>
-                <td className="py-2 pr-4">Set by Cloudflare Turnstile after completing the human verification on the contact form. Prevents you from having to verify repeatedly.</td>
+                <td className="py-2 pr-4">Set by the human verification check on the contact form. Prevents you from having to verify repeatedly.</td>
                 <td className="py-2 pr-4">Up to 30 mins</td>
                 <td className="py-2">Essential</td>
               </tr>
@@ -71,18 +71,9 @@ export default function CookiesPage() {
         <h2>3. Third-party cookies</h2>
         <p>
           We do <strong>not</strong> use any third-party advertising or analytics
-          cookies. The only third-party cookies that may be set are by
-          Cloudflare, as part of the Turnstile human verification on the contact
-          form. These are strictly functional and are governed by{" "}
-          <a
-            href="https://www.cloudflare.com/privacypolicy/"
-            className="underline underline-offset-2"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Cloudflare&rsquo;s privacy policy
-          </a>
-          .
+          cookies. The only third-party cookie that may be set is by the human
+          verification service used on the contact form. This cookie is strictly
+          functional and is used solely to prevent spam.
         </p>
 
         <h2>4. Managing cookies</h2>

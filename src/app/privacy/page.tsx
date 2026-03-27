@@ -105,41 +105,19 @@ export default function PrivacyPage() {
 
         <h2>6. Contact form verification</h2>
         <p>
-          The contact page uses Cloudflare Turnstile to help prevent automated
-          spam submissions. Turnstile runs in your browser and may process
-          technical data (such as device characteristics and network signals) as
-          described in{" "}
-          <a
-            href="https://www.cloudflare.com/privacypolicy/"
-            className="underline underline-offset-2"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Cloudflare&rsquo;s privacy policy
-          </a>
-          . No personal data is shared with Cloudflare beyond what is required for
-          the verification check.
+          The contact page uses a third-party human verification service to help
+          prevent automated spam submissions. This service runs in your browser
+          and may process technical data (such as device characteristics and
+          network signals) to confirm you are a real person. No personal data is
+          shared beyond what is required for the verification check.
         </p>
 
         <h2>7. Data storage and security</h2>
         <p>
-          Your data is stored securely using the following services:
+          Your data is stored securely using reputable third-party hosting and
+          database providers. Passwords are stored as one-way cryptographic hashes
+          and cannot be read by anyone, including administrators.
         </p>
-        <ul className="list-disc pl-6">
-          <li>
-            <strong>Database:</strong> Neon (PostgreSQL), hosted in the EU
-            (eu-west-2). Passwords are stored as one-way cryptographic hashes and
-            cannot be read by anyone, including administrators.
-          </li>
-          <li>
-            <strong>File storage:</strong> Vercel Blob for uploaded images and
-            media.
-          </li>
-          <li>
-            <strong>Hosting:</strong> Vercel, with servers located in the EU and
-            US.
-          </li>
-        </ul>
         <p>
           We take reasonable technical and organisational measures to protect your
           data against unauthorised access, loss or destruction. However, no method
@@ -158,14 +136,10 @@ export default function PrivacyPage() {
 
         <h2>9. Data sharing</h2>
         <p>
-          We may share your data with the following third parties, solely for the
-          purpose of operating this website:
+          We use reputable third-party service providers for website hosting,
+          data storage and spam prevention. These providers process data solely
+          on our behalf and in accordance with their own privacy policies.
         </p>
-        <ul className="list-disc pl-6">
-          <li><strong>Vercel</strong> &mdash; website hosting and file storage.</li>
-          <li><strong>Neon</strong> &mdash; database hosting.</li>
-          <li><strong>Cloudflare</strong> &mdash; contact form verification (Turnstile).</li>
-        </ul>
         <p>
           We do not share your personal information with any other third parties
           unless required to do so by law.

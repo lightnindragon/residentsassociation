@@ -107,10 +107,10 @@ export default function TermsPage() {
 
         <h2>7. Third-party links and services</h2>
         <p>
-          This site may contain links to external websites or use third-party
-          services (such as Cloudflare for security, Vercel for hosting, and Neon
-          for data storage). We are not responsible for the content, privacy
-          practices or availability of any third-party sites or services.
+          This site may contain links to external websites and uses third-party
+          services for hosting, data storage and security. We are not responsible
+          for the content, privacy practices or availability of any third-party
+          sites or services.
         </p>
 
         <h2>8. Disclaimer and limitation of liability</h2>
