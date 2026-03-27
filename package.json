@@ -9,6 +9,7 @@
     "lint": "eslint",
     "create-admin": "node --env-file=.env.local scripts/create-admin.js",
     "upload-site-logo": "node --env-file=.env.local scripts/upload-site-logo.js",
+    "upload-home-hero-blob": "node --env-file=.env.local scripts/upload-home-hero-blob.js",
     "seed-hero-image": "node --env-file=.env.local scripts/seed-hero-from-url.js",
     "seed-gallery-image": "node --env-file=.env.local scripts/seed-gallery-from-url.js",
     "dedupe-gallery": "node --env-file=.env.local scripts/dedupe-gallery-images.js"

@@ -1,5 +1,6 @@
 /**
- * Point homepage hero at the static file /public/Newchurch_front_right_2.jpg.
+ * Point homepage hero at a path under /public (no Blob).
+ * Prefer: node --env-file=.env.local scripts/upload-home-hero-blob.js
  * Run: node --env-file=.env.local scripts/set-home-hero-path.js
  */
 const { neon } = require("@neondatabase/serverless");

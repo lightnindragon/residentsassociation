@@ -62,19 +62,15 @@ export type ContactContent = {
   labelSubmit: string;
 };
 
-/** Default hero when `site_content.home_hero_image_url` is empty (file in /public). */
-const DEFAULT_HOME_HERO_PATH = "/Newchurch_front_right_2.jpg";
-
-/** Public homepage hero — `site_content.home_hero_image_url`, else bundled default above. */
+/** Public homepage hero — URL from `site_content.home_hero_image_url` (e.g. Vercel Blob after `upload-home-hero-blob`). */
 export async function getHomeHeroImageUrl(): Promise<string> {
   try {
     const sql = getSql();
     const rows = await sql`SELECT value FROM site_content WHERE key = 'home_hero_image_url' LIMIT 1`;
     const row = rows[0] as { value: string } | undefined;
-    const fromDb = normalizeSiteImageUrl(row?.value ?? "");
-    return fromDb || DEFAULT_HOME_HERO_PATH;
+    return normalizeSiteImageUrl(row?.value ?? "");
   } catch {
-    return DEFAULT_HOME_HERO_PATH;
+    return "";
   }
 }
 
