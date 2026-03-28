@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button, Card, CardHeader, CardContent } from "@/components/ui";
 import { auth } from "@/lib/auth";
-import { getHomeHeroImageUrl, normalizeSiteImageUrl } from "@/lib/site-content";
+import { getHomeHeroImageUrl, getHomePageContent, normalizeSiteImageUrl } from "@/lib/site-content";
 import { getSql } from "@/lib/db";
 import { getDonationSettings } from "@/lib/donations";
 import { DonateButton } from "@/components/DonateButton";
@@ -10,7 +10,7 @@ import { formatUkDate } from "@/lib/date-format";
 
 export default async function HomePage() {
   const session = await auth();
-  const heroUrl = await getHomeHeroImageUrl();
+  const [heroUrl, homeContent] = await Promise.all([getHomeHeroImageUrl(), getHomePageContent()]);
   const donationSettings = await getDonationSettings();
   const showDonate = !!session?.user && donationSettings?.enabled === true;
 
@@ -43,7 +43,7 @@ export default async function HomePage() {
           <div className="relative mx-auto aspect-[21/9] max-h-[min(45vh,420px)] w-full max-w-6xl sm:aspect-[3/1] sm:max-h-[min(50vh,480px)]">
             <Image
               src={heroUrl}
-              alt="Culcheth area — community photograph"
+              alt={homeContent.heroImageAlt}
               fill
               className="object-cover object-center"
               sizes="(max-width: 1152px) 100vw, 1152px"
@@ -54,13 +54,11 @@ export default async function HomePage() {
         <div
           className={`mx-auto max-w-3xl px-4 text-center sm:px-6 ${heroUrl ? "py-12 sm:py-16" : "py-16 sm:py-24"}`}
         >
-          <h1 className="font-heading text-4xl font-semibold tracking-tight text-[var(--foreground)] sm:text-5xl">
-            Culcheth & Glazebury
+          <h1 className="font-heading text-4xl font-bold tracking-tight text-[var(--foreground)] sm:text-5xl">
+            <span className="block">Culcheth & Glazebury</span>
+            <span className="mt-2 block sm:mt-3">Residents Association</span>
           </h1>
-          <p className="mt-3 text-xl text-[var(--color-muted)]">Residents Association</p>
-          <p className="mt-6 text-lg leading-relaxed text-[var(--foreground)]">
-            Your community hub for local news, events and discussion. Stay informed and get involved.
-          </p>
+          <p className="mt-6 text-lg leading-relaxed text-[var(--foreground)]">{homeContent.intro}</p>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
             <Link href="/news">
               <Button className="min-w-[140px]">Latest news</Button>
@@ -147,10 +145,10 @@ export default async function HomePage() {
       <section className="border-t border-[var(--color-border)] bg-[var(--background)]">
         <div className="mx-auto max-w-4xl px-4 py-16 sm:px-6">
           <h2 className="text-center font-heading text-2xl font-semibold text-[var(--foreground)]">
-            Get involved
+            {homeContent.getInvolvedTitle}
           </h2>
           <p className="mt-2 text-center text-sm text-[var(--color-muted)]">
-            Connect with your community
+            {homeContent.getInvolvedSubtitle}
           </p>
           <div className="mt-8 grid gap-6 sm:grid-cols-2">
             {session?.user ? (

@@ -74,6 +74,50 @@ export async function getHomeHeroImageUrl(): Promise<string> {
   }
 }
 
+export type HomePageContent = {
+  intro: string;
+  heroImageAlt: string;
+  getInvolvedTitle: string;
+  getInvolvedSubtitle: string;
+};
+
+const HOME_PAGE_DEFAULTS: HomePageContent = {
+  intro:
+    "Your community hub for local news, events and discussion. Stay informed and get involved.",
+  heroImageAlt: "Culcheth area — community photograph",
+  getInvolvedTitle: "Get involved",
+  getInvolvedSubtitle: "Connect with your community",
+};
+
+/** Editable homepage copy from `site_content` (falls back to defaults when keys are absent). */
+export async function getHomePageContent(): Promise<HomePageContent> {
+  try {
+    const sql = getSql();
+    const rows = await sql`
+      SELECT key, value FROM site_content
+      WHERE key IN ('home_intro', 'home_hero_image_alt', 'home_get_involved_title', 'home_get_involved_subtitle')
+    `;
+    const map = new Map<string, string>();
+    for (const r of rows as Array<{ key: string; value: string }>) {
+      map.set(r.key, r.value);
+    }
+    return {
+      intro: map.has("home_intro") ? map.get("home_intro")! : HOME_PAGE_DEFAULTS.intro,
+      heroImageAlt: map.has("home_hero_image_alt")
+        ? map.get("home_hero_image_alt")!
+        : HOME_PAGE_DEFAULTS.heroImageAlt,
+      getInvolvedTitle: map.has("home_get_involved_title")
+        ? map.get("home_get_involved_title")!
+        : HOME_PAGE_DEFAULTS.getInvolvedTitle,
+      getInvolvedSubtitle: map.has("home_get_involved_subtitle")
+        ? map.get("home_get_involved_subtitle")!
+        : HOME_PAGE_DEFAULTS.getInvolvedSubtitle,
+    };
+  } catch {
+    return { ...HOME_PAGE_DEFAULTS };
+  }
+}
+
 const DEFAULT_CONSTITUTION_PDF = "/documents/culcheth-glazebury-ra-constitution.pdf";
 const DEFAULT_CODE_OF_CONDUCT_PDF = "/documents/culcheth-glazebury-ra-code-of-conduct.pdf";
 
