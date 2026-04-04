@@ -13,9 +13,11 @@ async function main() {
     console.error("BLOB_READ_WRITE_TOKEN is not set.");
     process.exit(1);
   }
-  const filePath = path.join(__dirname, "..", "RA docs", "Main logo.jpeg");
+  const processed = path.join(__dirname, "..", "public", "branding", "site-logo.jpeg");
+  const fallback = path.join(__dirname, "..", "RA docs", "Main logo.jpeg");
+  const filePath = fs.existsSync(processed) ? processed : fallback;
   if (!fs.existsSync(filePath)) {
-    console.error("File not found:", filePath);
+    console.error("No logo found. Run: node scripts/process-logo-white-bg.js");
     process.exit(1);
   }
   const body = fs.readFileSync(filePath);

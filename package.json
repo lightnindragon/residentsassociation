@@ -9,6 +9,7 @@
     "lint": "eslint",
     "create-admin": "node --env-file=.env.local scripts/create-admin.js",
     "upload-site-logo": "node --env-file=.env.local scripts/upload-site-logo.js",
+    "process-logo": "node scripts/process-logo-white-bg.js",
     "upload-home-hero-blob": "node --env-file=.env.local scripts/upload-home-hero-blob.js",
     "strip-constitution-pdf": "python scripts/strip-constitution-signatures.py",
     "upload-constitution-blob": "node --env-file=.env.local scripts/upload-constitution-blob.js",
@@ -48,6 +49,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.1.7",
     "pdfkit": "^0.18.0",
+    "sharp": "^0.34.5",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
