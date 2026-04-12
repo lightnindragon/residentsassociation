@@ -34,7 +34,7 @@ export default async function AdminForumPage() {
   return (
     <div>
       <h1 className="font-heading text-2xl font-semibold text-[var(--foreground)]">
-        Forum areas &amp; categories
+        Forum Areas &amp; Categories
       </h1>
       <p className="mt-1 text-[var(--color-muted)]">
         Public URLs look like <code className="rounded bg-[var(--color-border)] px-1">/forum/area-slug/category-slug</code>.

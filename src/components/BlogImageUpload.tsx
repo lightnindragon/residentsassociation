@@ -2,17 +2,20 @@
 
 import { useState, useTransition } from "react";
 import { uploadBlogImage } from "@/app/admin/actions/blog-images";
-import { Button } from "@/components/ui";
 import { toast } from "sonner";
+import { ADMIN_COVER_IMAGE_HINT } from "@/lib/image-specs";
 
 export function BlogImageUpload({
   name,
   currentUrl,
-  label = "Hero image (optional)",
+  label = "Cover image (optional)",
+  sizeHint = ADMIN_COVER_IMAGE_HINT,
 }: {
   name: string;
   currentUrl?: string | null;
   label?: string;
+  /** Shown in red under the label — omit by passing empty string to hide */
+  sizeHint?: string;
 }) {
   const [url, setUrl] = useState(currentUrl || "");
   const [pending, start] = useTransition();
@@ -36,9 +39,12 @@ export function BlogImageUpload({
   return (
     <div className="space-y-2">
       <label className="block text-sm font-medium text-[var(--foreground)]">{label}</label>
+      {sizeHint ? (
+        <p className="text-sm font-medium text-red-600 dark:text-red-500">{sizeHint}</p>
+      ) : null}
       {url && (
-        <div className="relative max-w-md">
-          <img src={url} alt="Hero" className="h-32 w-full rounded border border-[var(--color-border)] object-cover" />
+        <div className="relative flex h-40 w-full max-w-md items-center justify-center overflow-hidden rounded border border-[var(--color-border)] bg-[var(--color-border)]">
+          <img src={url} alt="Preview" className="max-h-full max-w-full object-contain" />
           <button
             type="button"
             onClick={() => {

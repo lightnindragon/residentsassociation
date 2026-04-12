@@ -78,7 +78,7 @@ export function AccountSettingsForm({
           className="mt-0.5 rounded border-[var(--color-border)]"
         />
         <span>
-          Receive news and updates by email{" "}
+          Receive news, planning, events, and other updates by email{" "}
           <span className="text-[var(--color-muted)]">(untick to opt out)</span>
         </span>
       </label>

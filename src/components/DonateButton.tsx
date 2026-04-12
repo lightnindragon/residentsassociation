@@ -62,7 +62,7 @@ export function DonateButton({ details, variant = "nav", onDarkChrome = false }:
         }}
       >
         <div className="border-b border-[var(--color-border)] px-5 py-4">
-          <h2 className="font-heading text-lg font-semibold">Support the RA</h2>
+          <h2 className="font-heading text-lg font-semibold">Support The RA</h2>
           <p className="mt-1 text-sm text-[var(--color-muted)]">
             Thank you. Please use the details below for a bank transfer.
           </p>

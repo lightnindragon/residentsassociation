@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { addResidentReplyByEmail } from "@/app/actions/enquiries";
 
 /**
- * Inbound email webhook: when a resident replies via email, the provider (SendGrid
+ * Inbound email webhook: when a Resident replies via email, the provider (SendGrid
  * Inbound Parse, Mailgun, etc.) POSTs here. Body can be JSON or form depending on provider.
  * Expects: messageId (uuid), from (email), body (text).
  * Optional: Authorization header with INBOUND_EMAIL_SECRET for verification.

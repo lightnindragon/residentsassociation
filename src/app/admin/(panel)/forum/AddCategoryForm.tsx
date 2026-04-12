@@ -12,7 +12,7 @@ export function AddCategoryForm({
   const [state, formAction] = useActionState(addCategory, null);
   return (
     <form action={formAction} className="mt-6 flex max-w-md flex-col gap-4 rounded-lg border border-[var(--color-border)] p-4">
-      <h2 className="font-heading text-sm font-semibold">Add category</h2>
+      <h2 className="font-heading text-sm font-semibold">Add Category</h2>
       <div>
         <label className="mb-1.5 block text-sm font-medium">Area</label>
         <select

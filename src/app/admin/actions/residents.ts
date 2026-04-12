@@ -58,7 +58,7 @@ export async function addResident(formData: FormData): Promise<{ ok: boolean; er
     return { ok: true };
   } catch (e) {
     console.error(e);
-    return { ok: false, error: "Failed to add resident." };
+    return { ok: false, error: "Failed to add Resident." };
   }
 }
 

@@ -15,14 +15,14 @@ export default function CookiesPage() {
           and your choices regarding cookies.
         </p>
 
-        <h2>1. What are cookies?</h2>
+        <h2>1. What Are Cookies?</h2>
         <p>
           Cookies are small text files that are placed on your device (computer,
           phone or tablet) when you visit a website. They are widely used to make
           websites work efficiently and to provide information to the site owners.
         </p>
 
-        <h2>2. Cookies we use</h2>
+        <h2>2. Cookies We Use</h2>
         <p>
           We only use cookies that are <strong>strictly necessary</strong> for the
           site to function. We do not use any advertising, analytics or tracking
@@ -68,7 +68,7 @@ export default function CookiesPage() {
           </table>
         </div>
 
-        <h2>3. Third-party cookies</h2>
+        <h2>3. Third-Party Cookies</h2>
         <p>
           We do <strong>not</strong> use any third-party advertising or analytics
           cookies. The only third-party cookie that may be set is by the human
@@ -76,7 +76,7 @@ export default function CookiesPage() {
           functional and is used solely to prevent spam.
         </p>
 
-        <h2>4. Managing cookies</h2>
+        <h2>4. Managing Cookies</h2>
         <p>
           Since we only use essential cookies, there is no cookie consent banner
           on this site &mdash; essential cookies are exempt from consent requirements
@@ -123,7 +123,7 @@ export default function CookiesPage() {
           </li>
         </ul>
 
-        <h2>5. Changes to this policy</h2>
+        <h2>5. Changes To This Policy</h2>
         <p>
           We may update this Cookie Policy from time to time. The &ldquo;Last
           updated&rdquo; date at the top of this page will be revised accordingly.
@@ -131,7 +131,7 @@ export default function CookiesPage() {
           before doing so.
         </p>
 
-        <h2>6. More information</h2>
+        <h2>6. More Information</h2>
         <p>
           For more details on how we handle your personal data, please see our{" "}
           <a href="/privacy" className="underline underline-offset-2">

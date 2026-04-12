@@ -8,7 +8,7 @@ export function AddAreaForm() {
   const [state, formAction] = useActionState(addArea, null);
   return (
     <form action={formAction} className="mt-6 flex max-w-md flex-col gap-4 rounded-lg border border-[var(--color-border)] p-4">
-      <h2 className="font-heading text-sm font-semibold">Add area</h2>
+      <h2 className="font-heading text-sm font-semibold">Add Area</h2>
       <Input label="Name" name="name" required placeholder="General" />
       <Input label="Slug" name="slug" placeholder="general" />
       <Textarea label="Description" name="description" rows={2} />

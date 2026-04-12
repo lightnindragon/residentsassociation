@@ -91,12 +91,12 @@ export default async function NewsPostPage({
       </p>
       
       {post.cover_image_url && (
-        <div className="relative mt-8 h-64 w-full overflow-hidden rounded-xl border border-[var(--color-border)] sm:h-[400px]">
+        <div className="relative mt-8 h-64 w-full overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-border)] sm:h-[400px]">
           <Image
             src={normalizeSiteImageUrl(post.cover_image_url)}
             alt={post.title}
             fill
-            className="object-cover"
+            className="object-contain object-center"
             priority
           />
         </div>
@@ -117,10 +117,10 @@ export default async function NewsPostPage({
       {showDonate && donationSettings && (
         <footer className="mt-12 border-t border-[var(--color-border)] pt-8">
           <p className="text-xs font-medium uppercase tracking-wide text-[var(--color-muted)]">
-            Support the association
+            Support The Association
           </p>
           <p className="mt-2 text-sm text-[var(--color-muted)]">
-            If you would like to help fund our work in the community, you can donate by bank transfer.
+            If you would like to help fund our work in the Community, you can donate by bank transfer.
           </p>
           <div className="mt-3">
             <DonateButton

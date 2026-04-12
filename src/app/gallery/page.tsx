@@ -32,7 +32,7 @@ export default async function GalleryPage() {
         Gallery
       </h1>
       <p className="mt-2 text-[var(--color-muted)]">
-        Photos from the community and local events.
+        Photos from the Community and local events.
       </p>
       <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {images.length === 0 ? (
@@ -47,7 +47,7 @@ export default async function GalleryPage() {
                   src={img.url}
                   alt={img.caption ?? "Gallery image"}
                   fill
-                  className="object-cover"
+                  className="object-contain object-center"
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 />
               </div>

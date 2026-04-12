@@ -17,13 +17,13 @@ export default function TermsPage() {
         <p>
           The Culcheth &amp; Glazebury Residents Association (&ldquo;the
           Association&rdquo;, &ldquo;we&rdquo;, &ldquo;us&rdquo;, &ldquo;our&rdquo;)
-          is a voluntary, not-for-profit community organisation that operates this
-          website for the benefit of residents in Culcheth and Glazebury.
+          is a voluntary, not-for-profit Community organisation that operates this
+          website for the benefit of Residents in Culcheth and Glazebury.
         </p>
 
-        <h2>1. Use of the site</h2>
+        <h2>1. Use Of The Site</h2>
         <p>
-          You may use this website for lawful, personal and community purposes only.
+          You may use this website for lawful, personal and Community purposes only.
           You agree not to:
         </p>
         <ul className="list-disc pl-6">
@@ -39,9 +39,9 @@ export default function TermsPage() {
           without prior notice.
         </p>
 
-        <h2>2. Accounts and registration</h2>
+        <h2>2. Accounts And Registration</h2>
         <p>
-          Certain features of the site — including the residents&rsquo; forum — require
+          Certain features of the site — including the Residents&rsquo; forum — require
           you to create an account. When registering you agree to:
         </p>
         <ul className="list-disc pl-6">
@@ -55,22 +55,22 @@ export default function TermsPage() {
           for an extended period.
         </p>
 
-        <h2>3. Forum and user-generated content</h2>
+        <h2>3. Forum And User-Generated Content</h2>
         <p>
-          The residents&rsquo; forum is provided for constructive community
+          The Residents&rsquo; forum is provided for constructive Community
           discussion. By posting content you:
         </p>
         <ul className="list-disc pl-6">
           <li>Retain ownership of your content but grant us a non-exclusive, royalty-free licence to display it on the site.</li>
           <li>Confirm that your content does not infringe the intellectual property or other rights of any third party.</li>
-          <li>Accept that we may moderate, edit or remove posts that breach these terms or our community standards.</li>
+          <li>Accept that we may moderate, edit or remove posts that breach these terms or our Community standards.</li>
         </ul>
         <p>
           Views expressed by users on the forum are their own and do not
           necessarily represent the views of the Association or its committee.
         </p>
 
-        <h2>4. Contact form and messages</h2>
+        <h2>4. Contact Form And Messages</h2>
         <p>
           When you submit a message via the Contact page, the information you
           provide (name, email, subject and message) is stored so that the
@@ -86,11 +86,11 @@ export default function TermsPage() {
         <p>
           Donations are entirely voluntary and are made by bank transfer. The
           Association is not a registered charity. Donations are used to support
-          community activities and the running costs of the Association. Donations
+          Community activities and the running costs of the Association. Donations
           are non-refundable unless agreed otherwise by the committee.
         </p>
 
-        <h2>6. Intellectual property</h2>
+        <h2>6. Intellectual Property</h2>
         <p>
           Unless otherwise stated, the content on this website — including text,
           images, logos and design — is owned by or licensed to the Culcheth &amp;
@@ -99,13 +99,13 @@ export default function TermsPage() {
         </p>
         <p>
           Images uploaded to the gallery or news articles may be sourced from
-          community members or third parties and are used with permission or under
-          fair use for community reporting purposes. If you believe any content
+          Community members or third parties and are used with permission or under
+          fair use for Community reporting purposes. If you believe any content
           infringes your copyright, please contact us so we can address it
           promptly.
         </p>
 
-        <h2>7. Third-party links and services</h2>
+        <h2>7. Third-Party Links And Services</h2>
         <p>
           This site may contain links to external websites and uses third-party
           services for hosting, data storage and security. We are not responsible
@@ -113,7 +113,7 @@ export default function TermsPage() {
           sites or services.
         </p>
 
-        <h2>8. Disclaimer and limitation of liability</h2>
+        <h2>8. Disclaimer And Limitation Of Liability</h2>
         <p>
           This website is provided on an &ldquo;as is&rdquo; and &ldquo;as
           available&rdquo; basis. While we make reasonable efforts to keep the site
@@ -141,7 +141,7 @@ export default function TermsPage() {
           information.
         </p>
 
-        <h2>10. Changes to these terms</h2>
+        <h2>10. Changes To These Terms</h2>
         <p>
           We may update these Terms &amp; Conditions from time to time. The
           &ldquo;Last updated&rdquo; date at the top of this page will be revised
@@ -150,14 +150,14 @@ export default function TermsPage() {
           periodically.
         </p>
 
-        <h2>11. Governing law</h2>
+        <h2>11. Governing Law</h2>
         <p>
           These terms are governed by the laws of England and Wales. Any disputes
           arising from the use of this site shall be subject to the exclusive
           jurisdiction of the courts of England and Wales.
         </p>
 
-        <h2>12. Contact us</h2>
+        <h2>12. Contact Us</h2>
         <p>
           If you have any questions about these terms, please get in touch via our{" "}
           <a href="/contact" className="underline underline-offset-2">

@@ -32,10 +32,10 @@ export default async function NewsPage() {
     <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
       <div className="mb-10 border-l-4 border-[var(--color-primary)] pl-4">
         <h1 className="font-heading text-3xl font-semibold text-[var(--foreground)]">
-          Latest news
+          Latest News
         </h1>
         <p className="mt-2 text-[var(--color-muted)]">
-          Community updates and announcements from the residents association.
+          Community updates and announcements from the Residents Association.
         </p>
       </div>
       <div className="flex flex-col gap-6">
@@ -48,12 +48,12 @@ export default async function NewsPage() {
               <Link key={p.id} href={`/news/${p.slug}`}>
                 <Card className="overflow-hidden border-t-[3px] border-t-[var(--color-primary)] transition-all hover:shadow-md hover:-translate-y-0.5">
                   {imageUrl && (
-                    <div className="relative h-48 w-full border-b border-[var(--color-border)] bg-[var(--color-card)] sm:h-64">
+                    <div className="relative h-48 w-full border-b border-[var(--color-border)] bg-[var(--color-border)] sm:h-64">
                       <Image
                         src={imageUrl}
                         alt={p.title}
                         fill
-                        className="object-cover"
+                        className="object-contain object-center"
                       />
                     </div>
                   )}

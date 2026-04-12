@@ -140,7 +140,7 @@ async function main() {
     [
       "resident_approved",
       "Your account is approved – Culcheth & Glazebury RA",
-      "<p>Hi {{name}},</p><p>Your residents association account has been approved. You can now <a href=\"{{loginUrl}}\">sign in</a>.</p><p>— Culcheth & Glazebury Residents Association</p>",
+      "<p>Hi {{name}},</p><p>Your Residents Association account has been approved. You can now <a href=\"{{loginUrl}}\">sign in</a>.</p><p>— Culcheth & Glazebury Residents Association</p>",
       "Hi {{name}},\n\nYour account has been approved. Sign in: {{loginUrl}}\n\n— CGRA",
     ],
     [
@@ -160,6 +160,30 @@ async function main() {
       "New post: {{title}}",
       "<p>Hi {{name}},</p><p>New article: <strong>{{title}}</strong></p><p><a href=\"{{link}}\">Read more</a></p>",
       "Hi {{name}},\n\nNew: {{title}}\n{{link}}",
+    ],
+    [
+      "planning_new_application",
+      "New planning application: {{title}}",
+      "<p>Hi {{name}},</p><p>New planning application: <strong>{{title}}</strong></p><p><a href=\"{{link}}\">View on our site</a></p>",
+      "Hi {{name}},\n\nNew planning application: {{title}}\n{{link}}",
+    ],
+    [
+      "event_new",
+      "New event: {{title}}",
+      "<p>Hi {{name}},</p><p>New event: <strong>{{title}}</strong></p><p><a href=\"{{link}}\">View on our site</a></p>",
+      "Hi {{name}},\n\nNew event: {{title}}\n{{link}}",
+    ],
+    [
+      "agenda_new",
+      "New agenda: {{title}}",
+      "<p>Hi {{name}},</p><p>New agenda: <strong>{{title}}</strong></p><p><a href=\"{{link}}\">View on our site</a></p>",
+      "Hi {{name}},\n\nNew agenda: {{title}}\n{{link}}",
+    ],
+    [
+      "minutes_new",
+      "New minutes: {{title}}",
+      "<p>Hi {{name}},</p><p>New meeting minutes: <strong>{{title}}</strong></p><p><a href=\"{{link}}\">View on our site</a></p>",
+      "Hi {{name}},\n\nNew minutes: {{title}}\n{{link}}",
     ],
     [
       "message_reply_to_customer",

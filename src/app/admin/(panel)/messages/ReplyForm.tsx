@@ -23,7 +23,7 @@ export function ReplyForm({ messageId }: { messageId: string }) {
       const result = await addAdminReply(messageId, replyBody);
       if (result.ok) {
         setBody("");
-        toast.success("Reply sent to resident.");
+        toast.success("Reply sent to Resident.");
         router.refresh();
       } else {
         setError(result.error ?? "Failed to send reply.");
@@ -33,12 +33,12 @@ export function ReplyForm({ messageId }: { messageId: string }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-2">
-      <h3 className="font-heading text-sm font-semibold text-[var(--foreground)]">Reply to resident</h3>
+      <h3 className="font-heading text-sm font-semibold text-[var(--foreground)]">Reply To Resident</h3>
       <textarea
         name="body"
         value={body}
         onChange={(e) => setBody(e.target.value)}
-        placeholder="Your reply will be emailed to the resident and added to the thread."
+        placeholder="Your reply will be emailed to the Resident and added to the thread."
         rows={4}
         className="w-full rounded border border-[var(--color-border)] bg-[var(--color-card)] px-3 py-2 text-sm"
         disabled={pending}

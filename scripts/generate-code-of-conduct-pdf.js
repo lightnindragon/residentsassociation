@@ -14,7 +14,7 @@ const SECTIONS = [
   {
     title: "1. Act in the Best Interests of the Community",
     bullets: [
-      "Represent all residents fairly and respectfully.",
+      "Represent all Residents fairly and respectfully.",
       "Prioritise projects that improve communication, tidiness, and local connections.",
     ],
   },
@@ -22,7 +22,7 @@ const SECTIONS = [
     title: "2. Communicate Clearly and Responsively",
     bullets: [
       "Share updates promptly and accurately.",
-      "Listen actively to feedback from residents and fellow committee members.",
+      "Listen actively to feedback from Residents and fellow committee members.",
       "Use respectful, inclusive language in all communications.",
     ],
   },
@@ -45,7 +45,7 @@ const SECTIONS = [
   {
     title: "5. Uphold Integrity and Respect",
     bullets: [
-      "Treat all residents with dignity, regardless of background or belief.",
+      "Treat all Residents with dignity, regardless of background or belief.",
       "Maintain confidentiality where appropriate.",
       "Challenge discrimination or inappropriate behaviour if it arises.",
     ],

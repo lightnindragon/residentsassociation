@@ -20,7 +20,7 @@ export function AddResidentForm() {
         router.push("/admin/residents");
         router.refresh();
       } else {
-        toast.error(res.error ?? "Failed to add resident.");
+        toast.error(res.error ?? "Failed to add Resident.");
       }
     });
   }
@@ -74,7 +74,7 @@ export function AddResidentForm() {
           Cancel
         </Button>
         <Button type="submit" disabled={pending}>
-          {pending ? "Adding…" : "Add resident"}
+          {pending ? "Adding…" : "Add Resident"}
         </Button>
       </div>
     </form>

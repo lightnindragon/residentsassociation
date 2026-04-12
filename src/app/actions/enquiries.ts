@@ -4,7 +4,7 @@ import { getSql } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { sendResidentReplyNotification } from "@/lib/email";
 
-/** Shared logic: add resident reply and notify assignee (or General inbox). Used by web form and inbound email API. */
+/** Shared logic: add Resident reply and notify assignee (or General inbox). Used by web form and inbound email API. */
 export async function addResidentReplyByEmail(
   messageId: string,
   fromEmail: string,

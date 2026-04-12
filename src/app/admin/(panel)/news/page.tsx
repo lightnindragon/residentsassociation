@@ -73,7 +73,7 @@ export default async function AdminNewsPage({
     <div>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="font-heading text-2xl font-semibold text-[var(--foreground)]">
-          News posts
+          News Posts
         </h1>
         <div className="flex flex-wrap gap-2">
           <Link
@@ -86,7 +86,7 @@ export default async function AdminNewsPage({
             href="/admin/news/new"
             className="rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-white hover:bg-[var(--color-primary-hover)]"
           >
-            New post
+            New Post
           </Link>
         </div>
       </div>

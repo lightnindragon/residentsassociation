@@ -1,0 +1,75 @@
+import Link from "next/link";
+import Image from "next/image";
+import { getSql } from "@/lib/db";
+import { Card, CardHeader, CardContent } from "@/components/ui";
+import { normalizeSiteImageUrl } from "@/lib/site-content";
+import { formatUkDate } from "@/lib/date-format";
+
+export default async function MinutesPage() {
+  let entries: Array<{
+    id: string;
+    title: string;
+    slug: string;
+    excerpt: string | null;
+    cover_image_url: string | null;
+    published_at: string | null;
+    created_at: string;
+  }> = [];
+  try {
+    const sql = getSql();
+    entries = (await sql`
+      SELECT id, title, slug, excerpt, cover_image_url, published_at, created_at
+      FROM site_minutes
+      WHERE published_at IS NOT NULL AND published_at <= NOW() AND archived_at IS NULL
+      ORDER BY published_at DESC
+      LIMIT 50
+    `) as typeof entries;
+  } catch {
+    // no DB
+  }
+
+  return (
+    <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
+      <div className="mb-10 border-l-4 border-[var(--color-primary)] pl-4">
+        <h1 className="font-heading text-3xl font-semibold text-[var(--foreground)]">Minutes</h1>
+        <p className="mt-2 text-[var(--color-muted)]">
+          Approved meeting minutes from the Residents Association, with links to full documents.
+        </p>
+      </div>
+      <div className="flex flex-col gap-6">
+        {entries.length === 0 ? (
+          <p className="text-[var(--color-muted)]">No minutes published yet.</p>
+        ) : (
+          entries.map((p) => {
+            const imageUrl = normalizeSiteImageUrl(p.cover_image_url || "");
+            return (
+              <Link key={p.id} href={`/minutes/${p.slug}`}>
+                <Card className="overflow-hidden border-t-[3px] border-t-[var(--color-primary)] transition-all hover:shadow-md hover:-translate-y-0.5">
+                  {imageUrl && (
+                    <div className="relative h-48 w-full border-b border-[var(--color-border)] bg-[var(--color-border)] sm:h-64">
+                      <Image
+                        src={imageUrl}
+                        alt={p.title}
+                        fill
+                        className="object-contain object-center"
+                      />
+                    </div>
+                  )}
+                  <CardHeader>{p.title}</CardHeader>
+                  <CardContent>
+                    {p.excerpt || "Read more for details and the minutes document link."}
+                    <span className="mt-2 block text-xs text-[var(--color-muted)]">
+                      {p.published_at
+                        ? formatUkDate(p.published_at)
+                        : formatUkDate(p.created_at)}
+                    </span>
+                  </CardContent>
+                </Card>
+              </Link>
+            );
+          })
+        )}
+      </div>
+    </div>
+  );
+}

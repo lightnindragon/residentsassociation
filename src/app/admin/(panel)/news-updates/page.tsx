@@ -61,11 +61,12 @@ export default async function AdminNewsUpdatesPage({
   return (
     <div>
       <h1 className="font-heading text-2xl font-semibold text-[var(--foreground)]">
-        News &amp; updates email preferences
+        News &amp; Updates Email Preferences
       </h1>
       <p className="mt-1 text-[var(--color-muted)]">
-        Residents who have opted in or out of &quot;Receive news and updates by email&quot; (new blog posts).
-        Only accounts with role <strong>user</strong> are listed; approved members are who receive sends.
+        Residents who have opted in or out of site update emails (new news, planning applications, and
+        events). Only accounts with role <strong>user</strong> are listed; approved members are who receive
+        sends.
       </p>
 
       <div className="mt-4 flex flex-wrap gap-2">
@@ -88,7 +89,7 @@ export default async function AdminNewsUpdatesPage({
             {users.length === 0 ? (
               <tr>
                 <td colSpan={5} className="py-8 text-center text-[var(--color-muted)]">
-                  No residents in this list.
+                  No Residents in this list.
                 </td>
               </tr>
             ) : (

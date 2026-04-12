@@ -15,7 +15,7 @@ export default async function EmailTemplatesListPage() {
 
   return (
     <div>
-      <h1 className="font-heading text-2xl font-semibold">Email templates</h1>
+      <h1 className="font-heading text-2xl font-semibold">Email Templates</h1>
       <p className="mt-1 text-sm text-[var(--color-muted)]">
         Use variables like <code className="rounded bg-[var(--color-border)] px-1">{"{{name}}"}</code>,{" "}
         <code className="rounded bg-[var(--color-border)] px-1">{"{{link}}"}</code>,{" "}

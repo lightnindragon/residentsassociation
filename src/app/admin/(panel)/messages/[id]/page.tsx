@@ -61,7 +61,7 @@ export default async function AdminMessageDetailPage({
         href="/admin/messages"
         className="text-sm text-[var(--color-primary)] hover:underline"
       >
-        ← Back to messages
+        ← Back To Messages
       </Link>
       <div className="mt-6 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-6">
         <div className="flex flex-wrap items-center justify-between gap-4">

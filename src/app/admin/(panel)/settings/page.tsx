@@ -27,7 +27,7 @@ export default async function AdminSettingsPage() {
   return (
     <div>
       <h1 className="font-heading text-2xl font-semibold text-[var(--foreground)]">
-        Email / SMTP settings
+        Email / SMTP Settings
       </h1>
       <p className="mt-1 text-[var(--color-muted)]">
         Configure SMTP so contact form messages are sent to your Proton Mail

@@ -27,7 +27,7 @@ export default async function AdminNewPostPage() {
       >
         ← News
       </Link>
-      <h1 className="mt-4 font-heading text-2xl font-semibold">New post</h1>
+      <h1 className="mt-4 font-heading text-2xl font-semibold">New Post</h1>
       <NewsPostForm authorId={user.id} categories={categories} />
     </div>
   );

@@ -14,7 +14,7 @@ export default async function LoginPage({
   return (
     <div className="mx-auto flex min-h-[60vh] max-w-md flex-col justify-center px-6 py-16">
       <h1 className="font-heading text-2xl font-semibold text-[var(--foreground)]">
-        Sign in
+        Sign In
       </h1>
       <p className="mt-1 text-[var(--color-muted)]">
         Sign in to access the forum and your account.

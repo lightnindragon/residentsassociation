@@ -28,6 +28,18 @@ function PrimaryNav({
         Home
       </Link>
       <NewsNav categories={categories} />
+      <Link href="/planning-applications" className={navLink}>
+        Planning
+      </Link>
+      <Link href="/agendas" className={navLink}>
+        Agendas
+      </Link>
+      <Link href="/minutes" className={navLink}>
+        Minutes
+      </Link>
+      <Link href="/events" className={navLink}>
+        Events
+      </Link>
       <Link href="/about" className={navLink}>
         About
       </Link>

@@ -7,6 +7,7 @@ import { getSiteSettings } from "@/lib/site-settings";
 import { FacebookIconLink } from "@/components/FacebookIconLink";
 import { SocialIconLinks } from "@/components/SocialIconLinks";
 import { getHeaderLogoSrc } from "@/lib/branding";
+import { getPublicContactEmail } from "@/lib/email";
 
 const footLink =
   "transition-colors text-[var(--color-chrome-muted)] hover:text-[var(--color-chrome-foreground)]";
@@ -17,6 +18,7 @@ export async function Footer() {
   const showDonate = !!session?.user && donationSettings?.enabled === true;
   const social = await getSiteSettings();
   const logoSrc = getHeaderLogoSrc();
+  const contactEmail = await getPublicContactEmail();
 
   return (
     <footer className="mt-auto border-t-2 border-[var(--color-footer-border)] bg-[var(--color-footer-bg)] text-[var(--color-chrome-foreground)]">
@@ -46,6 +48,16 @@ export async function Footer() {
               )}
               <SocialIconLinks settings={social} />
             </div>
+            {contactEmail && (
+              <p className="mt-3 text-sm text-[var(--color-chrome-muted)]">
+                <a
+                  href={`mailto:${contactEmail}`}
+                  className="text-[var(--color-chrome-foreground)] underline underline-offset-2 transition-colors hover:text-[var(--color-primary)]"
+                >
+                  {contactEmail}
+                </a>
+              </p>
+            )}
           </div>
 
           <nav className="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm">

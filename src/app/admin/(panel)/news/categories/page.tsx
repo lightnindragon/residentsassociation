@@ -24,7 +24,7 @@ export default async function PostCategoriesPage() {
       <Link href="/admin/news" className="text-sm text-[var(--color-primary)] hover:underline">
         ← News
       </Link>
-      <h1 className="mt-4 font-heading text-2xl font-semibold">Blog categories</h1>
+      <h1 className="mt-4 font-heading text-2xl font-semibold">Blog Categories</h1>
       <PostCategoryForm />
       <ul className="mt-8 space-y-2">
         {cats.map((c) => (

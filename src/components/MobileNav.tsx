@@ -76,6 +76,18 @@ export function MobileNav({
               <div className="flex flex-col divide-y divide-[var(--color-border)] px-5 py-1">
                 <MobLink href="/" onClick={close}>Home</MobLink>
                 <MobLink href="/news" onClick={close}>News</MobLink>
+                <MobLink href="/planning-applications" onClick={close}>
+                  Planning
+                </MobLink>
+                <MobLink href="/agendas" onClick={close}>
+                  Agendas
+                </MobLink>
+                <MobLink href="/minutes" onClick={close}>
+                  Minutes
+                </MobLink>
+                <MobLink href="/events" onClick={close}>
+                  Events
+                </MobLink>
                 {categories.map((c) => (
                   <MobLink
                     key={c.slug}

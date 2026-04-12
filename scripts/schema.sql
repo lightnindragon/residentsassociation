@@ -34,6 +34,78 @@ CREATE TABLE IF NOT EXISTS posts (
 CREATE INDEX IF NOT EXISTS idx_posts_slug ON posts(slug);
 CREATE INDEX IF NOT EXISTS idx_posts_published_at ON posts(published_at DESC);
 
+-- Planning applications (public summaries + link to official portal)
+CREATE TABLE IF NOT EXISTS planning_applications (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  title TEXT NOT NULL,
+  slug TEXT NOT NULL UNIQUE,
+  excerpt TEXT,
+  body TEXT NOT NULL,
+  external_url TEXT NOT NULL,
+  cover_image_url TEXT,
+  author_id UUID REFERENCES users(id) ON DELETE SET NULL,
+  published_at TIMESTAMPTZ,
+  archived_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_planning_published ON planning_applications (published_at DESC) WHERE archived_at IS NULL;
+
+-- Events (public listings + external link; public URLs are /events)
+CREATE TABLE IF NOT EXISTS site_events (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  title TEXT NOT NULL,
+  slug TEXT NOT NULL UNIQUE,
+  excerpt TEXT,
+  body TEXT NOT NULL,
+  external_url TEXT NOT NULL,
+  cover_image_url TEXT,
+  author_id UUID REFERENCES users(id) ON DELETE SET NULL,
+  published_at TIMESTAMPTZ,
+  archived_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_site_events_published ON site_events (published_at DESC) WHERE archived_at IS NULL;
+
+-- Meeting agendas (public summaries + link to document or external page)
+CREATE TABLE IF NOT EXISTS site_agendas (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  title TEXT NOT NULL,
+  slug TEXT NOT NULL UNIQUE,
+  excerpt TEXT,
+  body TEXT NOT NULL,
+  external_url TEXT NOT NULL,
+  cover_image_url TEXT,
+  author_id UUID REFERENCES users(id) ON DELETE SET NULL,
+  published_at TIMESTAMPTZ,
+  archived_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_site_agendas_published ON site_agendas (published_at DESC) WHERE archived_at IS NULL;
+
+-- Meeting minutes (same pattern as agendas)
+CREATE TABLE IF NOT EXISTS site_minutes (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  title TEXT NOT NULL,
+  slug TEXT NOT NULL UNIQUE,
+  excerpt TEXT,
+  body TEXT NOT NULL,
+  external_url TEXT NOT NULL,
+  cover_image_url TEXT,
+  author_id UUID REFERENCES users(id) ON DELETE SET NULL,
+  published_at TIMESTAMPTZ,
+  archived_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_site_minutes_published ON site_minutes (published_at DESC) WHERE archived_at IS NULL;
+
 -- Forum categories
 CREATE TABLE IF NOT EXISTS forum_categories (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),

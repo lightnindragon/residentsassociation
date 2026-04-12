@@ -13,6 +13,24 @@ export type SmtpConfig = {
   contact_inbox: string;
 };
 
+/** Public inbox for mailto / footer — from SMTP settings or NEXT_PUBLIC_CONTACT_EMAIL. */
+export async function getPublicContactEmail(): Promise<string | null> {
+  const fromEnv = process.env.NEXT_PUBLIC_CONTACT_EMAIL?.trim();
+  if (fromEnv) return fromEnv;
+  try {
+    const sql = getSql();
+    const rows = await sql`
+      SELECT NULLIF(TRIM(contact_inbox), '') AS email
+      FROM smtp_config
+      LIMIT 1
+    `;
+    const e = (rows[0] as { email: string | null } | undefined)?.email;
+    return e?.trim() || null;
+  } catch {
+    return null;
+  }
+}
+
 export async function getSmtpConfig(): Promise<SmtpConfig | null> {
   try {
     const sql = getSql();
@@ -153,7 +171,7 @@ export async function sendAssignmentToGeneral(params: {
   }
 }
 
-/** When admin replies, email the resident with the reply and link to continue */
+/** When admin replies, email the Resident with the reply and link to continue */
 export async function sendAdminReplyToResident(params: {
   toEmail: string;
   toName: string;
@@ -205,7 +223,7 @@ export async function sendAdminReplyToResident(params: {
   }
 }
 
-/** When resident replies, notify assigned admin or main inbox if General */
+/** When Resident replies, notify assigned admin or main inbox if General */
 export async function sendResidentReplyNotification(params: {
   toEmail: string;
   toName: string;
@@ -223,8 +241,8 @@ export async function sendResidentReplyNotification(params: {
       from: config.from_address || config.contact_inbox,
       to: params.toEmail,
       subject: `[CGRA] New reply on enquiry: ${params.messageSubject}`,
-      text: `Hi ${params.toName},\n\nA resident has replied to an enquiry you're assigned to.\n\nSubject: ${params.messageSubject}\n\n---\n${params.replyBody}\n---\n\nView and reply: ${viewUrl}`,
-      html: `<p>Hi ${params.toName},</p><p>A resident has replied to an enquiry.</p><p><strong>Subject:</strong> ${params.messageSubject}</p><div style="margin:1em 0;padding:1em;background:#f5f5f5;border-radius:6px;">${params.replyBody.replace(/\n/g, "<br>")}</div><p><a href="${viewUrl}">View and reply</a></p>`,
+      text: `Hi ${params.toName},\n\nA Resident has replied to an enquiry you're assigned to.\n\nSubject: ${params.messageSubject}\n\n---\n${params.replyBody}\n---\n\nView and reply: ${viewUrl}`,
+      html: `<p>Hi ${params.toName},</p><p>A Resident has replied to an enquiry.</p><p><strong>Subject:</strong> ${params.messageSubject}</p><div style="margin:1em 0;padding:1em;background:#f5f5f5;border-radius:6px;">${params.replyBody.replace(/\n/g, "<br>")}</div><p><a href="${viewUrl}">View and reply</a></p>`,
     });
     return { ok: true };
   } catch (e) {

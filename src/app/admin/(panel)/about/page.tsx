@@ -12,7 +12,7 @@ export default async function AdminAboutPage() {
     <div className="space-y-10">
       <div>
         <h1 className="font-heading text-2xl font-semibold text-[var(--foreground)]">
-          About us
+          About Us
         </h1>
         <p className="mt-1 text-[var(--color-muted)]">
           Edit the About page intro and committee members (with photos).
@@ -21,7 +21,7 @@ export default async function AdminAboutPage() {
       </div>
       <div>
         <h2 className="font-heading text-lg font-semibold text-[var(--foreground)]">
-          Committee members
+          Committee Members
         </h2>
         <CommitteeMemberForm />
         <CommitteeMemberList members={members} />

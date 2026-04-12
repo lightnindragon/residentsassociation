@@ -26,7 +26,7 @@ export default async function ResetPasswordPage({
     if (!rows || rows.length === 0) {
       return (
         <div className="mx-auto max-w-lg px-4 py-24 text-center sm:px-6">
-          <h1 className="font-heading text-3xl font-semibold">Invalid or expired token</h1>
+          <h1 className="font-heading text-3xl font-semibold">Invalid Or Expired Token</h1>
           <p className="mt-4 text-[var(--color-muted)]">
             The password reset link you clicked is invalid or has expired. Please request a new one.
           </p>

@@ -12,7 +12,7 @@ export function MediaUploadForm() {
         <p className="mt-4 text-sm text-red-600">{state.error}</p>
       )}
       <form action={formAction} className="mt-6 flex max-w-lg flex-col gap-4 rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] p-4">
-        <h3 className="font-heading text-sm font-semibold">Upload new media</h3>
+        <h3 className="font-heading text-sm font-semibold">Upload New Media</h3>
         <div>
           <label className="mb-1 block text-sm font-medium text-[var(--foreground)]">Image file</label>
           <input

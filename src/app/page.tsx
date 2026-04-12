@@ -40,12 +40,12 @@ export default async function HomePage() {
     <div className="flex flex-col">
       <section className="border-b border-[var(--color-surface-strong)] bg-gradient-to-b from-[var(--color-surface)] to-[var(--background)]">
         {heroUrl ? (
-          <div className="relative mx-auto aspect-[21/9] max-h-[min(45vh,420px)] w-full max-w-6xl sm:aspect-[3/1] sm:max-h-[min(50vh,480px)]">
+          <div className="relative mx-auto aspect-[21/9] max-h-[min(45vh,420px)] w-full max-w-6xl bg-[var(--color-border)] sm:aspect-[3/1] sm:max-h-[min(50vh,480px)]">
             <Image
               src={heroUrl}
               alt={homeContent.heroImageAlt}
               fill
-              className="object-cover object-center"
+              className="object-contain object-center"
               sizes="(max-width: 1152px) 100vw, 1152px"
               priority
             />
@@ -61,7 +61,27 @@ export default async function HomePage() {
           <p className="mt-6 text-lg leading-relaxed text-[var(--foreground)]">{homeContent.intro}</p>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
             <Link href="/news">
-              <Button className="min-w-[140px]">Latest news</Button>
+              <Button className="min-w-[140px]">Latest News</Button>
+            </Link>
+            <Link href="/planning-applications">
+              <Button variant="outline" className="min-w-[140px]">
+                Planning Applications
+              </Button>
+            </Link>
+            <Link href="/agendas">
+              <Button variant="outline" className="min-w-[140px]">
+                Agendas
+              </Button>
+            </Link>
+            <Link href="/minutes">
+              <Button variant="outline" className="min-w-[140px]">
+                Minutes
+              </Button>
+            </Link>
+            <Link href="/events">
+              <Button variant="outline" className="min-w-[140px]">
+                Events
+              </Button>
             </Link>
             <Link href="/gallery">
               <Button variant="outline" className="min-w-[140px]">
@@ -70,7 +90,7 @@ export default async function HomePage() {
             </Link>
             <Link href="/contact">
               <Button variant="secondary" className="min-w-[140px]">
-                Contact us
+                Contact Us
               </Button>
             </Link>
             {session?.user ? (
@@ -102,7 +122,7 @@ export default async function HomePage() {
           </h2>
           <Link href="/news">
             <Button variant="outline" className="h-auto px-3 py-1.5 text-sm">
-              View all news
+              View All News
             </Button>
           </Link>
         </div>
@@ -113,12 +133,12 @@ export default async function HomePage() {
               <Link key={p.id} href={`/news/${p.slug}`}>
                 <Card className="flex h-full flex-col overflow-hidden border-t-[3px] border-t-[var(--color-primary)] transition-all hover:shadow-lg hover:-translate-y-0.5">
                   {imageUrl && (
-                    <div className="relative h-48 w-full shrink-0 border-b border-[var(--color-border)] bg-[var(--color-card)]">
+                    <div className="relative h-48 w-full shrink-0 border-b border-[var(--color-border)] bg-[var(--color-border)]">
                       <Image
                         src={imageUrl}
                         alt={p.title}
                         fill
-                        className="object-cover"
+                        className="object-contain object-center"
                       />
                     </div>
                   )}
@@ -154,18 +174,18 @@ export default async function HomePage() {
             {session?.user ? (
               <Link href="/forum">
                 <Card className="h-full border-2 border-[var(--color-surface-strong)] bg-white transition-all hover:border-[var(--color-primary)] hover:shadow-lg hover:-translate-y-1">
-                  <CardHeader>Residents forum</CardHeader>
+                  <CardHeader>Residents Forum</CardHeader>
                   <CardContent>
-                    Join the conversation and take part in community discussions.
+                    Join the conversation and take part in Community discussions.
                   </CardContent>
                 </Card>
               </Link>
             ) : (
               <Link href="/login?callbackUrl=/forum">
                 <Card className="h-full border-2 border-[var(--color-surface-strong)] bg-white transition-all hover:border-[var(--color-primary)] hover:shadow-lg hover:-translate-y-1">
-                  <CardHeader>Residents forum</CardHeader>
+                  <CardHeader>Residents Forum</CardHeader>
                   <CardContent>
-                    Sign in to view and take part in community discussions.
+                    Sign in to view and take part in Community discussions.
                   </CardContent>
                 </Card>
               </Link>

@@ -182,7 +182,7 @@ export default async function ForumPage() {
 
       {session?.user && recentThreads.length > 0 && (
         <div className="mt-10">
-          <h2 className="mb-4 font-heading text-xl font-semibold text-[var(--foreground)]">Latest posts</h2>
+          <h2 className="mb-4 font-heading text-xl font-semibold text-[var(--foreground)]">Latest Posts</h2>
           <div className="overflow-hidden rounded-md border border-[var(--color-border)] bg-[var(--color-card)] shadow-sm">
             <div className="divide-y divide-[var(--color-border)]">
               {recentThreads.map((thread) => (

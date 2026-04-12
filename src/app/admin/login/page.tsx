@@ -22,7 +22,7 @@ export default async function AdminLoginPage({
   return (
     <div className="mx-auto flex min-h-[60vh] max-w-md flex-col justify-center px-6 py-16">
       <h1 className="font-heading text-2xl font-semibold text-[var(--foreground)]">
-        Admin sign in
+        Admin Sign In
       </h1>
       <p className="mt-1 text-[var(--color-muted)]">
         Committee and site administrators only.
@@ -81,7 +81,7 @@ export default async function AdminLoginPage({
         </Link>
         {" · "}
         <Link href="/login" className="text-[var(--color-primary)] hover:underline">
-          Resident login
+          Resident Login
         </Link>
       </p>
     </div>

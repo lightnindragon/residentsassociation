@@ -9,7 +9,7 @@ export default async function AdminContactPage() {
   return (
     <div>
       <h1 className="font-heading text-2xl font-semibold text-[var(--foreground)]">
-        Contact page
+        Contact Page
       </h1>
       <p className="mt-1 text-[var(--color-muted)]">
         Edit the Contact page heading, description, and form field labels.

@@ -59,7 +59,7 @@ export default async function AdminMessagesPage({
   return (
     <div>
       <h1 className="font-heading text-2xl font-semibold text-[var(--foreground)]">
-        Contact messages
+        Contact Messages
       </h1>
       <p className="mt-1 text-[var(--color-muted)]">
         Assign messages to admins; they will receive an email notification.

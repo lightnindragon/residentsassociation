@@ -40,7 +40,7 @@ export default async function NewsCategoryPage({
   return (
     <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
       <Link href="/news" className="text-sm text-[var(--color-primary)] hover:underline">
-        ← All news
+        ← All News
       </Link>
       <h1 className="mt-4 font-heading text-3xl font-semibold">{cat.name}</h1>
       <ul className="mt-8 space-y-4">

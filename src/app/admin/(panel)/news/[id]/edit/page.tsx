@@ -49,7 +49,7 @@ export default async function AdminEditPostPage({
       >
         ← News
       </Link>
-      <h1 className="mt-4 font-heading text-2xl font-semibold">Edit post</h1>
+      <h1 className="mt-4 font-heading text-2xl font-semibold">Edit Post</h1>
       {post.archived_at && (
         <p className="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950 dark:border-amber-900/40 dark:bg-amber-950/30 dark:text-amber-100">
           This post is <strong>archived</strong> and hidden from the public news pages, home, and

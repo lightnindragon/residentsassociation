@@ -48,7 +48,7 @@ export default async function AdminDashboardPage() {
   return (
     <div>
       <h1 className="font-heading text-2xl font-semibold text-[var(--foreground)]">
-        Admin dashboard
+        Admin Dashboard
       </h1>
       <p className="mt-1 text-[var(--color-muted)]">
         Overview of your site and quick links.
@@ -102,7 +102,7 @@ export default async function AdminDashboardPage() {
       <div className="mt-10 grid gap-8 lg:grid-cols-2">
         <div>
           <h2 className="font-heading text-lg font-semibold text-[var(--foreground)]">
-            Recent news
+            Recent News
           </h2>
           <ul className="mt-3 space-y-2">
             {recentNews.length === 0 ? (
@@ -128,7 +128,7 @@ export default async function AdminDashboardPage() {
         </div>
         <div>
           <h2 className="font-heading text-lg font-semibold text-[var(--foreground)]">
-            Latest forum activity
+            Latest Forum Activity
           </h2>
           <ul className="mt-3 space-y-2">
             {recentForum.length === 0 ? (

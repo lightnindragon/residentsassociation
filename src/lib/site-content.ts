@@ -83,10 +83,10 @@ export type HomePageContent = {
 
 const HOME_PAGE_DEFAULTS: HomePageContent = {
   intro:
-    "Your community hub for local news, events and discussion. Stay informed and get involved.",
-  heroImageAlt: "Culcheth area — community photograph",
-  getInvolvedTitle: "Get involved",
-  getInvolvedSubtitle: "Connect with your community",
+    "Your Community hub for local news, events and discussion. Stay informed and get involved.",
+  heroImageAlt: "Culcheth area — Community photograph",
+  getInvolvedTitle: "Get Involved",
+  getInvolvedSubtitle: "Connect with your Community",
 };
 
 /** Editable homepage copy from `site_content` (falls back to defaults when keys are absent). */
@@ -176,8 +176,8 @@ export async function getCommitteeMembers(): Promise<
 
 export async function getContactContent(): Promise<ContactContent> {
   const defaults: ContactContent = {
-    title: "Contact us",
-    description: "Send a message to the residents association. We'll get back to you as soon as we can.",
+    title: "Contact Us",
+    description: "Send a message to the Residents Association. We'll get back to you as soon as we can.",
     labelName: "Your name",
     labelEmail: "Email",
     labelSubject: "Subject",

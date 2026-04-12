@@ -40,7 +40,7 @@ export default async function EditResidentPage({
       <Link href="/admin/residents" className="text-sm text-[var(--color-primary)] hover:underline">
         ← Residents
       </Link>
-      <h1 className="mt-4 font-heading text-2xl font-semibold">Edit resident</h1>
+      <h1 className="mt-4 font-heading text-2xl font-semibold">Edit Resident</h1>
       <p className="mt-1 text-sm text-[var(--color-muted)]">
         {user.email} · {user.approved ? "Approved" : "Pending"}
         {user.banned ? " · Banned" : ""}

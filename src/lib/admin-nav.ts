@@ -8,11 +8,11 @@ export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
     items: [{ href: "/admin", label: "Dashboard" }],
   },
   {
-    title: "People & comms",
+    title: "People & Comms",
     items: [
       { href: "/admin/messages", label: "Messages" },
       { href: "/admin/residents", label: "Residents" },
-      { href: "/admin/news-updates", label: "News updates" },
+      { href: "/admin/news-updates", label: "News Updates" },
       { href: "/admin/admins", label: "Admins" },
     ],
   },
@@ -20,6 +20,10 @@ export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
     title: "Content",
     items: [
       { href: "/admin/news", label: "News" },
+      { href: "/admin/planning-applications", label: "Planning Applications" },
+      { href: "/admin/agendas", label: "Agendas" },
+      { href: "/admin/minutes", label: "Minutes" },
+      { href: "/admin/events", label: "Events" },
       { href: "/admin/forum", label: "Forum" },
       { href: "/admin/gallery", label: "Gallery" },
       { href: "/admin/media", label: "Media" },
@@ -29,15 +33,15 @@ export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
     title: "Website",
     items: [
       { href: "/admin/homepage", label: "Homepage" },
-      { href: "/admin/about", label: "About us" },
-      { href: "/admin/contact", label: "Contact page" },
-      { href: "/admin/social", label: "Social links" },
+      { href: "/admin/about", label: "About Us" },
+      { href: "/admin/contact", label: "Contact Page" },
+      { href: "/admin/social", label: "Social Links" },
     ],
   },
   {
-    title: "Email & payments",
+    title: "Email & Payments",
     items: [
-      { href: "/admin/email-templates", label: "Email templates" },
+      { href: "/admin/email-templates", label: "Email Templates" },
       { href: "/admin/donations", label: "Donations" },
     ],
   },

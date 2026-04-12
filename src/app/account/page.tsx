@@ -32,7 +32,7 @@ export default async function AccountPage() {
 
   return (
     <div className="mx-auto max-w-lg px-4 py-10">
-      <h1 className="font-heading text-2xl font-semibold">Your account</h1>
+      <h1 className="font-heading text-2xl font-semibold">Your Account</h1>
       <p className="mt-1 text-sm text-[var(--color-muted)]">
         Forum display details and email preferences. Admins use the admin panel for most settings.
       </p>

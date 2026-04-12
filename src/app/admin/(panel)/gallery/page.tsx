@@ -42,7 +42,7 @@ export default async function AdminGalleryPage() {
                 src={img.url}
                 alt={img.caption ?? "Gallery"}
                 fill
-                className="object-cover"
+                className="object-contain object-center"
                 sizes="200px"
               />
             </div>

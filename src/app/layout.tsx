@@ -24,7 +24,7 @@ const fraunces = Fraunces({
 export const metadata: Metadata = {
   title: "Culcheth & Glazebury Residents Association",
   description:
-    "Culcheth and Glazebury Residents Association – community news, events and information for residents.",
+    "Culcheth and Glazebury Residents Association – Community news, events and information for Residents.",
 };
 
 export default function RootLayout({

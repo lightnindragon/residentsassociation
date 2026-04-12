@@ -80,7 +80,7 @@ export function ResidentEditForm({
         </Button>
       </form>
       <div className="border-t border-[var(--color-border)] pt-6">
-        <h2 className="font-heading text-sm font-semibold">Reset password</h2>
+        <h2 className="font-heading text-sm font-semibold">Reset Password</h2>
         <p className="mt-1 text-xs text-[var(--color-muted)]">Min. 8 characters.</p>
         <div className="mt-2 flex gap-2">
           <input
@@ -126,7 +126,7 @@ export function ResidentEditForm({
         </div>
       </div>
       <div className="border-t border-[var(--color-border)] pt-6">
-        <h2 className="font-heading text-sm font-semibold">Forum / site access</h2>
+        <h2 className="font-heading text-sm font-semibold">Forum / Site Access</h2>
         {user.banned && user.banned_until ? (
           <p className="mt-1 text-xs text-red-500 mb-3">
             Banned until: {formatUkDateTime(user.banned_until)}

@@ -16,10 +16,10 @@ export default function PrivacyPage() {
           when you use this website (<strong>cagra.co.uk</strong>).
         </p>
 
-        <h2>1. Who we are</h2>
+        <h2>1. Who We Are</h2>
         <p>
           We are the Culcheth &amp; Glazebury Residents Association, a voluntary,
-          not-for-profit community organisation. We are the data controller for
+          not-for-profit Community organisation. We are the data controller for
           the personal information collected through this website. If you have any
           questions about how we handle your data, please contact us via our{" "}
           <a href="/contact" className="underline underline-offset-2">
@@ -28,7 +28,7 @@ export default function PrivacyPage() {
           .
         </p>
 
-        <h2>2. Information we collect</h2>
+        <h2>2. Information We Collect</h2>
         <p>We may collect and process the following personal information:</p>
         <ul className="list-disc pl-6">
           <li>
@@ -41,7 +41,7 @@ export default function PrivacyPage() {
           </li>
           <li>
             <strong>Forum posts:</strong> Any content you post in the
-            residents&rsquo; forum, including text and any images you upload.
+            Residents&rsquo; forum, including text and any images you upload.
           </li>
           <li>
             <strong>Donation information:</strong> If you choose to donate, we do
@@ -55,14 +55,14 @@ export default function PrivacyPage() {
           </li>
         </ul>
 
-        <h2>3. How we use your information</h2>
+        <h2>3. How We Use Your Information</h2>
         <p>We use your personal information to:</p>
         <ul className="list-disc pl-6">
           <li>Operate and maintain the website and your account.</li>
           <li>Respond to messages submitted through the contact form.</li>
           <li>Send administrative notifications (e.g. when a contact message is assigned to a committee member).</li>
           <li>Display your forum posts and contributions on the site.</li>
-          <li>Moderate content to maintain community standards.</li>
+          <li>Moderate content to maintain Community standards.</li>
           <li>Improve the website and understand how it is used.</li>
         </ul>
         <p>
@@ -70,7 +70,7 @@ export default function PrivacyPage() {
           third parties for marketing purposes.
         </p>
 
-        <h2>4. Legal basis for processing (UK GDPR)</h2>
+        <h2>4. Legal Basis For Processing (UK GDPR)</h2>
         <p>We process your personal data on the following bases:</p>
         <ul className="list-disc pl-6">
           <li>
@@ -103,7 +103,7 @@ export default function PrivacyPage() {
           .
         </p>
 
-        <h2>6. Contact form verification</h2>
+        <h2>6. Contact Form Verification</h2>
         <p>
           The contact page uses a third-party human verification service to help
           prevent automated spam submissions. This service runs in your browser
@@ -112,7 +112,7 @@ export default function PrivacyPage() {
           shared beyond what is required for the verification check.
         </p>
 
-        <h2>7. Data storage and security</h2>
+        <h2>7. Data Storage And Security</h2>
         <p>
           Your data is stored securely using reputable third-party hosting and
           database providers. Passwords are stored as one-way cryptographic hashes
@@ -125,7 +125,7 @@ export default function PrivacyPage() {
           guarantee absolute security.
         </p>
 
-        <h2>8. Data retention</h2>
+        <h2>8. Data Retention</h2>
         <p>
           We retain your personal data for as long as your account is active or as
           needed to provide the services described above. Contact form messages are
@@ -134,7 +134,7 @@ export default function PrivacyPage() {
           reasonable timeframe, except where we are required by law to retain it.
         </p>
 
-        <h2>9. Data sharing</h2>
+        <h2>9. Data Sharing</h2>
         <p>
           We use reputable third-party service providers for website hosting,
           data storage and spam prevention. These providers process data solely
@@ -145,7 +145,7 @@ export default function PrivacyPage() {
           unless required to do so by law.
         </p>
 
-        <h2>10. Your rights</h2>
+        <h2>10. Your Rights</h2>
         <p>
           Under the UK General Data Protection Regulation (UK GDPR) and the Data
           Protection Act 2018, you have the right to:
@@ -167,7 +167,7 @@ export default function PrivacyPage() {
           . We will respond within one month of receiving your request.
         </p>
 
-        <h2>11. Children&rsquo;s privacy</h2>
+        <h2>11. Children&rsquo;s Privacy</h2>
         <p>
           This website is not directed at children under 13. We do not knowingly
           collect personal data from children under 13. If you believe a child has
@@ -175,7 +175,7 @@ export default function PrivacyPage() {
           take steps to remove that data.
         </p>
 
-        <h2>12. Changes to this policy</h2>
+        <h2>12. Changes To This Policy</h2>
         <p>
           We may update this Privacy Policy from time to time. The &ldquo;Last
           updated&rdquo; date at the top of this page will be revised accordingly.
@@ -204,7 +204,7 @@ export default function PrivacyPage() {
           <li>Helpline: 0303 123 1113</li>
         </ul>
 
-        <h2>14. Contact us</h2>
+        <h2>14. Contact Us</h2>
         <p>
           If you have any questions about this Privacy Policy or how we handle
           your data, please get in touch via our{" "}

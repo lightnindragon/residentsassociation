@@ -77,10 +77,10 @@ async function main() {
 
   const title = "Parish Plan Questionnaire";
   const slug = "parish-plan-questionnaire";
-  const excerpt = "One of our Committee recently attended a Parish Plan meeting. As outlined at our meeting on Monday, we are happy to help by sharing this information across our community.";
+  const excerpt = "One of our Committee recently attended a Parish Plan meeting. As outlined at our meeting on Monday, we are happy to help by sharing this information across our Community.";
   
   const body = `
-<p>One of our Committee recently attended a Parish Plan meeting. As outlined at our meeting on Monday, we are happy to help by sharing this information across our community.</p>
+<p>One of our Committee recently attended a Parish Plan meeting. As outlined at our meeting on Monday, we are happy to help by sharing this information across our Community.</p>
 <p>Please complete the questionnaire by 31 March 2026.</p>
 <p>Your feedback will help shape the future of our villages.</p>
 <p>We encourage everyone to take a few minutes to respond and share your views. Thank you for your support.</p>

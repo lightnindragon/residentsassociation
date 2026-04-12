@@ -50,9 +50,9 @@ async function main() {
   await sql.query(`CREATE INDEX IF NOT EXISTS idx_committee_members_sort ON committee_members(sort_order ASC)`);
 
   const defaults = [
-    ["about_intro", "The Culcheth & Glazebury Residents Association represents and supports residents in the Culcheth and Glazebury areas. We work to promote community interests, share local news and events, and provide a forum for discussion.\n\nThis website is your hub for the latest news, a residents' forum, gallery, and a way to get in touch with the committee. If you'd like to get involved or have questions, please use the Contact page."],
-    ["contact_title", "Contact us"],
-    ["contact_description", "Send a message to the residents association. We'll get back to you as soon as we can."],
+    ["about_intro", "The Culcheth & Glazebury Residents Association represents and supports Residents in the Culcheth and Glazebury areas. We work to promote Community interests, share local news and events, and provide a forum for discussion.\n\nThis website is your hub for the latest news, a Residents' forum, gallery, and a way to get in touch with the committee. If you'd like to get involved or have questions, please use the Contact page."],
+    ["contact_title", "Contact Us"],
+    ["contact_description", "Send a message to the Residents Association. We'll get back to you as soon as we can."],
     ["contact_label_name", "Your name"],
     ["contact_label_email", "Email"],
     ["contact_label_subject", "Subject"],

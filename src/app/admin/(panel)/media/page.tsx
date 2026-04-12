@@ -20,14 +20,14 @@ export default async function AdminMediaPage() {
 
   return (
     <div>
-      <h1 className="font-heading text-2xl font-semibold">Media library</h1>
+      <h1 className="font-heading text-2xl font-semibold">Media Library</h1>
       <p className="mt-1 text-sm text-[var(--color-muted)]">
         Upload, browse and manage all your images. Copy a URL to reuse in news or elsewhere.
       </p>
 
       <MediaUploadForm />
 
-      <h2 className="mt-10 font-heading text-lg font-semibold">Gallery images</h2>
+      <h2 className="mt-10 font-heading text-lg font-semibold">Gallery Images</h2>
       {gallery.length === 0 ? (
         <p className="mt-2 text-sm text-[var(--color-muted)]">No gallery images.</p>
       ) : (
@@ -44,7 +44,7 @@ export default async function AdminMediaPage() {
         </div>
       )}
 
-      <h2 className="mt-10 font-heading text-lg font-semibold">Media assets</h2>
+      <h2 className="mt-10 font-heading text-lg font-semibold">Media Assets</h2>
       {assets.length === 0 ? (
         <p className="mt-2 text-sm text-[var(--color-muted)]">No media assets uploaded yet.</p>
       ) : (

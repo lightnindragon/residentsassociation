@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { uploadImage } from "@/app/admin/actions/gallery";
 import { Input, Button } from "@/components/ui";
+import { ADMIN_GALLERY_IMAGE_HINT } from "@/lib/image-specs";
 
 export function UploadForm() {
   const [state, formAction] = useActionState(uploadImage, null);
@@ -14,6 +15,7 @@ export function UploadForm() {
       <form action={formAction} className="mt-6 flex max-w-md flex-col gap-4">
         <div className="flex-1">
           <label className="mb-1 block text-sm font-medium text-[var(--foreground)]">Image file</label>
+          <p className="mb-2 text-sm font-medium text-red-600 dark:text-red-500">{ADMIN_GALLERY_IMAGE_HINT}</p>
           <input
             type="file"
             name="file"
