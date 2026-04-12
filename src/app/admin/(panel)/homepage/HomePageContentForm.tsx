@@ -37,17 +37,17 @@ export function HomePageContentForm({
         </p>
         <p className="mt-2 text-sm font-medium text-red-600 dark:text-red-500">{ADMIN_HERO_IMAGE_HINT}</p>
         {initialHeroUrl ? (
-          <div className="relative mt-3 aspect-[3/1] w-full max-w-xl overflow-hidden rounded-lg border border-[var(--color-border)] bg-[var(--color-border)]">
+          <div className="relative mt-3 aspect-[3/1] w-full max-w-xl overflow-hidden rounded-lg border border-[var(--color-border)]">
             {showPreview ? (
               <Image
                 src={initialHeroUrl}
                 alt=""
                 fill
-                className="object-contain object-center"
+                className="object-cover object-center"
                 sizes="(max-width: 576px) 100vw, 576px"
               />
             ) : (
-              <img src={initialHeroUrl} alt="" className="h-full w-full object-contain object-center" />
+              <img src={initialHeroUrl} alt="" className="h-full w-full object-cover object-center" />
             )}
           </div>
         ) : (

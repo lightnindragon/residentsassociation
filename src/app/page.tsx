@@ -40,12 +40,12 @@ export default async function HomePage() {
     <div className="flex flex-col">
       <section className="border-b border-[var(--color-surface-strong)] bg-gradient-to-b from-[var(--color-surface)] to-[var(--background)]">
         {heroUrl ? (
-          <div className="relative mx-auto aspect-[21/9] max-h-[min(45vh,420px)] w-full max-w-6xl bg-[var(--color-border)] sm:aspect-[3/1] sm:max-h-[min(50vh,480px)]">
+          <div className="relative mx-auto aspect-[21/9] max-h-[min(45vh,420px)] w-full max-w-6xl overflow-hidden sm:aspect-[3/1] sm:max-h-[min(50vh,480px)]">
             <Image
               src={heroUrl}
               alt={homeContent.heroImageAlt}
               fill
-              className="object-contain object-center"
+              className="object-cover object-center"
               sizes="(max-width: 1152px) 100vw, 1152px"
               priority
             />
