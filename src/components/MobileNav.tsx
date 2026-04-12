@@ -23,6 +23,7 @@ export function MobileNav({
   const bar = tone === "dark" ? "bg-white" : "bg-[var(--foreground)]";
   const hit = tone === "dark" ? "hover:bg-white/10" : "hover:bg-[var(--color-surface)]";
   const [open, setOpen] = useState(false);
+  const [newsOpen, setNewsOpen] = useState(false);
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
@@ -31,7 +32,10 @@ export function MobileNav({
     };
   }, [open]);
 
-  const close = () => setOpen(false);
+  const close = () => {
+    setOpen(false);
+    setNewsOpen(false);
+  };
 
   return (
     <div className="md:hidden">
@@ -75,29 +79,48 @@ export function MobileNav({
               {/* Main links */}
               <div className="flex flex-col divide-y divide-[var(--color-border)] px-5 py-1">
                 <MobLink href="/" onClick={close}>Home</MobLink>
-                <MobLink href="/news" onClick={close}>News</MobLink>
-                <MobLink href="/planning-applications" onClick={close}>
-                  Planning
-                </MobLink>
-                <MobLink href="/agendas" onClick={close}>
-                  Agendas
-                </MobLink>
-                <MobLink href="/minutes" onClick={close}>
-                  Minutes
-                </MobLink>
-                <MobLink href="/events" onClick={close}>
-                  Events
-                </MobLink>
-                {categories.map((c) => (
-                  <MobLink
-                    key={c.slug}
-                    href={`/news/category/${c.slug}`}
-                    onClick={close}
-                    sub
+                <div className="py-0">
+                  <button
+                    type="button"
+                    className="flex w-full items-center justify-between py-4 text-left text-sm font-medium text-[var(--foreground)] hover:text-[var(--color-primary)]"
+                    aria-expanded={newsOpen}
+                    onClick={() => setNewsOpen((n) => !n)}
                   >
-                    {c.name}
-                  </MobLink>
-                ))}
+                    News
+                    <span className="text-xs opacity-70" aria-hidden>
+                      ▾
+                    </span>
+                  </button>
+                  {newsOpen && (
+                    <div className="flex flex-col border-t border-[var(--color-border)] bg-[var(--color-surface)]/40">
+                      <MobLink href="/news" onClick={close} sub>
+                        All news
+                      </MobLink>
+                      {categories.map((c) => (
+                        <MobLink
+                          key={c.slug}
+                          href={`/news/category/${c.slug}`}
+                          onClick={close}
+                          sub
+                        >
+                          {c.name}
+                        </MobLink>
+                      ))}
+                      <MobLink href="/events" onClick={close} sub>
+                        Events
+                      </MobLink>
+                      <MobLink href="/planning-applications" onClick={close} sub>
+                        Planning
+                      </MobLink>
+                      <MobLink href="/agendas" onClick={close} sub>
+                        Agendas
+                      </MobLink>
+                      <MobLink href="/minutes" onClick={close} sub>
+                        Minutes
+                      </MobLink>
+                    </div>
+                  )}
+                </div>
                 <MobLink href="/gallery" onClick={close}>Gallery</MobLink>
                 <MobLink href="/contact" onClick={close}>Contact</MobLink>
                 <MobLink href="/about" onClick={close}>About</MobLink>

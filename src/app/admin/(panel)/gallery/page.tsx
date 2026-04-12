@@ -37,13 +37,13 @@ export default async function AdminGalleryPage() {
             key={img.id}
             className="overflow-hidden rounded-lg border border-[var(--color-border)]"
           >
-            <div className="relative aspect-square bg-[var(--color-border)]">
+            <div className="relative aspect-[4/3] bg-[var(--color-border)]">
               <Image
                 src={img.url}
                 alt={img.caption ?? "Gallery"}
                 fill
                 className="object-contain object-center"
-                sizes="200px"
+                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
               />
             </div>
             <div className="flex items-center justify-between p-2">

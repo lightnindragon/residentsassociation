@@ -63,43 +63,11 @@ export default async function HomePage() {
             <Link href="/news">
               <Button className="min-w-[140px]">Latest News</Button>
             </Link>
-            <Link href="/planning-applications">
-              <Button variant="outline" className="min-w-[140px]">
-                Planning Applications
-              </Button>
-            </Link>
-            <Link href="/agendas">
-              <Button variant="outline" className="min-w-[140px]">
-                Agendas
-              </Button>
-            </Link>
-            <Link href="/minutes">
-              <Button variant="outline" className="min-w-[140px]">
-                Minutes
-              </Button>
-            </Link>
-            <Link href="/events">
-              <Button variant="outline" className="min-w-[140px]">
-                Events
-              </Button>
-            </Link>
-            <Link href="/gallery">
-              <Button variant="outline" className="min-w-[140px]">
-                Gallery
-              </Button>
-            </Link>
             <Link href="/contact">
               <Button variant="secondary" className="min-w-[140px]">
                 Contact Us
               </Button>
             </Link>
-            {session?.user ? (
-              <Link href="/forum">
-                <Button variant="outline" className="min-w-[140px]">
-                  Forum
-                </Button>
-              </Link>
-            ) : null}
             {showDonate && donationSettings && (
               <DonateButton
                 variant="hero"

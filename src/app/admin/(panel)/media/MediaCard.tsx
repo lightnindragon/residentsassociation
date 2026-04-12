@@ -21,17 +21,17 @@ export function MediaCard({
 
   return (
     <div className="group relative overflow-hidden rounded-lg border border-[var(--color-border)] bg-white">
-      <div className="relative aspect-square bg-[var(--color-border)]">
+      <div className="flex aspect-[4/3] w-full items-center justify-center bg-[var(--color-border)] p-2">
         {isImage ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={url}
             alt={label ?? "Media"}
-            className="h-full w-full object-cover"
+            className="max-h-full max-w-full object-contain object-center"
             loading="lazy"
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center text-xs text-[var(--color-muted)]">
+          <div className="flex min-h-[6rem] w-full items-center justify-center text-xs text-[var(--color-muted)]">
             Non-image file
           </div>
         )}
