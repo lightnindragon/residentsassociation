@@ -67,6 +67,12 @@ export async function Footer() {
             <Link href="/terms" className={footLink}>
               Terms & Conditions
             </Link>
+            <Link href="/acceptable-use" className={footLink}>
+              Acceptable use policy
+            </Link>
+            <Link href="/website-disclaimer" className={footLink}>
+              Website disclaimer
+            </Link>
             <Link href="/privacy" className={footLink}>
               Privacy
             </Link>
@@ -89,6 +95,23 @@ export async function Footer() {
             )}
           </nav>
         </div>
+
+        <p className="mt-8 max-w-3xl text-xs leading-relaxed text-[var(--color-chrome-muted)]">
+          <span className="font-medium text-[var(--color-chrome-foreground)]/90">
+            Disclaimer:
+          </span>{" "}
+          CAGRA shares information in good faith for general community awareness.
+          While we do our best to keep everything accurate and up to date, we
+          can&apos;t guarantee completeness or correctness. For full details, please
+          see our{" "}
+          <Link
+            href="/website-disclaimer"
+            className="text-[var(--color-chrome-foreground)]/80 underline underline-offset-2 hover:text-[var(--color-primary)] transition-colors"
+          >
+            Website Disclaimer
+          </Link>
+          .
+        </p>
 
         <div className="mt-8 flex flex-col gap-1 border-t border-black/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-xs text-[var(--color-chrome-muted)]">

@@ -113,7 +113,7 @@ export default function TermsPage() {
           sites or services.
         </p>
 
-        <h2>8. Disclaimer And Limitation Of Liability</h2>
+        <h2 className="scroll-mt-24">8. Disclaimer And Limitation Of Liability</h2>
         <p>
           This website is provided on an &ldquo;as is&rdquo; and &ldquo;as
           available&rdquo; basis. While we make reasonable efforts to keep the site
