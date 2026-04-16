@@ -43,3 +43,7 @@ next-env.d.ts
 
 .vercel
 .env*.local
+
+# Local-only files (not for the repo)
+/CAGRA Acceptable Use Policy copy.docx
+/Newchurch_front_right_2.jpg
