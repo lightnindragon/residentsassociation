@@ -5,13 +5,17 @@ export type AdminNavSection = { title: string; items: AdminNavItem[] };
 export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
   {
     title: "Overview",
-    items: [{ href: "/admin", label: "Dashboard" }],
+    items: [
+      { href: "/admin", label: "Dashboard" },
+      { href: "/admin/calendar", label: "Calendar" },
+    ],
   },
   {
     title: "People & Comms",
     items: [
       { href: "/admin/messages", label: "Messages" },
       { href: "/admin/residents", label: "Residents" },
+      { href: "/admin/mailing-list", label: "Mailing List" },
       { href: "/admin/news-updates", label: "News Updates" },
       { href: "/admin/admins", label: "Admins" },
     ],
@@ -33,6 +37,7 @@ export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
     title: "Website",
     items: [
       { href: "/admin/homepage", label: "Homepage" },
+      { href: "/admin/header-menus", label: "Header Menus" },
       { href: "/admin/about", label: "About Us" },
       { href: "/admin/contact", label: "Contact Page" },
       { href: "/admin/social", label: "Social Links" },

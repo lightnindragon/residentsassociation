@@ -4,6 +4,7 @@ import { getSql } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { sanitizeRichHtml } from "@/lib/rich-text";
 import { notifySubscribersNewMinutes } from "@/lib/notify-blog";
+import { shouldNotifySubscribers } from "@/lib/publish-notify";
 
 type MinutesActionResult = { ok?: boolean; error?: string } | null;
 
@@ -67,7 +68,7 @@ export async function createMinutesEntry(
         ${publish ? new Date().toISOString() : null}, ${coverImageUrl}
       )
     `;
-    if (publish) {
+    if (shouldNotifySubscribers(formData, publish)) {
       void notifySubscribersNewMinutes({ title, slug });
     }
     revalidateMinutesPaths(slug);
@@ -112,7 +113,7 @@ export async function updateMinutesEntry(
           updated_at = NOW()
       WHERE id = ${id}::uuid
     `;
-    if (publish && !wasPublished && prev) {
+    if (shouldNotifySubscribers(formData, publish, wasPublished) && prev) {
       void notifySubscribersNewMinutes({ title, slug: prev.slug });
     }
     revalidateMinutesPaths(prev?.slug ?? null);

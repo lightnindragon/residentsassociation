@@ -328,3 +328,39 @@ CREATE TABLE IF NOT EXISTS forum_post_likes (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   PRIMARY KEY (post_id, user_id)
 );
+
+-- Admin-only internal calendar
+CREATE TABLE IF NOT EXISTS admin_calendar_events (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  title TEXT NOT NULL,
+  description TEXT,
+  starts_at TIMESTAMPTZ NOT NULL,
+  ends_at TIMESTAMPTZ,
+  all_day BOOLEAN NOT NULL DEFAULT false,
+  location TEXT,
+  created_by UUID REFERENCES users(id) ON DELETE SET NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_admin_calendar_starts ON admin_calendar_events (starts_at);
+
+-- Mailing list (separate from website user accounts; import/export)
+CREATE TABLE IF NOT EXISTS mailing_list_subscribers (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name TEXT NOT NULL DEFAULT '',
+  email TEXT NOT NULL,
+  source TEXT NOT NULL DEFAULT 'manual' CHECK (source IN ('manual', 'import', 'website')),
+  notes TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_mailing_list_email_lower ON mailing_list_subscribers (LOWER(email));
+
+-- Editable public header menus (desktop + mobile)
+CREATE TABLE IF NOT EXISTS nav_menus (
+  menu_key TEXT PRIMARY KEY CHECK (menu_key IN ('desktop', 'mobile')),
+  items JSONB NOT NULL DEFAULT '[]'::jsonb,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);

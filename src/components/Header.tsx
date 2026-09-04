@@ -4,42 +4,16 @@ import { auth, signOut } from "@/lib/auth";
 import { Button } from "@/components/ui";
 import { getDonationSettings } from "@/lib/donations";
 import { DonateButton } from "@/components/DonateButton";
-import { getHeaderNewsCategories, type HeaderNewsCategory } from "@/lib/news-nav";
 import { getSiteSettings } from "@/lib/site-settings";
-import { NewsNav } from "@/components/NewsNav";
 import { FacebookIconLink } from "@/components/FacebookIconLink";
 import { hasNonFacebookSocialLinks, SocialIconLinks } from "@/components/SocialIconLinks";
 import { getHeaderLogoSrc } from "@/lib/branding";
 import { MobileNav } from "@/components/MobileNav";
+import { HeaderNav } from "@/components/HeaderNav";
+import { getResolvedNavMenu } from "@/lib/nav-menu";
 
 const navLink =
   "font-medium text-[var(--color-chrome-foreground)] transition-colors hover:text-[var(--color-primary)]";
-
-function PrimaryNav({
-  categories,
-  className = "",
-}: {
-  categories: HeaderNewsCategory[];
-  className?: string;
-}) {
-  return (
-    <nav className={className} aria-label="Primary">
-      <Link href="/" className={navLink}>
-        Home
-      </Link>
-      <NewsNav categories={categories} />
-      <Link href="/about" className={navLink}>
-        About
-      </Link>
-      <Link href="/contact" className={navLink}>
-        Contact
-      </Link>
-      <Link href="/gallery" className={navLink}>
-        Gallery
-      </Link>
-    </nav>
-  );
-}
 
 export async function Header() {
   const session = await auth();
@@ -47,9 +21,12 @@ export async function Header() {
   const isAdmin = user?.role === "admin" || user?.role === "dev";
   const donationSettings = await getDonationSettings();
   const showDonate = !!session?.user && donationSettings?.enabled === true;
-  const newsCategories = await getHeaderNewsCategories();
   const social = await getSiteSettings();
   const logoSrc = getHeaderLogoSrc();
+  const [desktopNav, mobileNav] = await Promise.all([
+    getResolvedNavMenu("desktop"),
+    getResolvedNavMenu("mobile"),
+  ]);
 
   const signOutAction = async () => {
     "use server";
@@ -146,7 +123,7 @@ export async function Header() {
             <MobileNav
               isLoggedIn={!!session?.user}
               isAdmin={isAdmin}
-              categories={newsCategories}
+              items={mobileNav}
               signOutAction={signOutAction}
             />
           </div>
@@ -154,8 +131,8 @@ export async function Header() {
 
         {/* Desktop: primary nav left — logo centre — account & social right */}
         <div className="hidden min-h-24 items-center gap-4 py-3 md:grid md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] md:gap-6 lg:min-h-28">
-          <PrimaryNav
-            categories={newsCategories}
+          <HeaderNav
+            items={desktopNav}
             className="flex flex-wrap items-center gap-x-3 gap-y-2 text-sm justify-self-start lg:gap-x-4"
           />
           <div className="justify-self-center">{logo}</div>

@@ -5,6 +5,7 @@ import { createAgenda, updateAgenda } from "@/app/admin/actions/agendas";
 import { Input, Button } from "@/components/ui";
 import { RichTextEditor } from "@/components/RichTextEditor";
 import { BlogImageUpload } from "@/components/BlogImageUpload";
+import { PublishNotifyFields } from "@/components/PublishNotifyFields";
 import { toast } from "sonner";
 
 function updateBound(id: string) {
@@ -91,15 +92,7 @@ export function AgendaForm({
           </span>
           <RichTextEditor name="body" initialHtml={agenda?.body ?? ""} />
         </div>
-        <label className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            name="published"
-            value="1"
-            defaultChecked={!!agenda?.published_at}
-          />
-          <span className="text-sm">Published (visible on site)</span>
-        </label>
+        <PublishNotifyFields defaultPublished={!!agenda?.published_at} />
         <Button type="submit">{isEdit ? "Update" : "Create"}</Button>
       </form>
     </>

@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, type ReactNode } from "react";
 import Link from "next/link";
-import type { HeaderNewsCategory } from "@/lib/news-nav";
+import type { NavItem } from "@/lib/nav-menu";
 
 type MobileNavProps = {
   isLoggedIn: boolean;
   isAdmin: boolean;
-  categories: HeaderNewsCategory[];
+  items: NavItem[];
   signOutAction: () => Promise<void>;
   /** `dark` — hamburger on slate header */
   tone?: "light" | "dark";
@@ -16,14 +16,14 @@ type MobileNavProps = {
 export function MobileNav({
   isLoggedIn,
   isAdmin,
-  categories,
+  items,
   signOutAction,
   tone = "light",
 }: MobileNavProps) {
   const bar = tone === "dark" ? "bg-white" : "bg-[var(--foreground)]";
   const hit = tone === "dark" ? "hover:bg-white/10" : "hover:bg-[var(--color-surface)]";
   const [open, setOpen] = useState(false);
-  const [newsOpen, setNewsOpen] = useState(false);
+  const [openId, setOpenId] = useState<string | null>(null);
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
@@ -34,12 +34,11 @@ export function MobileNav({
 
   const close = () => {
     setOpen(false);
-    setNewsOpen(false);
+    setOpenId(null);
   };
 
   return (
     <div className="md:hidden">
-      {/* Hamburger button */}
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
@@ -66,76 +65,64 @@ export function MobileNav({
 
       {open && (
         <>
-          {/* Backdrop */}
           <div
             className="fixed inset-0 z-40 bg-black/25"
             onClick={close}
             aria-hidden
           />
 
-          {/* Drawer */}
           <div className="absolute left-0 right-0 top-full z-50 max-h-[80vh] overflow-y-auto border-b border-[var(--color-border)] bg-white shadow-xl">
             <nav aria-label="Mobile navigation">
-              {/* Main links */}
               <div className="flex flex-col divide-y divide-[var(--color-border)] px-5 py-1">
-                <MobLink href="/" onClick={close}>Home</MobLink>
-                <div className="py-0">
-                  <button
-                    type="button"
-                    className="flex w-full items-center justify-between py-4 text-left text-sm font-medium text-[var(--foreground)] hover:text-[var(--color-primary)]"
-                    aria-expanded={newsOpen}
-                    onClick={() => setNewsOpen((n) => !n)}
-                  >
-                    News
-                    <span className="text-xs opacity-70" aria-hidden>
-                      ▾
-                    </span>
-                  </button>
-                  {newsOpen && (
-                    <div className="flex flex-col border-t border-[var(--color-border)] bg-[var(--color-surface)]/40">
-                      <MobLink href="/news" onClick={close} sub>
-                        All news
-                      </MobLink>
-                      {categories.map((c) => (
-                        <MobLink
-                          key={c.slug}
-                          href={`/news/category/${c.slug}`}
-                          onClick={close}
-                          sub
-                        >
-                          {c.name}
-                        </MobLink>
-                      ))}
-                      <MobLink href="/events" onClick={close} sub>
-                        Events
-                      </MobLink>
-                      <MobLink href="/planning-applications" onClick={close} sub>
-                        Planning
-                      </MobLink>
-                      <MobLink href="/agendas" onClick={close} sub>
-                        Agendas
-                      </MobLink>
-                      <MobLink href="/minutes" onClick={close} sub>
-                        Minutes
-                      </MobLink>
+                {items.map((item) => {
+                  const children = item.children ?? [];
+                  if (children.length === 0) {
+                    return (
+                      <MobLink key={item.id} item={item} onClick={close} />
+                    );
+                  }
+                  const expanded = openId === item.id;
+                  return (
+                    <div key={item.id} className="py-0">
+                      <button
+                        type="button"
+                        className="flex w-full items-center justify-between py-4 text-left text-sm font-medium text-[var(--foreground)] hover:text-[var(--color-primary)]"
+                        aria-expanded={expanded}
+                        onClick={() => setOpenId((id) => (id === item.id ? null : item.id))}
+                      >
+                        {item.label}
+                        <span className="text-xs opacity-70" aria-hidden>
+                          ▾
+                        </span>
+                      </button>
+                      {expanded && (
+                        <div className="flex flex-col border-t border-[var(--color-border)] bg-[var(--color-surface)]/40">
+                          {item.href && !children.some((c) => c.href === item.href) ? (
+                            <MobLink item={item} onClick={close} sub />
+                          ) : null}
+                          {children.map((child) => (
+                            <MobLink key={child.id} item={child} onClick={close} sub />
+                          ))}
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-                <MobLink href="/gallery" onClick={close}>Gallery</MobLink>
-                <MobLink href="/contact" onClick={close}>Contact</MobLink>
-                <MobLink href="/about" onClick={close}>About</MobLink>
+                  );
+                })}
               </div>
 
-              {/* Auth links */}
               <div className="flex flex-col divide-y divide-[var(--color-border)] border-t-2 border-[var(--color-surface-strong)] px-5 py-1">
                 {isLoggedIn ? (
                   <>
-                    <MobLink href="/account" onClick={close}>Account</MobLink>
-                    <MobLink href="/forum" onClick={close}>Forum</MobLink>
+                    <MobHref href="/account" onClick={close}>
+                      Account
+                    </MobHref>
+                    <MobHref href="/forum" onClick={close}>
+                      Forum
+                    </MobHref>
                     {isAdmin && (
-                      <MobLink href="/admin" onClick={close} accent>
+                      <MobHref href="/admin" onClick={close} accent>
                         Admin
-                      </MobLink>
+                      </MobHref>
                     )}
                     <form action={signOutAction}>
                       <button
@@ -148,10 +135,12 @@ export function MobileNav({
                   </>
                 ) : (
                   <>
-                    <MobLink href="/login" onClick={close}>Sign in</MobLink>
-                    <MobLink href="/signup" onClick={close} accent>
+                    <MobHref href="/login" onClick={close}>
+                      Sign in
+                    </MobHref>
+                    <MobHref href="/signup" onClick={close} accent>
                       Sign up
-                    </MobLink>
+                    </MobHref>
                   </>
                 )}
               </div>
@@ -164,16 +153,46 @@ export function MobileNav({
 }
 
 function MobLink({
+  item,
+  onClick,
+  sub,
+  accent,
+}: {
+  item: NavItem;
+  onClick: () => void;
+  sub?: boolean;
+  accent?: boolean;
+}) {
+  const extra = item.openInNewTab
+    ? { target: "_blank" as const, rel: "noopener noreferrer" }
+    : {};
+  return (
+    <Link
+      href={item.href || "#"}
+      onClick={onClick}
+      className={`py-4 text-sm font-medium ${
+        accent
+          ? "text-[var(--color-primary)] hover:underline"
+          : sub
+          ? "pl-4 text-[var(--color-muted)] hover:text-[var(--color-primary)]"
+          : "text-[var(--foreground)] hover:text-[var(--color-primary)]"
+      }`}
+      {...extra}
+    >
+      {item.label}
+    </Link>
+  );
+}
+
+function MobHref({
   href,
   onClick,
   children,
-  sub,
   accent,
 }: {
   href: string;
   onClick: () => void;
-  children: React.ReactNode;
-  sub?: boolean;
+  children: ReactNode;
   accent?: boolean;
 }) {
   return (
@@ -183,8 +202,6 @@ function MobLink({
       className={`py-4 text-sm font-medium ${
         accent
           ? "text-[var(--color-primary)] hover:underline"
-          : sub
-          ? "pl-4 text-[var(--color-muted)] hover:text-[var(--color-primary)]"
           : "text-[var(--foreground)] hover:text-[var(--color-primary)]"
       }`}
     >

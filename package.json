@@ -17,7 +17,8 @@
     "upload-code-of-conduct-blob": "node --env-file=.env.local scripts/upload-code-of-conduct-blob.js",
     "seed-hero-image": "node --env-file=.env.local scripts/seed-hero-from-url.js",
     "seed-gallery-image": "node --env-file=.env.local scripts/seed-gallery-from-url.js",
-    "dedupe-gallery": "node --env-file=.env.local scripts/dedupe-gallery-images.js"
+    "dedupe-gallery": "node --env-file=.env.local scripts/dedupe-gallery-images.js",
+    "migrate-calendar-mailing-nav": "node --env-file=.env.local scripts/migrate-calendar-mailing-nav.js"
   },
   "dependencies": {
     "@marsidev/react-turnstile": "^1.4.2",

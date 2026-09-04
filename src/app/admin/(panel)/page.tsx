@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getSql } from "@/lib/db";
-import { formatUkDate } from "@/lib/date-format";
+import { formatUkDate, formatUkDateTime } from "@/lib/date-format";
 
 export default async function AdminDashboardPage() {
   let messageCount = 0;
@@ -15,6 +15,12 @@ export default async function AdminDashboardPage() {
     category_slug: string;
     area_slug: string;
     created_at: string;
+  }> = [];
+  let upcomingCalendar: Array<{
+    id: string;
+    title: string;
+    starts_at: string;
+    all_day: boolean;
   }> = [];
   try {
     const sql = getSql();
@@ -41,6 +47,17 @@ export default async function AdminDashboardPage() {
       ORDER BY t.created_at DESC
       LIMIT 5
     `) as typeof recentForum;
+    try {
+      upcomingCalendar = (await sql`
+        SELECT id, title, starts_at::text, all_day
+        FROM admin_calendar_events
+        WHERE COALESCE(ends_at, starts_at) >= NOW()
+        ORDER BY starts_at ASC
+        LIMIT 5
+      `) as typeof upcomingCalendar;
+    } catch {
+      upcomingCalendar = [];
+    }
   } catch {
     // DB not configured
   }
@@ -99,7 +116,7 @@ export default async function AdminDashboardPage() {
         </Link>
       </div>
 
-      <div className="mt-10 grid gap-8 lg:grid-cols-2">
+      <div className="mt-10 grid gap-8 lg:grid-cols-3">
         <div>
           <h2 className="font-heading text-lg font-semibold text-[var(--foreground)]">
             Recent News
@@ -144,6 +161,35 @@ export default async function AdminDashboardPage() {
                   </Link>
                   <span className="ml-2 text-xs text-[var(--color-muted)]">
                     {formatUkDate(t.created_at)}
+                  </span>
+                </li>
+              ))
+            )}
+          </ul>
+        </div>
+        <div>
+          <h2 className="font-heading text-lg font-semibold text-[var(--foreground)]">
+            Upcoming calendar
+          </h2>
+          <ul className="mt-3 space-y-2">
+            {upcomingCalendar.length === 0 ? (
+              <li className="text-sm text-[var(--color-muted)]">
+                No upcoming admin calendar events.{" "}
+                <Link href="/admin/calendar" className="text-[var(--color-primary)] hover:underline">
+                  Add one
+                </Link>
+              </li>
+            ) : (
+              upcomingCalendar.map((e) => (
+                <li key={e.id}>
+                  <Link
+                    href="/admin/calendar"
+                    className="text-sm text-[var(--color-primary)] hover:underline"
+                  >
+                    {e.title}
+                  </Link>
+                  <span className="ml-2 text-xs text-[var(--color-muted)]">
+                    {e.all_day ? formatUkDate(e.starts_at) : formatUkDateTime(e.starts_at)}
                   </span>
                 </li>
               ))

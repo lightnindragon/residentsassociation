@@ -4,6 +4,7 @@ import { getSql } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { sanitizeRichHtml } from "@/lib/rich-text";
 import { notifySubscribersNewAgenda } from "@/lib/notify-blog";
+import { shouldNotifySubscribers } from "@/lib/publish-notify";
 
 type AgendaActionResult = { ok?: boolean; error?: string } | null;
 
@@ -67,7 +68,7 @@ export async function createAgenda(
         ${publish ? new Date().toISOString() : null}, ${coverImageUrl}
       )
     `;
-    if (publish) {
+    if (shouldNotifySubscribers(formData, publish)) {
       void notifySubscribersNewAgenda({ title, slug });
     }
     revalidateAgendaPaths(slug);
@@ -112,7 +113,7 @@ export async function updateAgenda(
           updated_at = NOW()
       WHERE id = ${id}::uuid
     `;
-    if (publish && !wasPublished && prev) {
+    if (shouldNotifySubscribers(formData, publish, wasPublished) && prev) {
       void notifySubscribersNewAgenda({ title, slug: prev.slug });
     }
     revalidateAgendaPaths(prev?.slug ?? null);

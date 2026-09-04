@@ -4,6 +4,7 @@ import { getSql } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { sanitizeRichHtml } from "@/lib/rich-text";
 import { notifySubscribersNewPlanningApplication } from "@/lib/notify-blog";
+import { shouldNotifySubscribers } from "@/lib/publish-notify";
 
 type PlanningActionResult = { ok?: boolean; error?: string } | null;
 
@@ -67,7 +68,7 @@ export async function createPlanningApplication(
         ${publish ? new Date().toISOString() : null}, ${coverImageUrl}
       )
     `;
-    if (publish) {
+    if (shouldNotifySubscribers(formData, publish)) {
       void notifySubscribersNewPlanningApplication({ title, slug });
     }
     revalidatePlanningPaths(slug);
@@ -112,7 +113,7 @@ export async function updatePlanningApplication(
           updated_at = NOW()
       WHERE id = ${id}::uuid
     `;
-    if (publish && !wasPublished && prev) {
+    if (shouldNotifySubscribers(formData, publish, wasPublished) && prev) {
       void notifySubscribersNewPlanningApplication({ title, slug: prev.slug });
     }
     revalidatePlanningPaths(prev?.slug ?? null);

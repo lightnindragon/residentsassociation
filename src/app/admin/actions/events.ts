@@ -4,6 +4,7 @@ import { getSql } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { sanitizeRichHtml } from "@/lib/rich-text";
 import { notifySubscribersNewEvent } from "@/lib/notify-blog";
+import { shouldNotifySubscribers } from "@/lib/publish-notify";
 
 type EventActionResult = { ok?: boolean; error?: string } | null;
 
@@ -67,7 +68,7 @@ export async function createEvent(
         ${publish ? new Date().toISOString() : null}, ${coverImageUrl}
       )
     `;
-    if (publish) {
+    if (shouldNotifySubscribers(formData, publish)) {
       void notifySubscribersNewEvent({ title, slug });
     }
     revalidateEventPaths(slug);
@@ -112,7 +113,7 @@ export async function updateEvent(
           updated_at = NOW()
       WHERE id = ${id}::uuid
     `;
-    if (publish && !wasPublished && prev) {
+    if (shouldNotifySubscribers(formData, publish, wasPublished) && prev) {
       void notifySubscribersNewEvent({ title, slug: prev.slug });
     }
     revalidateEventPaths(prev?.slug ?? null);

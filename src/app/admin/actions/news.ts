@@ -4,6 +4,7 @@ import { getSql } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { notifySubscribersNewPost } from "@/lib/notify-blog";
 import { sanitizeRichHtml } from "@/lib/rich-text";
+import { shouldNotifySubscribers } from "@/lib/publish-notify";
 
 type PostActionResult = { ok?: boolean; error?: string } | null;
 
@@ -45,7 +46,7 @@ export async function createPost(
         ${catId}, ${coverImageUrl}
       )
     `;
-    if (publish) {
+    if (shouldNotifySubscribers(formData, publish)) {
       void notifySubscribersNewPost({ title, slug });
     }
     revalidatePath("/");
@@ -89,7 +90,7 @@ export async function updatePost(
           updated_at = NOW()
       WHERE id = ${id}::uuid
     `;
-    if (publish && !wasPublished && prev) {
+    if (shouldNotifySubscribers(formData, publish, wasPublished) && prev) {
       void notifySubscribersNewPost({ title, slug: prev.slug });
     }
     revalidatePath("/");
