@@ -1,14 +1,33 @@
 "use client";
 
-import { useActionState, useEffect, useMemo, useRef, useState, type Dispatch, type ReactNode, type SetStateAction } from "react";
+import {
+  useActionState,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type Dispatch,
+  type DragEvent,
+  type ReactNode,
+  type SetStateAction,
+} from "react";
 import { saveNavMenu } from "@/app/admin/actions/nav-menus";
-import { Button, Input } from "@/components/ui";
+import { Button } from "@/components/ui";
 import { toast } from "sonner";
 import {
   NAV_PAGE_OPTIONS,
   type NavItem,
   type NavMenuKey,
 } from "@/lib/nav-menu";
+
+type FlatRow = {
+  id: string;
+  label: string;
+  href: string;
+  openInNewTab?: boolean;
+  includeNewsCategories?: boolean;
+  depth: 0 | 1;
+};
 
 function newId(): string {
   return crypto.randomUUID();
@@ -29,14 +48,57 @@ function regenIds(items: NavItem[]): NavItem[] {
   }));
 }
 
-function emptyItem(): NavItem {
-  return { id: newId(), label: "New link", href: "/" };
+function toFlat(items: NavItem[]): FlatRow[] {
+  const rows: FlatRow[] = [];
+  for (const item of items) {
+    const { children, ...rest } = item;
+    rows.push({ ...rest, depth: 0 });
+    for (const child of children ?? []) {
+      rows.push({
+        id: child.id,
+        label: child.label,
+        href: child.href,
+        openInNewTab: child.openInNewTab,
+        includeNewsCategories: child.includeNewsCategories,
+        depth: 1,
+      });
+    }
+  }
+  return rows;
 }
 
-type DragState =
-  | { kind: "top"; from: number }
-  | { kind: "child"; parent: number; from: number }
-  | null;
+function fromFlat(rows: FlatRow[]): NavItem[] {
+  const items: NavItem[] = [];
+  let current: NavItem | null = null;
+  for (const row of rows) {
+    const item: NavItem = {
+      id: row.id,
+      label: row.label.trim() || "Untitled",
+      href: row.href,
+    };
+    if (row.openInNewTab) item.openInNewTab = true;
+    if (row.includeNewsCategories) item.includeNewsCategories = true;
+    if (row.depth === 0 || !current) {
+      current = item;
+      items.push(current);
+    } else {
+      current.children = [...(current.children ?? []), item];
+    }
+  }
+  return items;
+}
+
+function blockRange(rows: FlatRow[], index: number): { start: number; end: number } {
+  if (rows[index]?.depth === 1) return { start: index, end: index };
+  let end = index;
+  while (end + 1 < rows.length && rows[end + 1].depth === 1) end += 1;
+  return { start: index, end };
+}
+
+function pageTypeLabel(href: string): string {
+  const match = NAV_PAGE_OPTIONS.find((p) => p.href === href);
+  return match ? "Page" : href ? "Custom" : "Link";
+}
 
 export function HeaderMenuEditor({
   desktop,
@@ -62,9 +124,8 @@ export function HeaderMenuEditor({
         </TabButton>
       </div>
       <p className="mt-3 text-sm text-[var(--color-muted)]">
-        {tab === "desktop"
-          ? "Shown in the top bar on larger screens. Keep this list fairly short so it still wraps cleanly beside the logo."
-          : "Shown in the hamburger drawer on phones. You can include more links here than on desktop."}
+        Drag to reorder. Drag slightly right to nest a submenu. Click an item to edit it.
+        Sign in, Account, Forum and Admin stay in the header automatically.
       </p>
       <MenuEditor
         key={tab}
@@ -118,7 +179,10 @@ function MenuEditor({
   onCopyFromOther: () => void;
   copyLabel: string;
 }) {
-  const [drag, setDrag] = useState<DragState>(null);
+  const rows = useMemo(() => toFlat(items), [items]);
+  const [openId, setOpenId] = useState<string | null>(null);
+  const [dragIndex, setDragIndex] = useState<number | null>(null);
+  const [drop, setDrop] = useState<{ insertAt: number; depth: 0 | 1 } | null>(null);
   const [state, formAction] = useActionState(saveNavMenu, null);
   const last = useRef<typeof state>(null);
 
@@ -129,90 +193,45 @@ function MenuEditor({
     else if (state.error) toast.error(state.error);
   }, [state]);
 
-  const preview = useMemo(() => items, [items]);
-
-  function patchTop(index: number, patch: Partial<NavItem>) {
-    setItems((prev) => prev.map((item, i) => (i === index ? { ...item, ...patch } : item)));
+  function commit(nextRows: FlatRow[]) {
+    setItems(fromFlat(nextRows));
   }
 
-  function patchChild(parent: number, index: number, patch: Partial<NavItem>) {
-    setItems((prev) =>
-      prev.map((item, i) => {
-        if (i !== parent) return item;
-        const children = (item.children ?? []).map((c, ci) =>
-          ci === index ? { ...c, ...patch } : c
-        );
-        return { ...item, children };
-      })
-    );
+  function patchRow(id: string, patch: Partial<FlatRow>) {
+    commit(rows.map((row) => (row.id === id ? { ...row, ...patch } : row)));
   }
 
-  function moveTop(index: number, dir: -1 | 1) {
-    setItems((prev) => {
-      const next = [...prev];
-      const to = index + dir;
-      if (to < 0 || to >= next.length) return prev;
-      const [row] = next.splice(index, 1);
-      next.splice(to, 0, row);
-      return next;
-    });
+  function removeRow(index: number) {
+    const { start, end } = blockRange(rows, index);
+    commit([...rows.slice(0, start), ...rows.slice(end + 1)]);
+    if (openId && rows.slice(start, end + 1).some((r) => r.id === openId)) {
+      setOpenId(null);
+    }
   }
 
-  function moveChild(parent: number, index: number, dir: -1 | 1) {
-    setItems((prev) =>
-      prev.map((item, i) => {
-        if (i !== parent) return item;
-        const children = [...(item.children ?? [])];
-        const to = index + dir;
-        if (to < 0 || to >= children.length) return item;
-        const [row] = children.splice(index, 1);
-        children.splice(to, 0, row);
-        return { ...item, children };
-      })
-    );
+  function applyDrop(fromIndex: number, insertAt: number, depth: 0 | 1) {
+    const { start, end } = blockRange(rows, fromIndex);
+    const block = rows.slice(start, end + 1);
+    const without = [...rows.slice(0, start), ...rows.slice(end + 1)];
+    let at = insertAt;
+    if (insertAt > start) at = insertAt - (end - start + 1);
+    at = Math.max(0, Math.min(at, without.length));
+    let nextDepth: 0 | 1 = depth;
+    if (at === 0) nextDepth = 0;
+    const moved = block.map((row, i) => ({
+      ...row,
+      depth: (nextDepth === 1 ? 1 : i === 0 ? 0 : 1) as 0 | 1,
+    }));
+    commit([...without.slice(0, at), ...moved, ...without.slice(at)]);
   }
 
-  function indentTop(index: number) {
-    if (index <= 0) return;
-    setItems((prev) => {
-      const next = [...prev];
-      const [row] = next.splice(index, 1);
-      const parent = next[index - 1];
-      const nested = row.children?.length
-        ? [{ ...row, children: undefined }, ...row.children]
-        : [row];
-      next[index - 1] = {
-        ...parent,
-        children: [...(parent.children ?? []), ...nested],
-      };
-      return next;
-    });
-  }
-
-  function outdentChild(parent: number, index: number) {
-    setItems((prev) => {
-      const next = [...prev];
-      const parentItem = next[parent];
-      const children = [...(parentItem.children ?? [])];
-      const [row] = children.splice(index, 1);
-      next[parent] = { ...parentItem, children: children.length ? children : undefined };
-      next.splice(parent + 1, 0, row);
-      return next;
-    });
-  }
-
-  function removeTop(index: number) {
-    setItems((prev) => prev.filter((_, i) => i !== index));
-  }
-
-  function removeChild(parent: number, index: number) {
-    setItems((prev) =>
-      prev.map((item, i) => {
-        if (i !== parent) return item;
-        const children = (item.children ?? []).filter((_, ci) => ci !== index);
-        return { ...item, children: children.length ? children : undefined };
-      })
-    );
+  function updateDropFromPoint(targetIndex: number, clientX: number, clientY: number, el: HTMLElement) {
+    const rect = el.getBoundingClientRect();
+    const after = clientY > rect.top + rect.height / 2;
+    const insertAt = after ? targetIndex + 1 : targetIndex;
+    const indent = clientX > rect.left + 36;
+    const depth: 0 | 1 = insertAt === 0 || !indent ? 0 : 1;
+    setDrop({ insertAt, depth });
   }
 
   return (
@@ -220,13 +239,13 @@ function MenuEditor({
       <input type="hidden" name="menu_key" value={menuKey} />
       <input type="hidden" name="items" value={JSON.stringify(items)} />
 
-      <div className="mb-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-header-bg)] px-4 py-3">
-        <p className="mb-2 text-xs font-medium uppercase tracking-wide text-[var(--color-chrome-muted)]">
+      <div className="mb-4 rounded-lg border border-[var(--color-header-border)] bg-[var(--color-header-bg)] px-4 py-2.5">
+        <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-[var(--color-chrome-muted)]">
           Preview
         </p>
         {menuKey === "desktop" ? (
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm font-medium text-[var(--color-chrome-foreground)]">
-            {preview.map((item) => (
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm font-medium text-[var(--color-chrome-foreground)]">
+            {items.map((item) => (
               <span key={item.id} className="inline-flex items-center gap-0.5">
                 {item.label}
                 {(item.children?.length || item.includeNewsCategories) && (
@@ -236,20 +255,15 @@ function MenuEditor({
             ))}
           </div>
         ) : (
-          <ul className="divide-y divide-black/10 text-sm font-medium">
-            {preview.map((item) => (
-              <li key={item.id} className="py-2">
+          <ul className="text-sm font-medium text-[var(--color-chrome-foreground)]">
+            {items.map((item) => (
+              <li key={item.id}>
                 {item.label}
                 {item.children && item.children.length > 0 && (
-                  <ul className="mt-1 pl-4 text-[var(--color-chrome-muted)]">
+                  <ul className="pl-4 text-[var(--color-chrome-muted)]">
                     {item.children.map((c) => (
-                      <li key={c.id} className="py-0.5">
-                        {c.label}
-                      </li>
+                      <li key={c.id}>{c.label}</li>
                     ))}
-                    {item.includeNewsCategories && (
-                      <li className="py-0.5 italic">News categories…</li>
-                    )}
                   </ul>
                 )}
               </li>
@@ -258,220 +272,343 @@ function MenuEditor({
         )}
       </div>
 
-      <div className="space-y-3">
-        {items.map((item, index) => (
+      <div className="grid gap-6 lg:grid-cols-[16.5rem_minmax(0,1fr)]">
+        <AddItemsPanel
+          onAdd={(added) => commit([...rows, ...added])}
+        />
+
+        <div>
+          <h2 className="mb-2 text-sm font-semibold text-[var(--foreground)]">Menu structure</h2>
           <div
-            key={item.id}
-            draggable
-            onDragStart={() => setDrag({ kind: "top", from: index })}
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={() => {
-              if (drag?.kind === "top" && drag.from !== index) {
-                setItems((prev) => {
-                  const next = [...prev];
-                  const [row] = next.splice(drag.from, 1);
-                  next.splice(index, 0, row);
-                  return next;
-                });
-              }
-              setDrag(null);
+            className="rounded-lg border border-[var(--color-border)] bg-[var(--color-card)]"
+            onDragOver={(e) => {
+              if (dragIndex === null) return;
+              e.preventDefault();
+              e.dataTransfer.dropEffect = "move";
             }}
-            className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-3 shadow-sm"
+            onDrop={(e) => {
+              e.preventDefault();
+              if (dragIndex !== null && drop) applyDrop(dragIndex, drop.insertAt, drop.depth);
+              setDragIndex(null);
+              setDrop(null);
+            }}
           >
-            <ItemFields
-              item={item}
-              onChange={(patch) => patchTop(index, patch)}
-              allowNewsCategories
-            />
-            <div className="mt-2 flex flex-wrap gap-1">
-              <TinyButton onClick={() => moveTop(index, -1)} disabled={index === 0}>
-                Up
-              </TinyButton>
-              <TinyButton onClick={() => moveTop(index, 1)} disabled={index === items.length - 1}>
-                Down
-              </TinyButton>
-              <TinyButton onClick={() => indentTop(index)} disabled={index === 0}>
-                Make submenu of previous
-              </TinyButton>
-              <TinyButton
-                onClick={() =>
-                  patchTop(index, {
-                    children: [...(item.children ?? []), emptyItem()],
-                  })
-                }
-              >
-                Add submenu item
-              </TinyButton>
-              <TinyButton onClick={() => removeTop(index)} danger>
-                Remove
-              </TinyButton>
-            </div>
-
-            {(item.children ?? []).map((child, ci) => (
-              <div
-                key={child.id}
-                draggable
-                onDragStart={(e) => {
-                  e.stopPropagation();
-                  setDrag({ kind: "child", parent: index, from: ci });
-                }}
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={(e) => {
-                  e.stopPropagation();
-                  if (drag?.kind === "child" && drag.parent === index && drag.from !== ci) {
-                    setItems((prev) =>
-                      prev.map((p, pi) => {
-                        if (pi !== index) return p;
-                        const children = [...(p.children ?? [])];
-                        const [row] = children.splice(drag.from, 1);
-                        children.splice(ci, 0, row);
-                        return { ...p, children };
-                      })
-                    );
-                  }
-                  setDrag(null);
-                }}
-                className="mt-2 ml-6 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]/40 p-3"
-              >
-                <ItemFields item={child} onChange={(patch) => patchChild(index, ci, patch)} />
-                <div className="mt-2 flex flex-wrap gap-1">
-                  <TinyButton onClick={() => moveChild(index, ci, -1)} disabled={ci === 0}>
-                    Up
-                  </TinyButton>
-                  <TinyButton
-                    onClick={() => moveChild(index, ci, 1)}
-                    disabled={ci === (item.children?.length ?? 0) - 1}
-                  >
-                    Down
-                  </TinyButton>
-                  <TinyButton onClick={() => outdentChild(index, ci)}>Move to top level</TinyButton>
-                  <TinyButton onClick={() => removeChild(index, ci)} danger>
-                    Remove
-                  </TinyButton>
-                </div>
-              </div>
-            ))}
+            {rows.length === 0 ? (
+              <p className="px-4 py-8 text-center text-sm text-[var(--color-muted)]">
+                No items yet. Tick pages on the left and click Add to menu.
+              </p>
+            ) : (
+              rows.map((row, index) => {
+                const dragging = dragIndex !== null && index >= blockRange(rows, dragIndex).start && index <= blockRange(rows, dragIndex).end;
+                const showLine = drop && drop.insertAt === index && dragIndex !== null;
+                return (
+                  <div key={row.id}>
+                    {showLine && <DropLine depth={drop.depth} />}
+                    <MenuRow
+                      row={row}
+                      open={openId === row.id}
+                      dragging={dragging}
+                      isSub={row.depth === 1}
+                      canNestNews={row.depth === 0}
+                      onToggle={() => setOpenId((id) => (id === row.id ? null : row.id))}
+                      onChange={(patch) => patchRow(row.id, patch)}
+                      onRemove={() => removeRow(index)}
+                      onDragStart={() => {
+                        setDragIndex(index);
+                        setDrop({ insertAt: index, depth: row.depth });
+                      }}
+                      onDragEnd={() => {
+                        setDragIndex(null);
+                        setDrop(null);
+                      }}
+                      onDragOverRow={(e) => {
+                        if (dragIndex === null) return;
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.dataTransfer.dropEffect = "move";
+                        updateDropFromPoint(index, e.clientX, e.clientY, e.currentTarget);
+                      }}
+                    />
+                  </div>
+                );
+              })
+            )}
+            {drop && dragIndex !== null && drop.insertAt === rows.length && (
+              <DropLine depth={drop.depth} />
+            )}
           </div>
-        ))}
-      </div>
 
-      <div className="mt-4 flex flex-wrap gap-2">
-        <Button type="button" variant="outline" onClick={() => setItems((prev) => [...prev, emptyItem()])}>
-          Add menu item
-        </Button>
-        <Button type="button" variant="ghost" onClick={onCopyFromOther}>
-          {copyLabel}
-        </Button>
-        <Button type="submit">Save {menuKey} menu</Button>
+          <div className="mt-4 flex flex-wrap gap-2">
+            <Button type="submit">Save {menuKey} menu</Button>
+            <Button type="button" variant="ghost" onClick={onCopyFromOther}>
+              {copyLabel}
+            </Button>
+          </div>
+        </div>
       </div>
     </form>
   );
 }
 
-function ItemFields({
-  item,
-  onChange,
-  allowNewsCategories,
-}: {
-  item: NavItem;
-  onChange: (patch: Partial<NavItem>) => void;
-  allowNewsCategories?: boolean;
-}) {
-  const known = NAV_PAGE_OPTIONS.some((p) => p.href === item.href);
-  const selectValue = known ? item.href : "__custom__";
+function DropLine({ depth }: { depth: 0 | 1 }) {
+  return (
+    <div className={depth === 1 ? "ml-8" : ""}>
+      <div className="h-0.5 bg-[var(--color-primary)]" />
+    </div>
+  );
+}
+
+function AddItemsPanel({ onAdd }: { onAdd: (rows: FlatRow[]) => void }) {
+  const [checked, setChecked] = useState<Record<string, boolean>>({});
+  const [customLabel, setCustomLabel] = useState("");
+  const [customHref, setCustomHref] = useState("");
 
   return (
-    <div className="grid gap-3 sm:grid-cols-2">
-      <Input
-        label="Label"
-        value={item.label}
-        onChange={(e) => onChange({ label: e.target.value })}
-      />
-      <div>
-        <label className="mb-1.5 block text-sm font-medium">Page or URL</label>
-        <select
-          value={selectValue}
-          onChange={(e) => {
-            const v = e.target.value;
-            if (v === "__custom__") {
-              onChange({ href: item.href && !known ? item.href : "" });
-              return;
-            }
-            const match = NAV_PAGE_OPTIONS.find((p) => p.href === v);
-            onChange({
-              href: v,
-              label: item.label === "New link" && match ? match.label : item.label,
-            });
-          }}
-          className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-3 py-2 text-sm"
-        >
+    <div className="space-y-4">
+      <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-card)]">
+        <h2 className="border-b border-[var(--color-border)] px-3 py-2 text-sm font-semibold">
+          Add pages
+        </h2>
+        <ul className="max-h-72 overflow-y-auto p-2">
           {NAV_PAGE_OPTIONS.map((p) => (
-            <option key={p.href} value={p.href}>
-              {p.label}
-            </option>
+            <li key={p.href}>
+              <label className="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-[var(--color-surface)]/60">
+                <input
+                  type="checkbox"
+                  checked={!!checked[p.href]}
+                  onChange={(e) =>
+                    setChecked((c) => ({ ...c, [p.href]: e.target.checked }))
+                  }
+                />
+                {p.label}
+              </label>
+            </li>
           ))}
-          <option value="__custom__">Custom URL…</option>
-        </select>
-        {selectValue === "__custom__" && (
-          <input
-            value={item.href}
-            onChange={(e) => onChange({ href: e.target.value })}
-            placeholder="/path or https://…"
-            className="mt-2 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-3 py-2 text-sm"
-          />
-        )}
+        </ul>
+        <div className="border-t border-[var(--color-border)] p-2">
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full"
+            onClick={() => {
+              const added = NAV_PAGE_OPTIONS.filter((p) => checked[p.href]).map((p) => ({
+                id: newId(),
+                label: p.label === "Planning applications" ? "Planning" : p.label,
+                href: p.href,
+                depth: 0 as const,
+              }));
+              if (added.length === 0) {
+                toast.error("Tick one or more pages first.");
+                return;
+              }
+              onAdd(added);
+              setChecked({});
+            }}
+          >
+            Add to menu
+          </Button>
+        </div>
       </div>
-      <label className="flex items-center gap-2 text-sm sm:col-span-2">
-        <input
-          type="checkbox"
-          checked={item.openInNewTab === true}
-          onChange={(e) => onChange({ openInNewTab: e.target.checked || undefined })}
-        />
-        Open in a new tab
-      </label>
-      {allowNewsCategories && (
-        <label className="flex items-start gap-2 text-sm sm:col-span-2">
-          <input
-            type="checkbox"
-            className="mt-0.5"
-            checked={item.includeNewsCategories === true}
-            onChange={(e) => onChange({ includeNewsCategories: e.target.checked || undefined })}
-          />
-          <span>
-            Include news categories in this submenu
-            <span className="mt-0.5 block text-xs text-[var(--color-muted)]">
-              Categories marked “show in header” are added automatically.
-            </span>
+
+      <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-card)]">
+        <h2 className="border-b border-[var(--color-border)] px-3 py-2 text-sm font-semibold">
+          Custom link
+        </h2>
+        <div className="flex flex-col gap-2 p-3">
+          <label className="text-xs font-medium text-[var(--color-muted)]">
+            URL
+            <input
+              value={customHref}
+              onChange={(e) => setCustomHref(e.target.value)}
+              placeholder="https:// or /page"
+              className="mt-1 w-full rounded-md border border-[var(--color-border)] px-2 py-1.5 text-sm"
+            />
+          </label>
+          <label className="text-xs font-medium text-[var(--color-muted)]">
+            Link text
+            <input
+              value={customLabel}
+              onChange={(e) => setCustomLabel(e.target.value)}
+              placeholder="Label"
+              className="mt-1 w-full rounded-md border border-[var(--color-border)] px-2 py-1.5 text-sm"
+            />
+          </label>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => {
+              const href = customHref.trim();
+              const label = customLabel.trim() || href;
+              if (!href) {
+                toast.error("Enter a URL.");
+                return;
+              }
+              onAdd([{ id: newId(), label, href, depth: 0 }]);
+              setCustomHref("");
+              setCustomLabel("");
+            }}
+          >
+            Add to menu
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MenuRow({
+  row,
+  open,
+  dragging,
+  isSub,
+  canNestNews,
+  onToggle,
+  onChange,
+  onRemove,
+  onDragStart,
+  onDragEnd,
+  onDragOverRow,
+}: {
+  row: FlatRow;
+  open: boolean;
+  dragging: boolean;
+  isSub: boolean;
+  canNestNews: boolean;
+  onToggle: () => void;
+  onChange: (patch: Partial<FlatRow>) => void;
+  onRemove: () => void;
+  onDragStart: () => void;
+  onDragEnd: () => void;
+  onDragOverRow: (e: DragEvent<HTMLDivElement>) => void;
+}) {
+  const known = NAV_PAGE_OPTIONS.some((p) => p.href === row.href);
+  const selectValue = known ? row.href : "__custom__";
+
+  return (
+    <div
+      className={`${isSub ? "ml-8" : ""} ${dragging ? "opacity-40" : ""}`}
+      onDragOver={onDragOverRow}
+    >
+      <div className="flex items-stretch border-b border-[var(--color-border)] bg-[var(--color-surface)]/50">
+        <button
+          type="button"
+          draggable
+          onDragStart={(e) => {
+            e.dataTransfer.effectAllowed = "move";
+            e.dataTransfer.setData("text/plain", row.id);
+            onDragStart();
+          }}
+          onDragEnd={onDragEnd}
+          className="flex w-8 shrink-0 cursor-grab items-center justify-center text-[var(--color-muted)] active:cursor-grabbing"
+          aria-label={`Drag ${row.label}`}
+        >
+          <DragHandle />
+        </button>
+        <button
+          type="button"
+          onClick={onToggle}
+          className="flex min-w-0 flex-1 items-center justify-between gap-2 px-2 py-2.5 text-left"
+          aria-expanded={open}
+        >
+          <span className="truncate text-sm font-medium text-[var(--foreground)]">{row.label}</span>
+          <span className="flex shrink-0 items-center gap-2 text-xs text-[var(--color-muted)]">
+            {pageTypeLabel(row.href)}
+            <span aria-hidden>{open ? "▴" : "▾"}</span>
           </span>
-        </label>
+        </button>
+      </div>
+      {open && (
+        <div className="space-y-3 border-b border-[var(--color-border)] bg-white px-4 py-3">
+          <label className="block text-sm">
+            <span className="mb-1 block text-xs font-medium text-[var(--color-muted)]">
+              Navigation label
+            </span>
+            <input
+              value={row.label}
+              onChange={(e) => onChange({ label: e.target.value })}
+              className="w-full rounded-md border border-[var(--color-border)] px-2 py-1.5 text-sm"
+            />
+          </label>
+          <label className="block text-sm">
+            <span className="mb-1 block text-xs font-medium text-[var(--color-muted)]">
+              Page or URL
+            </span>
+            <select
+              value={selectValue}
+              onChange={(e) => {
+                const v = e.target.value;
+                if (v === "__custom__") {
+                  onChange({ href: known ? "" : row.href });
+                  return;
+                }
+                onChange({ href: v });
+              }}
+              className="w-full rounded-md border border-[var(--color-border)] bg-white px-2 py-1.5 text-sm"
+            >
+              {NAV_PAGE_OPTIONS.map((p) => (
+                <option key={p.href} value={p.href}>
+                  {p.label}
+                </option>
+              ))}
+              <option value="__custom__">Custom URL…</option>
+            </select>
+          </label>
+          {selectValue === "__custom__" && (
+            <input
+              value={row.href}
+              onChange={(e) => onChange({ href: e.target.value })}
+              placeholder="/path or https://…"
+              className="w-full rounded-md border border-[var(--color-border)] px-2 py-1.5 text-sm"
+            />
+          )}
+          <label className="flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={row.openInNewTab === true}
+              onChange={(e) => onChange({ openInNewTab: e.target.checked || undefined })}
+            />
+            Open in a new tab
+          </label>
+          {canNestNews && (
+            <label className="flex items-start gap-2 text-sm">
+              <input
+                type="checkbox"
+                className="mt-0.5"
+                checked={row.includeNewsCategories === true}
+                onChange={(e) =>
+                  onChange({ includeNewsCategories: e.target.checked || undefined })
+                }
+              />
+              <span>
+                Include news categories in this submenu
+                <span className="mt-0.5 block text-xs text-[var(--color-muted)]">
+                  Categories marked “show in header” are added automatically.
+                </span>
+              </span>
+            </label>
+          )}
+          <button
+            type="button"
+            onClick={onRemove}
+            className="text-sm text-red-700 hover:underline"
+          >
+            Remove
+          </button>
+        </div>
       )}
     </div>
   );
 }
 
-function TinyButton({
-  onClick,
-  children,
-  disabled,
-  danger,
-}: {
-  onClick: () => void;
-  children: ReactNode;
-  disabled?: boolean;
-  danger?: boolean;
-}) {
+function DragHandle() {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      className={`rounded-md px-2 py-1 text-xs font-medium disabled:opacity-40 ${
-        danger
-          ? "text-red-700 hover:bg-red-50"
-          : "text-[var(--color-muted)] hover:bg-[var(--color-surface)] hover:text-[var(--foreground)]"
-      }`}
-    >
-      {children}
-    </button>
+    <svg width="10" height="16" viewBox="0 0 10 16" aria-hidden className="fill-current">
+      <circle cx="3" cy="3" r="1.2" />
+      <circle cx="7" cy="3" r="1.2" />
+      <circle cx="3" cy="8" r="1.2" />
+      <circle cx="7" cy="8" r="1.2" />
+      <circle cx="3" cy="13" r="1.2" />
+      <circle cx="7" cy="13" r="1.2" />
+    </svg>
   );
 }

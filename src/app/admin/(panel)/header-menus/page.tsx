@@ -10,9 +10,8 @@ export default async function AdminHeaderMenusPage() {
         Header menus
       </h1>
       <p className="mt-1 max-w-2xl text-[var(--color-muted)]">
-        Change the public header independently for desktop and mobile. Reorder links, nest a
-        submenu, and add pages such as Planning and Documents. Sign in, Account, Forum, and Admin
-        stay in the header automatically.
+        Build the public header the same way as WordPress: add pages, drag to reorder, and indent
+        to create a submenu. Desktop and mobile can be different.
       </p>
       <HeaderMenuEditor desktop={desktop} mobile={mobile} />
     </div>
