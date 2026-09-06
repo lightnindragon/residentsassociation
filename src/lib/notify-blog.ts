@@ -28,28 +28,69 @@ async function notifyNewsOptInSubscribers(params: {
     WHERE role = 'user' AND approved = true AND notify_new_blog = true
   `;
 
+  const list = users as Array<{ email: string; name: string }>;
+  if (list.length === 0) return { sent: 0 };
+
   const transport = nodemailer.createTransport({
     host: config.host,
     port: config.port,
     secure: config.port === 465,
     auth: config.user && config.password ? { user: config.user, pass: config.password } : undefined,
+    pool: true,
+    maxConnections: 5,
+    maxMessages: list.length + 2,
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 20000,
   });
 
+  const CHUNK = 5;
   let sent = 0;
-  for (const row of users as Array<{ email: string; name: string }>) {
-    try {
-      const vars = { name: row.name, title: params.title, link: params.link };
-      await transport.sendMail({
-        from: config.from_address || config.contact_inbox,
-        to: row.email,
-        subject: applyTemplate(tpl.subject, vars),
-        text: applyTemplate(tpl.body_text, vars),
-        html: applyTemplate(tpl.body_html, vars),
-      });
-      sent += 1;
-    } catch (e) {
-      console.error("notify subscribers email", params.templateKey, e);
+  let lastError: string | undefined;
+  try {
+    for (let i = 0; i < list.length; i += CHUNK) {
+      const chunk = list.slice(i, i + CHUNK);
+      const results = await Promise.all(
+        chunk.map(async (row) => {
+          try {
+            const vars = { name: row.name, title: params.title, link: params.link };
+            await transport.sendMail({
+              from: config.from_address || config.contact_inbox,
+              to: row.email,
+              subject: applyTemplate(tpl.subject, vars),
+              text: applyTemplate(tpl.body_text, vars),
+              html: applyTemplate(tpl.body_html, vars),
+            });
+            return { ok: true as const };
+          } catch (e) {
+            console.error("notify subscribers email", params.templateKey, e);
+            return {
+              ok: false as const,
+              error: e instanceof Error ? e.message : "Send failed",
+            };
+          }
+        })
+      );
+      for (const r of results) {
+        if (r.ok) sent += 1;
+        else lastError = r.error;
+      }
     }
+  } finally {
+    transport.close();
+  }
+
+  if (sent === 0) {
+    return {
+      sent: 0,
+      error: lastError || "Could not send emails. Check Email settings (SMTP).",
+    };
+  }
+  if (lastError && sent < list.length) {
+    return {
+      sent,
+      error: `Sent ${sent} of ${list.length}. Some failed (${lastError}).`,
+    };
   }
   return { sent };
 }

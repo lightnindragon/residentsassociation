@@ -5,8 +5,7 @@ import { createAgenda, updateAgenda } from "@/app/admin/actions/agendas";
 import { Input } from "@/components/ui";
 import { RichTextEditor } from "@/components/RichTextEditor";
 import { BlogImageUpload } from "@/components/BlogImageUpload";
-import { PublishNotifyFields } from "@/components/PublishNotifyFields";
-import { toast } from "sonner";
+import { PublishNotifyFields, toastPublishResult } from "@/components/PublishNotifyFields";
 
 function updateBound(id: string) {
   return (prev: unknown, formData: FormData) => updateAgenda(id, prev, formData);
@@ -39,14 +38,7 @@ export function AgendaForm({
     if (!state || state === lastStateRef.current) return;
     lastStateRef.current = state;
 
-    if (state.ok) {
-      toast.success(isEdit ? "Agenda updated." : "Agenda created.");
-      return;
-    }
-
-    if (state.error) {
-      toast.error(state.error);
-    }
+    toastPublishResult(state, isEdit ? "Agenda updated." : "Agenda created.");
   }, [isEdit, state]);
 
   return (

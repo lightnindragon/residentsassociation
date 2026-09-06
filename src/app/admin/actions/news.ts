@@ -4,9 +4,9 @@ import { getSql } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { notifySubscribersNewPost } from "@/lib/notify-blog";
 import { sanitizeRichHtml } from "@/lib/rich-text";
-import { shouldNotifySubscribers } from "@/lib/publish-notify";
+import { runPublishNotify, type PublishActionResult } from "@/lib/publish-notify";
 
-type PostActionResult = { ok?: boolean; error?: string } | null;
+type PostActionResult = PublishActionResult;
 
 function slugify(s: string): string {
   return s
@@ -46,16 +46,16 @@ export async function createPost(
         ${catId}, ${coverImageUrl}
       )
     `;
-    if (shouldNotifySubscribers(formData, publish)) {
-      const notified = await notifySubscribersNewPost({ title, slug });
-      if (!notified.error) {
-        await sql`UPDATE posts SET subscribers_notified_at = NOW() WHERE slug = ${slug}`;
-      }
-    }
+    const notifyResult = await runPublishNotify({
+      formData,
+      publish,
+      send: () => notifySubscribersNewPost({ title, slug }),
+      markSent: () => sql`UPDATE posts SET subscribers_notified_at = NOW() WHERE slug = ${slug}`,
+    });
     revalidatePath("/");
     revalidatePath("/news");
     revalidatePath("/admin/news");
-    return { ok: true };
+    return { ok: true, ...notifyResult };
   } catch (e) {
     console.error(e);
     return { error: "Failed to create post." };
@@ -97,17 +97,21 @@ export async function updatePost(
           updated_at = NOW()
       WHERE id = ${id}::uuid
     `;
-    if (shouldNotifySubscribers(formData, publish, alreadyNotified) && prev) {
-      const notified = await notifySubscribersNewPost({ title, slug: prev.slug });
-      if (!notified.error) {
-        await sql`UPDATE posts SET subscribers_notified_at = NOW() WHERE id = ${id}::uuid`;
-      }
-    }
+    const notifyResult = prev
+      ? await runPublishNotify({
+          formData,
+          publish,
+          alreadyNotified,
+          send: () => notifySubscribersNewPost({ title, slug: prev.slug }),
+          markSent: () =>
+            sql`UPDATE posts SET subscribers_notified_at = NOW() WHERE id = ${id}::uuid`,
+        })
+      : {};
     revalidatePath("/");
     revalidatePath("/news");
     revalidatePath(`/news/${prev?.slug ?? ""}`);
     revalidatePath("/admin/news");
-    return { ok: true };
+    return { ok: true, ...notifyResult };
   } catch (e) {
     console.error(e);
     return { error: "Failed to update post." };

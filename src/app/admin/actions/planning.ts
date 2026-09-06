@@ -4,9 +4,9 @@ import { getSql } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { sanitizeRichHtml } from "@/lib/rich-text";
 import { notifySubscribersNewPlanningApplication } from "@/lib/notify-blog";
-import { shouldNotifySubscribers } from "@/lib/publish-notify";
+import { runPublishNotify, type PublishActionResult } from "@/lib/publish-notify";
 
-type PlanningActionResult = { ok?: boolean; error?: string } | null;
+type PlanningActionResult = PublishActionResult;
 
 function slugify(s: string): string {
   return s
@@ -68,14 +68,15 @@ export async function createPlanningApplication(
         ${publish ? new Date().toISOString() : null}, ${coverImageUrl}
       )
     `;
-    if (shouldNotifySubscribers(formData, publish)) {
-      const notified = await notifySubscribersNewPlanningApplication({ title, slug });
-      if (!notified.error) {
-        await sql`UPDATE planning_applications SET subscribers_notified_at = NOW() WHERE slug = ${slug}`;
-      }
-    }
+    const notifyResult = await runPublishNotify({
+      formData,
+      publish,
+      send: () => notifySubscribersNewPlanningApplication({ title, slug }),
+      markSent: () =>
+        sql`UPDATE planning_applications SET subscribers_notified_at = NOW() WHERE slug = ${slug}`,
+    });
     revalidatePlanningPaths(slug);
-    return { ok: true };
+    return { ok: true, ...notifyResult };
   } catch (e) {
     console.error(e);
     return { error: "Failed to create planning application." };
@@ -120,14 +121,18 @@ export async function updatePlanningApplication(
           updated_at = NOW()
       WHERE id = ${id}::uuid
     `;
-    if (shouldNotifySubscribers(formData, publish, alreadyNotified) && prev) {
-      const notified = await notifySubscribersNewPlanningApplication({ title, slug: prev.slug });
-      if (!notified.error) {
-        await sql`UPDATE planning_applications SET subscribers_notified_at = NOW() WHERE id = ${id}::uuid`;
-      }
-    }
+    const notifyResult = prev
+      ? await runPublishNotify({
+          formData,
+          publish,
+          alreadyNotified,
+          send: () => notifySubscribersNewPlanningApplication({ title, slug: prev.slug }),
+          markSent: () =>
+            sql`UPDATE planning_applications SET subscribers_notified_at = NOW() WHERE id = ${id}::uuid`,
+        })
+      : {};
     revalidatePlanningPaths(prev?.slug ?? null);
-    return { ok: true };
+    return { ok: true, ...notifyResult };
   } catch (e) {
     console.error(e);
     return { error: "Failed to update planning application." };

@@ -4,9 +4,9 @@ import { getSql } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { sanitizeRichHtml } from "@/lib/rich-text";
 import { notifySubscribersNewEvent } from "@/lib/notify-blog";
-import { shouldNotifySubscribers } from "@/lib/publish-notify";
+import { runPublishNotify, type PublishActionResult } from "@/lib/publish-notify";
 
-type EventActionResult = { ok?: boolean; error?: string } | null;
+type EventActionResult = PublishActionResult;
 
 function slugify(s: string): string {
   return s
@@ -68,14 +68,14 @@ export async function createEvent(
         ${publish ? new Date().toISOString() : null}, ${coverImageUrl}
       )
     `;
-    if (shouldNotifySubscribers(formData, publish)) {
-      const notified = await notifySubscribersNewEvent({ title, slug });
-      if (!notified.error) {
-        await sql`UPDATE site_events SET subscribers_notified_at = NOW() WHERE slug = ${slug}`;
-      }
-    }
+    const notifyResult = await runPublishNotify({
+      formData,
+      publish,
+      send: () => notifySubscribersNewEvent({ title, slug }),
+      markSent: () => sql`UPDATE site_events SET subscribers_notified_at = NOW() WHERE slug = ${slug}`,
+    });
     revalidateEventPaths(slug);
-    return { ok: true };
+    return { ok: true, ...notifyResult };
   } catch (e) {
     console.error(e);
     return { error: "Failed to create event." };
@@ -120,14 +120,18 @@ export async function updateEvent(
           updated_at = NOW()
       WHERE id = ${id}::uuid
     `;
-    if (shouldNotifySubscribers(formData, publish, alreadyNotified) && prev) {
-      const notified = await notifySubscribersNewEvent({ title, slug: prev.slug });
-      if (!notified.error) {
-        await sql`UPDATE site_events SET subscribers_notified_at = NOW() WHERE id = ${id}::uuid`;
-      }
-    }
+    const notifyResult = prev
+      ? await runPublishNotify({
+          formData,
+          publish,
+          alreadyNotified,
+          send: () => notifySubscribersNewEvent({ title, slug: prev.slug }),
+          markSent: () =>
+            sql`UPDATE site_events SET subscribers_notified_at = NOW() WHERE id = ${id}::uuid`,
+        })
+      : {};
     revalidateEventPaths(prev?.slug ?? null);
-    return { ok: true };
+    return { ok: true, ...notifyResult };
   } catch (e) {
     console.error(e);
     return { error: "Failed to update event." };

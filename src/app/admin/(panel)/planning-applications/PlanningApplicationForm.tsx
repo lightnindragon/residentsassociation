@@ -8,8 +8,7 @@ import {
 import { Input } from "@/components/ui";
 import { RichTextEditor } from "@/components/RichTextEditor";
 import { BlogImageUpload } from "@/components/BlogImageUpload";
-import { PublishNotifyFields } from "@/components/PublishNotifyFields";
-import { toast } from "sonner";
+import { PublishNotifyFields, toastPublishResult } from "@/components/PublishNotifyFields";
 
 function updateBound(id: string) {
   return (prev: unknown, formData: FormData) => updatePlanningApplication(id, prev, formData);
@@ -44,16 +43,10 @@ export function PlanningApplicationForm({
     if (!state || state === lastStateRef.current) return;
     lastStateRef.current = state;
 
-    if (state.ok) {
-      toast.success(
-        isEdit ? "Planning application updated." : "Planning application created."
-      );
-      return;
-    }
-
-    if (state.error) {
-      toast.error(state.error);
-    }
+    toastPublishResult(
+      state,
+      isEdit ? "Planning application updated." : "Planning application created."
+    );
   }, [isEdit, state]);
 
   return (

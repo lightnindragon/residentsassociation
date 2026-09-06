@@ -4,9 +4,9 @@ import { getSql } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { sanitizeRichHtml } from "@/lib/rich-text";
 import { notifySubscribersNewAgenda } from "@/lib/notify-blog";
-import { shouldNotifySubscribers } from "@/lib/publish-notify";
+import { runPublishNotify, type PublishActionResult } from "@/lib/publish-notify";
 
-type AgendaActionResult = { ok?: boolean; error?: string } | null;
+type AgendaActionResult = PublishActionResult;
 
 function slugify(s: string): string {
   return s
@@ -68,14 +68,14 @@ export async function createAgenda(
         ${publish ? new Date().toISOString() : null}, ${coverImageUrl}
       )
     `;
-    if (shouldNotifySubscribers(formData, publish)) {
-      const notified = await notifySubscribersNewAgenda({ title, slug });
-      if (!notified.error) {
-        await sql`UPDATE site_agendas SET subscribers_notified_at = NOW() WHERE slug = ${slug}`;
-      }
-    }
+    const notifyResult = await runPublishNotify({
+      formData,
+      publish,
+      send: () => notifySubscribersNewAgenda({ title, slug }),
+      markSent: () => sql`UPDATE site_agendas SET subscribers_notified_at = NOW() WHERE slug = ${slug}`,
+    });
     revalidateAgendaPaths(slug);
-    return { ok: true };
+    return { ok: true, ...notifyResult };
   } catch (e) {
     console.error(e);
     return { error: "Failed to create agenda." };
@@ -120,14 +120,18 @@ export async function updateAgenda(
           updated_at = NOW()
       WHERE id = ${id}::uuid
     `;
-    if (shouldNotifySubscribers(formData, publish, alreadyNotified) && prev) {
-      const notified = await notifySubscribersNewAgenda({ title, slug: prev.slug });
-      if (!notified.error) {
-        await sql`UPDATE site_agendas SET subscribers_notified_at = NOW() WHERE id = ${id}::uuid`;
-      }
-    }
+    const notifyResult = prev
+      ? await runPublishNotify({
+          formData,
+          publish,
+          alreadyNotified,
+          send: () => notifySubscribersNewAgenda({ title, slug: prev.slug }),
+          markSent: () =>
+            sql`UPDATE site_agendas SET subscribers_notified_at = NOW() WHERE id = ${id}::uuid`,
+        })
+      : {};
     revalidateAgendaPaths(prev?.slug ?? null);
-    return { ok: true };
+    return { ok: true, ...notifyResult };
   } catch (e) {
     console.error(e);
     return { error: "Failed to update agenda." };

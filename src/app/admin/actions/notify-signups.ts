@@ -90,30 +90,31 @@ export async function sendToSignUps(
               ? await notifySubscribersNewAgenda(params)
               : await notifySubscribersNewMinutes(params);
 
-    if (result.error) return { ok: false, error: result.error };
-
-    if (kind === "news") {
-      await sql`UPDATE posts SET subscribers_notified_at = NOW() WHERE id = ${id}::uuid`;
-      revalidatePath("/admin/news");
-      revalidatePath(`/admin/news/${id}/edit`);
-    } else if (kind === "planning") {
-      await sql`UPDATE planning_applications SET subscribers_notified_at = NOW() WHERE id = ${id}::uuid`;
-      revalidatePath("/admin/planning-applications");
-      revalidatePath(`/admin/planning-applications/${id}/edit`);
-    } else if (kind === "event") {
-      await sql`UPDATE site_events SET subscribers_notified_at = NOW() WHERE id = ${id}::uuid`;
-      revalidatePath("/admin/events");
-      revalidatePath(`/admin/events/${id}/edit`);
-    } else if (kind === "agenda") {
-      await sql`UPDATE site_agendas SET subscribers_notified_at = NOW() WHERE id = ${id}::uuid`;
-      revalidatePath("/admin/agendas");
-      revalidatePath(`/admin/agendas/${id}/edit`);
-    } else {
-      await sql`UPDATE site_minutes SET subscribers_notified_at = NOW() WHERE id = ${id}::uuid`;
-      revalidatePath("/admin/minutes");
-      revalidatePath(`/admin/minutes/${id}/edit`);
+    if (result.sent > 0 || !result.error) {
+      if (kind === "news") {
+        await sql`UPDATE posts SET subscribers_notified_at = NOW() WHERE id = ${id}::uuid`;
+        revalidatePath("/admin/news");
+        revalidatePath(`/admin/news/${id}/edit`);
+      } else if (kind === "planning") {
+        await sql`UPDATE planning_applications SET subscribers_notified_at = NOW() WHERE id = ${id}::uuid`;
+        revalidatePath("/admin/planning-applications");
+        revalidatePath(`/admin/planning-applications/${id}/edit`);
+      } else if (kind === "event") {
+        await sql`UPDATE site_events SET subscribers_notified_at = NOW() WHERE id = ${id}::uuid`;
+        revalidatePath("/admin/events");
+        revalidatePath(`/admin/events/${id}/edit`);
+      } else if (kind === "agenda") {
+        await sql`UPDATE site_agendas SET subscribers_notified_at = NOW() WHERE id = ${id}::uuid`;
+        revalidatePath("/admin/agendas");
+        revalidatePath(`/admin/agendas/${id}/edit`);
+      } else {
+        await sql`UPDATE site_minutes SET subscribers_notified_at = NOW() WHERE id = ${id}::uuid`;
+        revalidatePath("/admin/minutes");
+        revalidatePath(`/admin/minutes/${id}/edit`);
+      }
     }
 
+    if (result.error) return { ok: false, error: result.error, sent: result.sent };
     return { ok: true, sent: result.sent };
   } catch (e) {
     console.error(e);

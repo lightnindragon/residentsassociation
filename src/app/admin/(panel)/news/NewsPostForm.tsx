@@ -5,8 +5,7 @@ import { createPost, updatePost } from "@/app/admin/actions/news";
 import { Input } from "@/components/ui";
 import { RichTextEditor } from "@/components/RichTextEditor";
 import { BlogImageUpload } from "@/components/BlogImageUpload";
-import { PublishNotifyFields } from "@/components/PublishNotifyFields";
-import { toast } from "sonner";
+import { PublishNotifyFields, toastPublishResult } from "@/components/PublishNotifyFields";
 
 function updatePostBound(id: string) {
   return (prev: unknown, formData: FormData) => updatePost(id, prev, formData);
@@ -47,14 +46,7 @@ export function NewsPostForm({
     if (!state || state === lastStateRef.current) return;
     lastStateRef.current = state;
 
-    if (state.ok) {
-      toast.success(isEdit ? "News article updated." : "News article created.");
-      return;
-    }
-
-    if (state.error) {
-      toast.error(state.error);
-    }
+    toastPublishResult(state, isEdit ? "News article updated." : "News article created.");
   }, [isEdit, state]);
 
   return (

@@ -5,8 +5,7 @@ import { createMinutesEntry, updateMinutesEntry } from "@/app/admin/actions/minu
 import { Input } from "@/components/ui";
 import { RichTextEditor } from "@/components/RichTextEditor";
 import { BlogImageUpload } from "@/components/BlogImageUpload";
-import { PublishNotifyFields } from "@/components/PublishNotifyFields";
-import { toast } from "sonner";
+import { PublishNotifyFields, toastPublishResult } from "@/components/PublishNotifyFields";
 
 function updateBound(id: string) {
   return (prev: unknown, formData: FormData) => updateMinutesEntry(id, prev, formData);
@@ -41,14 +40,7 @@ export function MinutesForm({
     if (!state || state === lastStateRef.current) return;
     lastStateRef.current = state;
 
-    if (state.ok) {
-      toast.success(isEdit ? "Minutes updated." : "Minutes created.");
-      return;
-    }
-
-    if (state.error) {
-      toast.error(state.error);
-    }
+    toastPublishResult(state, isEdit ? "Minutes updated." : "Minutes created.");
   }, [isEdit, state]);
 
   return (

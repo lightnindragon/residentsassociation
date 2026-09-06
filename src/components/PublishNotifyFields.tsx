@@ -1,12 +1,33 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useFormStatus } from "react-dom";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui";
 import { toast } from "sonner";
 import { formatUkDate } from "@/lib/date-format";
 import { sendToSignUps } from "@/app/admin/actions/notify-signups";
-import type { SignUpNotifyKind } from "@/lib/publish-notify";
+import type { PublishActionResult, SignUpNotifyKind } from "@/lib/publish-notify";
+
+export function toastPublishResult(state: NonNullable<PublishActionResult>, savedLabel: string) {
+  if (state.error) {
+    toast.error(state.error);
+    return;
+  }
+  if (!state.ok) return;
+  toast.success(savedLabel);
+  if (state.notifyError) {
+    toast.error(state.notifyError);
+    return;
+  }
+  if (typeof state.sent === "number") {
+    toast.success(
+      state.sent === 0
+        ? "No sign-ups currently opted in for emails."
+        : `Emailed ${state.sent} sign-up${state.sent === 1 ? "" : "s"}.`
+    );
+  }
+}
 
 export function PublishNotifyFields({
   defaultPublished,
@@ -21,6 +42,7 @@ export function PublishNotifyFields({
   sendKind?: SignUpNotifyKind;
   sendId?: string;
 }) {
+  const { pending } = useFormStatus();
   const [published, setPublished] = useState(defaultPublished);
   const [notify, setNotify] = useState(false);
   const [confirmingSave, setConfirmingSave] = useState(false);
@@ -31,6 +53,7 @@ export function PublishNotifyFields({
 
   return (
     <div className="flex flex-col gap-3">
+      {notify && <input type="hidden" name="notify_subscribers" value="1" />}
       <label className="flex items-center gap-2">
         <input
           type="checkbox"
@@ -52,8 +75,6 @@ export function PublishNotifyFields({
         <label className="flex items-start gap-2 pl-6">
           <input
             type="checkbox"
-            name="notify_subscribers"
-            value="1"
             checked={notify}
             onChange={(e) => {
               setNotify(e.target.checked);
@@ -64,7 +85,8 @@ export function PublishNotifyFields({
           <span className="text-sm">
             Send to all sign-ups
             <span className="mt-0.5 block text-xs text-[var(--color-muted)]">
-              Emails approved residents who asked for news and updates.
+              Emails approved residents who asked for news and updates. This can
+              take a minute.
             </span>
           </span>
         </label>
@@ -87,10 +109,18 @@ export function PublishNotifyFields({
           </p>
           <p className="mt-1 text-xs text-[var(--color-muted)]">
             Approved residents who opted in for email updates will be notified.
+            Keep this tab open until it finishes.
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
-            <Button type="submit">Confirm and save</Button>
-            <Button type="button" variant="ghost" onClick={() => setConfirmingSave(false)}>
+            <Button type="submit" disabled={pending}>
+              {pending ? "Sending…" : "Confirm and save"}
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              disabled={pending}
+              onClick={() => setConfirmingSave(false)}
+            >
               Cancel
             </Button>
           </div>
@@ -98,13 +128,14 @@ export function PublishNotifyFields({
       ) : (
         <Button
           type={notify ? "button" : "submit"}
+          disabled={pending}
           onClick={
             notify
               ? () => setConfirmingSave(true)
               : undefined
           }
         >
-          {submitLabel}
+          {pending ? "Saving…" : submitLabel}
         </Button>
       )}
     </div>
@@ -129,8 +160,8 @@ export function SendToSignUpsButton({
           Send to all sign-ups?
         </p>
         <p className="mt-1 text-xs text-[var(--color-muted)]">
-          This emails approved residents who opted in for updates. You cannot undo
-          the send.
+          This emails approved residents who opted in for updates. Keep this tab
+          open until it finishes. You cannot undo the send.
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
           <Button

@@ -1,6 +1,8 @@
 import { ADMIN_NAV_SECTIONS } from "@/lib/admin-nav";
 import { AdminDesktopSidebar, AdminMobileNav } from "@/components/admin/AdminPanelNav";
 
+export const maxDuration = 60;
+
 export default function AdminPanelLayout({
   children,
 }: {
