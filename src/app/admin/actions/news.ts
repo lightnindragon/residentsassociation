@@ -50,7 +50,14 @@ export async function createPost(
       formData,
       publish,
       send: () => notifySubscribersNewPost({ title, slug }),
-      markSent: () => sql`UPDATE posts SET subscribers_notified_at = NOW() WHERE slug = ${slug}`,
+      claimSent: async () => {
+        const rows = await sql`
+          UPDATE posts SET subscribers_notified_at = NOW()
+          WHERE slug = ${slug} AND subscribers_notified_at IS NULL
+          RETURNING id
+        `;
+        return rows.length > 0;
+      },
     });
     revalidatePath("/");
     revalidatePath("/news");
@@ -103,8 +110,14 @@ export async function updatePost(
           publish,
           alreadyNotified,
           send: () => notifySubscribersNewPost({ title, slug: prev.slug }),
-          markSent: () =>
-            sql`UPDATE posts SET subscribers_notified_at = NOW() WHERE id = ${id}::uuid`,
+          claimSent: async () => {
+            const rows = await sql`
+              UPDATE posts SET subscribers_notified_at = NOW()
+              WHERE id = ${id}::uuid AND subscribers_notified_at IS NULL
+              RETURNING id
+            `;
+            return rows.length > 0;
+          },
         })
       : {};
     revalidatePath("/");

@@ -72,7 +72,14 @@ export async function createEvent(
       formData,
       publish,
       send: () => notifySubscribersNewEvent({ title, slug }),
-      markSent: () => sql`UPDATE site_events SET subscribers_notified_at = NOW() WHERE slug = ${slug}`,
+      claimSent: async () => {
+        const rows = await sql`
+          UPDATE site_events SET subscribers_notified_at = NOW()
+          WHERE slug = ${slug} AND subscribers_notified_at IS NULL
+          RETURNING id
+        `;
+        return rows.length > 0;
+      },
     });
     revalidateEventPaths(slug);
     return { ok: true, ...notifyResult };
@@ -126,8 +133,14 @@ export async function updateEvent(
           publish,
           alreadyNotified,
           send: () => notifySubscribersNewEvent({ title, slug: prev.slug }),
-          markSent: () =>
-            sql`UPDATE site_events SET subscribers_notified_at = NOW() WHERE id = ${id}::uuid`,
+          claimSent: async () => {
+            const rows = await sql`
+              UPDATE site_events SET subscribers_notified_at = NOW()
+              WHERE id = ${id}::uuid AND subscribers_notified_at IS NULL
+              RETURNING id
+            `;
+            return rows.length > 0;
+          },
         })
       : {};
     revalidateEventPaths(prev?.slug ?? null);

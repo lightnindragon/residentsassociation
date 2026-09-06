@@ -72,8 +72,14 @@ export async function createPlanningApplication(
       formData,
       publish,
       send: () => notifySubscribersNewPlanningApplication({ title, slug }),
-      markSent: () =>
-        sql`UPDATE planning_applications SET subscribers_notified_at = NOW() WHERE slug = ${slug}`,
+      claimSent: async () => {
+        const rows = await sql`
+          UPDATE planning_applications SET subscribers_notified_at = NOW()
+          WHERE slug = ${slug} AND subscribers_notified_at IS NULL
+          RETURNING id
+        `;
+        return rows.length > 0;
+      },
     });
     revalidatePlanningPaths(slug);
     return { ok: true, ...notifyResult };
@@ -127,8 +133,14 @@ export async function updatePlanningApplication(
           publish,
           alreadyNotified,
           send: () => notifySubscribersNewPlanningApplication({ title, slug: prev.slug }),
-          markSent: () =>
-            sql`UPDATE planning_applications SET subscribers_notified_at = NOW() WHERE id = ${id}::uuid`,
+          claimSent: async () => {
+            const rows = await sql`
+              UPDATE planning_applications SET subscribers_notified_at = NOW()
+              WHERE id = ${id}::uuid AND subscribers_notified_at IS NULL
+              RETURNING id
+            `;
+            return rows.length > 0;
+          },
         })
       : {};
     revalidatePlanningPaths(prev?.slug ?? null);

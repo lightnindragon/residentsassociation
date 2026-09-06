@@ -8,7 +8,7 @@ import {
 import { Input } from "@/components/ui";
 import { RichTextEditor } from "@/components/RichTextEditor";
 import { BlogImageUpload } from "@/components/BlogImageUpload";
-import { PublishNotifyFields, toastPublishResult } from "@/components/PublishNotifyFields";
+import { PublishNotifyFields, toastPublishResult, useOnceFormSubmit } from "@/components/PublishNotifyFields";
 
 function updateBound(id: string) {
   return (prev: unknown, formData: FormData) => updatePlanningApplication(id, prev, formData);
@@ -49,6 +49,8 @@ export function PlanningApplicationForm({
     );
   }, [isEdit, state]);
 
+  const onSubmit = useOnceFormSubmit({ error: state?.error, unlock: isEdit && !!state?.ok });
+
   return (
     <>
       {state?.ok && (
@@ -61,7 +63,7 @@ export function PlanningApplicationForm({
           {state.error}
         </p>
       )}
-      <form action={formAction} className="mt-6 flex max-w-3xl flex-col gap-4">
+      <form action={formAction} onSubmit={onSubmit} className="mt-6 flex max-w-3xl flex-col gap-4">
         <input type="hidden" name="authorId" value={authorId} />
         <Input
           label="Title"
@@ -99,6 +101,12 @@ export function PlanningApplicationForm({
           submitLabel={isEdit ? "Update" : "Create"}
           sendKind="planning"
           sendId={application?.id}
+          sentNotice={
+            state?.ok && (typeof state.sent === "number" || state.alreadySent)
+              ? { sent: state.sent, alreadySent: state.alreadySent }
+              : null
+          }
+          saveComplete={!!state?.ok && !isEdit}
         />
       </form>
     </>

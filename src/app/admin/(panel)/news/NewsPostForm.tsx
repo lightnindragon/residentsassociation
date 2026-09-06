@@ -5,7 +5,7 @@ import { createPost, updatePost } from "@/app/admin/actions/news";
 import { Input } from "@/components/ui";
 import { RichTextEditor } from "@/components/RichTextEditor";
 import { BlogImageUpload } from "@/components/BlogImageUpload";
-import { PublishNotifyFields, toastPublishResult } from "@/components/PublishNotifyFields";
+import { PublishNotifyFields, toastPublishResult, useOnceFormSubmit } from "@/components/PublishNotifyFields";
 
 function updatePostBound(id: string) {
   return (prev: unknown, formData: FormData) => updatePost(id, prev, formData);
@@ -49,6 +49,8 @@ export function NewsPostForm({
     toastPublishResult(state, isEdit ? "News article updated." : "News article created.");
   }, [isEdit, state]);
 
+  const onSubmit = useOnceFormSubmit({ error: state?.error, unlock: isEdit && !!state?.ok });
+
   return (
     <>
       {state?.ok && (
@@ -61,7 +63,7 @@ export function NewsPostForm({
           {state.error}
         </p>
       )}
-      <form action={formAction} className="mt-6 flex max-w-3xl flex-col gap-4">
+      <form action={formAction} onSubmit={onSubmit} className="mt-6 flex max-w-3xl flex-col gap-4">
         <input type="hidden" name="authorId" value={authorId} />
         <Input
           label="Title"
@@ -106,6 +108,12 @@ export function NewsPostForm({
           submitLabel={isEdit ? "Update" : "Create"}
           sendKind="news"
           sendId={post?.id}
+          sentNotice={
+            state?.ok && (typeof state.sent === "number" || state.alreadySent)
+              ? { sent: state.sent, alreadySent: state.alreadySent }
+              : null
+          }
+          saveComplete={!!state?.ok && !isEdit}
         />
       </form>
     </>

@@ -72,7 +72,14 @@ export async function createMinutesEntry(
       formData,
       publish,
       send: () => notifySubscribersNewMinutes({ title, slug }),
-      markSent: () => sql`UPDATE site_minutes SET subscribers_notified_at = NOW() WHERE slug = ${slug}`,
+      claimSent: async () => {
+        const rows = await sql`
+          UPDATE site_minutes SET subscribers_notified_at = NOW()
+          WHERE slug = ${slug} AND subscribers_notified_at IS NULL
+          RETURNING id
+        `;
+        return rows.length > 0;
+      },
     });
     revalidateMinutesPaths(slug);
     return { ok: true, ...notifyResult };
@@ -126,8 +133,14 @@ export async function updateMinutesEntry(
           publish,
           alreadyNotified,
           send: () => notifySubscribersNewMinutes({ title, slug: prev.slug }),
-          markSent: () =>
-            sql`UPDATE site_minutes SET subscribers_notified_at = NOW() WHERE id = ${id}::uuid`,
+          claimSent: async () => {
+            const rows = await sql`
+              UPDATE site_minutes SET subscribers_notified_at = NOW()
+              WHERE id = ${id}::uuid AND subscribers_notified_at IS NULL
+              RETURNING id
+            `;
+            return rows.length > 0;
+          },
         })
       : {};
     revalidateMinutesPaths(prev?.slug ?? null);

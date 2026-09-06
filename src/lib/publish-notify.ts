@@ -7,6 +7,7 @@ export type PublishActionResult = {
   error?: string;
   sent?: number;
   notifyError?: string;
+  alreadySent?: boolean;
 } | null;
 
 export function shouldNotifySubscribers(
@@ -17,13 +18,14 @@ export function shouldNotifySubscribers(
   return publish && !alreadyNotified && formData.get("notify_subscribers") === "1";
 }
 
+/** Claim the send first so a second click cannot email the same item again. */
 export async function runPublishNotify(params: {
   formData: FormData;
   publish: boolean;
   alreadyNotified?: boolean;
   send: () => Promise<NotifySignUpsResult>;
-  markSent: () => Promise<unknown>;
-}): Promise<{ sent?: number; notifyError?: string }> {
+  claimSent: () => Promise<boolean>;
+}): Promise<{ sent?: number; notifyError?: string; alreadySent?: boolean }> {
   if (
     !shouldNotifySubscribers(
       params.formData,
@@ -33,8 +35,9 @@ export async function runPublishNotify(params: {
   ) {
     return {};
   }
+  const claimed = await params.claimSent();
+  if (!claimed) return { alreadySent: true };
   const notified = await params.send();
-  if (notified.sent > 0) await params.markSent();
-  if (notified.error) return { sent: notified.sent, notifyError: notified.error };
-  return { sent: notified.sent };
+  if (notified.error) return { sent: notified.sent, notifyError: notified.error, alreadySent: true };
+  return { sent: notified.sent, alreadySent: true };
 }

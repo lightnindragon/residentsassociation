@@ -72,7 +72,14 @@ export async function createAgenda(
       formData,
       publish,
       send: () => notifySubscribersNewAgenda({ title, slug }),
-      markSent: () => sql`UPDATE site_agendas SET subscribers_notified_at = NOW() WHERE slug = ${slug}`,
+      claimSent: async () => {
+        const rows = await sql`
+          UPDATE site_agendas SET subscribers_notified_at = NOW()
+          WHERE slug = ${slug} AND subscribers_notified_at IS NULL
+          RETURNING id
+        `;
+        return rows.length > 0;
+      },
     });
     revalidateAgendaPaths(slug);
     return { ok: true, ...notifyResult };
@@ -126,8 +133,14 @@ export async function updateAgenda(
           publish,
           alreadyNotified,
           send: () => notifySubscribersNewAgenda({ title, slug: prev.slug }),
-          markSent: () =>
-            sql`UPDATE site_agendas SET subscribers_notified_at = NOW() WHERE id = ${id}::uuid`,
+          claimSent: async () => {
+            const rows = await sql`
+              UPDATE site_agendas SET subscribers_notified_at = NOW()
+              WHERE id = ${id}::uuid AND subscribers_notified_at IS NULL
+              RETURNING id
+            `;
+            return rows.length > 0;
+          },
         })
       : {};
     revalidateAgendaPaths(prev?.slug ?? null);
