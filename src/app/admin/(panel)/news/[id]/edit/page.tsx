@@ -23,13 +23,14 @@ export default async function AdminEditPostPage({
     post_category_id: string | null;
     cover_image_url: string | null;
     archived_at: string | null;
+    subscribers_notified_at: string | null;
   };
   let post: PostRow | null = null;
   let categories: Array<{ id: string; name: string; slug: string }> = [];
   try {
     const sql = getSql();
     const rows = await sql`
-      SELECT id, title, excerpt, body, published_at, post_category_id, cover_image_url, archived_at
+      SELECT id, title, excerpt, body, published_at, post_category_id, cover_image_url, archived_at, subscribers_notified_at
       FROM posts WHERE id = ${id}::uuid LIMIT 1
     `;
     post = (rows[0] as PostRow) ?? null;

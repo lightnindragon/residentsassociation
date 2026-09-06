@@ -69,7 +69,10 @@ export async function createPlanningApplication(
       )
     `;
     if (shouldNotifySubscribers(formData, publish)) {
-      void notifySubscribersNewPlanningApplication({ title, slug });
+      const notified = await notifySubscribersNewPlanningApplication({ title, slug });
+      if (!notified.error) {
+        await sql`UPDATE planning_applications SET subscribers_notified_at = NOW() WHERE slug = ${slug}`;
+      }
     }
     revalidatePlanningPaths(slug);
     return { ok: true };
@@ -99,10 +102,14 @@ export async function updatePlanningApplication(
   try {
     const sql = getSql();
     const [before] = await sql`
-      SELECT slug, published_at FROM planning_applications WHERE id = ${id}::uuid LIMIT 1
+      SELECT slug, published_at, subscribers_notified_at FROM planning_applications WHERE id = ${id}::uuid LIMIT 1
     `;
-    const prev = before as { slug: string; published_at: string | null } | undefined;
-    const wasPublished = !!prev?.published_at;
+    const prev = before as {
+      slug: string;
+      published_at: string | null;
+      subscribers_notified_at: string | null;
+    } | undefined;
+    const alreadyNotified = !!prev?.subscribers_notified_at;
 
     await sql`
       UPDATE planning_applications
@@ -113,8 +120,11 @@ export async function updatePlanningApplication(
           updated_at = NOW()
       WHERE id = ${id}::uuid
     `;
-    if (shouldNotifySubscribers(formData, publish, wasPublished) && prev) {
-      void notifySubscribersNewPlanningApplication({ title, slug: prev.slug });
+    if (shouldNotifySubscribers(formData, publish, alreadyNotified) && prev) {
+      const notified = await notifySubscribersNewPlanningApplication({ title, slug: prev.slug });
+      if (!notified.error) {
+        await sql`UPDATE planning_applications SET subscribers_notified_at = NOW() WHERE id = ${id}::uuid`;
+      }
     }
     revalidatePlanningPaths(prev?.slug ?? null);
     return { ok: true };

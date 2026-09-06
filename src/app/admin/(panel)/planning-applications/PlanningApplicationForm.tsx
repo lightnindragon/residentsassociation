@@ -5,7 +5,7 @@ import {
   createPlanningApplication,
   updatePlanningApplication,
 } from "@/app/admin/actions/planning";
-import { Input, Button } from "@/components/ui";
+import { Input } from "@/components/ui";
 import { RichTextEditor } from "@/components/RichTextEditor";
 import { BlogImageUpload } from "@/components/BlogImageUpload";
 import { PublishNotifyFields } from "@/components/PublishNotifyFields";
@@ -28,6 +28,7 @@ export function PlanningApplicationForm({
     external_url: string;
     published_at: string | null;
     cover_image_url: string | null;
+    subscribers_notified_at?: string | null;
   };
 }) {
   const isEdit = !!application;
@@ -99,8 +100,13 @@ export function PlanningApplicationForm({
           </span>
           <RichTextEditor name="body" initialHtml={application?.body ?? ""} />
         </div>
-        <PublishNotifyFields defaultPublished={!!application?.published_at} />
-        <Button type="submit">{isEdit ? "Update" : "Create"}</Button>
+        <PublishNotifyFields
+          defaultPublished={!!application?.published_at}
+          notifiedAt={application?.subscribers_notified_at}
+          submitLabel={isEdit ? "Update" : "Create"}
+          sendKind="planning"
+          sendId={application?.id}
+        />
       </form>
     </>
   );

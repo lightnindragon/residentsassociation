@@ -1,7 +1,9 @@
+export type SignUpNotifyKind = "news" | "planning" | "event" | "agenda" | "minutes";
+
 export function shouldNotifySubscribers(
   formData: FormData,
   publish: boolean,
-  wasPublished = false
+  alreadyNotified = false
 ): boolean {
-  return publish && !wasPublished && formData.get("notify_subscribers") === "1";
+  return publish && !alreadyNotified && formData.get("notify_subscribers") === "1";
 }

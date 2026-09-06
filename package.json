@@ -18,7 +18,8 @@
     "seed-hero-image": "node --env-file=.env.local scripts/seed-hero-from-url.js",
     "seed-gallery-image": "node --env-file=.env.local scripts/seed-gallery-from-url.js",
     "dedupe-gallery": "node --env-file=.env.local scripts/dedupe-gallery-images.js",
-    "migrate-calendar-mailing-nav": "node --env-file=.env.local scripts/migrate-calendar-mailing-nav.js"
+    "migrate-calendar-mailing-nav": "node --env-file=.env.local scripts/migrate-calendar-mailing-nav.js",
+    "migrate-subscribers-notified": "node --env-file=.env.local scripts/migrate-subscribers-notified.js"
   },
   "dependencies": {
     "@marsidev/react-turnstile": "^1.4.2",

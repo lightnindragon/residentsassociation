@@ -2,7 +2,7 @@
 
 import { useActionState, useEffect, useRef } from "react";
 import { createAgenda, updateAgenda } from "@/app/admin/actions/agendas";
-import { Input, Button } from "@/components/ui";
+import { Input } from "@/components/ui";
 import { RichTextEditor } from "@/components/RichTextEditor";
 import { BlogImageUpload } from "@/components/BlogImageUpload";
 import { PublishNotifyFields } from "@/components/PublishNotifyFields";
@@ -25,6 +25,7 @@ export function AgendaForm({
     external_url: string;
     published_at: string | null;
     cover_image_url: string | null;
+    subscribers_notified_at?: string | null;
   };
 }) {
   const isEdit = !!agenda;
@@ -92,8 +93,13 @@ export function AgendaForm({
           </span>
           <RichTextEditor name="body" initialHtml={agenda?.body ?? ""} />
         </div>
-        <PublishNotifyFields defaultPublished={!!agenda?.published_at} />
-        <Button type="submit">{isEdit ? "Update" : "Create"}</Button>
+        <PublishNotifyFields
+          defaultPublished={!!agenda?.published_at}
+          notifiedAt={agenda?.subscribers_notified_at}
+          submitLabel={isEdit ? "Update" : "Create"}
+          sendKind="agenda"
+          sendId={agenda?.id}
+        />
       </form>
     </>
   );

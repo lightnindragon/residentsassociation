@@ -2,7 +2,7 @@
 
 import { useActionState, useEffect, useRef } from "react";
 import { createMinutesEntry, updateMinutesEntry } from "@/app/admin/actions/minutes";
-import { Input, Button } from "@/components/ui";
+import { Input } from "@/components/ui";
 import { RichTextEditor } from "@/components/RichTextEditor";
 import { BlogImageUpload } from "@/components/BlogImageUpload";
 import { PublishNotifyFields } from "@/components/PublishNotifyFields";
@@ -25,6 +25,7 @@ export function MinutesForm({
     external_url: string;
     published_at: string | null;
     cover_image_url: string | null;
+    subscribers_notified_at?: string | null;
   };
 }) {
   const isEdit = !!entry;
@@ -94,8 +95,13 @@ export function MinutesForm({
           </span>
           <RichTextEditor name="body" initialHtml={entry?.body ?? ""} />
         </div>
-        <PublishNotifyFields defaultPublished={!!entry?.published_at} />
-        <Button type="submit">{isEdit ? "Update" : "Create"}</Button>
+        <PublishNotifyFields
+          defaultPublished={!!entry?.published_at}
+          notifiedAt={entry?.subscribers_notified_at}
+          submitLabel={isEdit ? "Update" : "Create"}
+          sendKind="minutes"
+          sendId={entry?.id}
+        />
       </form>
     </>
   );

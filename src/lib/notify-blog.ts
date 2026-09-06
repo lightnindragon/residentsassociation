@@ -3,6 +3,8 @@ import { getSmtpConfig } from "@/lib/email";
 import nodemailer from "nodemailer";
 import { getEmailTemplate, applyTemplate } from "@/lib/email-templates";
 
+export type NotifySignUpsResult = { sent: number; error?: string };
+
 function getSiteBaseUrl(): string {
   return (
     process.env.NEXTAUTH_URL ||
@@ -14,10 +16,11 @@ async function notifyNewsOptInSubscribers(params: {
   templateKey: string;
   title: string;
   link: string;
-}): Promise<void> {
+}): Promise<NotifySignUpsResult> {
   const config = await getSmtpConfig();
+  if (!config) return { sent: 0, error: "Email (SMTP) is not configured." };
   const tpl = await getEmailTemplate(params.templateKey);
-  if (!config || !tpl) return;
+  if (!tpl) return { sent: 0, error: "The email template for this update is missing." };
 
   const sql = getSql();
   const users = await sql`
@@ -32,6 +35,7 @@ async function notifyNewsOptInSubscribers(params: {
     auth: config.user && config.password ? { user: config.user, pass: config.password } : undefined,
   });
 
+  let sent = 0;
   for (const row of users as Array<{ email: string; name: string }>) {
     try {
       const vars = { name: row.name, title: params.title, link: params.link };
@@ -42,19 +46,21 @@ async function notifyNewsOptInSubscribers(params: {
         text: applyTemplate(tpl.body_text, vars),
         html: applyTemplate(tpl.body_html, vars),
       });
+      sent += 1;
     } catch (e) {
       console.error("notify subscribers email", params.templateKey, e);
     }
   }
+  return { sent };
 }
 
 export async function notifySubscribersNewPost(params: {
   title: string;
   slug: string;
-}): Promise<void> {
+}): Promise<NotifySignUpsResult> {
   const baseUrl = getSiteBaseUrl();
   const link = `${baseUrl}/news/${params.slug}`;
-  await notifyNewsOptInSubscribers({
+  return notifyNewsOptInSubscribers({
     templateKey: "blog_new_post",
     title: params.title,
     link,
@@ -64,10 +70,10 @@ export async function notifySubscribersNewPost(params: {
 export async function notifySubscribersNewPlanningApplication(params: {
   title: string;
   slug: string;
-}): Promise<void> {
+}): Promise<NotifySignUpsResult> {
   const baseUrl = getSiteBaseUrl();
   const link = `${baseUrl}/planning-applications/${params.slug}`;
-  await notifyNewsOptInSubscribers({
+  return notifyNewsOptInSubscribers({
     templateKey: "planning_new_application",
     title: params.title,
     link,
@@ -77,10 +83,10 @@ export async function notifySubscribersNewPlanningApplication(params: {
 export async function notifySubscribersNewEvent(params: {
   title: string;
   slug: string;
-}): Promise<void> {
+}): Promise<NotifySignUpsResult> {
   const baseUrl = getSiteBaseUrl();
   const link = `${baseUrl}/events/${params.slug}`;
-  await notifyNewsOptInSubscribers({
+  return notifyNewsOptInSubscribers({
     templateKey: "event_new",
     title: params.title,
     link,
@@ -90,10 +96,10 @@ export async function notifySubscribersNewEvent(params: {
 export async function notifySubscribersNewAgenda(params: {
   title: string;
   slug: string;
-}): Promise<void> {
+}): Promise<NotifySignUpsResult> {
   const baseUrl = getSiteBaseUrl();
   const link = `${baseUrl}/agendas/${params.slug}`;
-  await notifyNewsOptInSubscribers({
+  return notifyNewsOptInSubscribers({
     templateKey: "agenda_new",
     title: params.title,
     link,
@@ -103,10 +109,10 @@ export async function notifySubscribersNewAgenda(params: {
 export async function notifySubscribersNewMinutes(params: {
   title: string;
   slug: string;
-}): Promise<void> {
+}): Promise<NotifySignUpsResult> {
   const baseUrl = getSiteBaseUrl();
   const link = `${baseUrl}/minutes/${params.slug}`;
-  await notifyNewsOptInSubscribers({
+  return notifyNewsOptInSubscribers({
     templateKey: "minutes_new",
     title: params.title,
     link,

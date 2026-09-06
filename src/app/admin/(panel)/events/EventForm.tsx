@@ -2,7 +2,7 @@
 
 import { useActionState, useEffect, useRef } from "react";
 import { createEvent, updateEvent } from "@/app/admin/actions/events";
-import { Input, Button } from "@/components/ui";
+import { Input } from "@/components/ui";
 import { RichTextEditor } from "@/components/RichTextEditor";
 import { BlogImageUpload } from "@/components/BlogImageUpload";
 import { PublishNotifyFields } from "@/components/PublishNotifyFields";
@@ -25,6 +25,7 @@ export function EventForm({
     external_url: string;
     published_at: string | null;
     cover_image_url: string | null;
+    subscribers_notified_at?: string | null;
   };
 }) {
   const isEdit = !!event;
@@ -94,8 +95,13 @@ export function EventForm({
           </span>
           <RichTextEditor name="body" initialHtml={event?.body ?? ""} />
         </div>
-        <PublishNotifyFields defaultPublished={!!event?.published_at} />
-        <Button type="submit">{isEdit ? "Update" : "Create"}</Button>
+        <PublishNotifyFields
+          defaultPublished={!!event?.published_at}
+          notifiedAt={event?.subscribers_notified_at}
+          submitLabel={isEdit ? "Update" : "Create"}
+          sendKind="event"
+          sendId={event?.id}
+        />
       </form>
     </>
   );

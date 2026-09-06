@@ -47,7 +47,10 @@ export async function createPost(
       )
     `;
     if (shouldNotifySubscribers(formData, publish)) {
-      void notifySubscribersNewPost({ title, slug });
+      const notified = await notifySubscribersNewPost({ title, slug });
+      if (!notified.error) {
+        await sql`UPDATE posts SET subscribers_notified_at = NOW() WHERE slug = ${slug}`;
+      }
     }
     revalidatePath("/");
     revalidatePath("/news");
@@ -77,9 +80,13 @@ export async function updatePost(
 
   try {
     const sql = getSql();
-    const [before] = await sql`SELECT slug, published_at FROM posts WHERE id = ${id}::uuid LIMIT 1`;
-    const prev = before as { slug: string; published_at: string | null } | undefined;
-    const wasPublished = !!prev?.published_at;
+    const [before] = await sql`SELECT slug, published_at, subscribers_notified_at FROM posts WHERE id = ${id}::uuid LIMIT 1`;
+    const prev = before as {
+      slug: string;
+      published_at: string | null;
+      subscribers_notified_at: string | null;
+    } | undefined;
+    const alreadyNotified = !!prev?.subscribers_notified_at;
 
     const coverImageUrl = formData.get("cover_image_url")?.toString()?.trim() || null;
     await sql`
@@ -90,8 +97,11 @@ export async function updatePost(
           updated_at = NOW()
       WHERE id = ${id}::uuid
     `;
-    if (shouldNotifySubscribers(formData, publish, wasPublished) && prev) {
-      void notifySubscribersNewPost({ title, slug: prev.slug });
+    if (shouldNotifySubscribers(formData, publish, alreadyNotified) && prev) {
+      const notified = await notifySubscribersNewPost({ title, slug: prev.slug });
+      if (!notified.error) {
+        await sql`UPDATE posts SET subscribers_notified_at = NOW() WHERE id = ${id}::uuid`;
+      }
     }
     revalidatePath("/");
     revalidatePath("/news");

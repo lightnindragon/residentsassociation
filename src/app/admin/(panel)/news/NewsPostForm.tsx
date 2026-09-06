@@ -2,7 +2,7 @@
 
 import { useActionState, useEffect, useRef } from "react";
 import { createPost, updatePost } from "@/app/admin/actions/news";
-import { Input, Button } from "@/components/ui";
+import { Input } from "@/components/ui";
 import { RichTextEditor } from "@/components/RichTextEditor";
 import { BlogImageUpload } from "@/components/BlogImageUpload";
 import { PublishNotifyFields } from "@/components/PublishNotifyFields";
@@ -30,6 +30,7 @@ export function NewsPostForm({
     published_at: string | null;
     post_category_id: string | null;
     cover_image_url: string | null;
+    subscribers_notified_at?: string | null;
   };
 }) {
   const isEdit = !!post;
@@ -107,8 +108,13 @@ export function NewsPostForm({
           </span>
           <RichTextEditor name="body" initialHtml={post?.body ?? ""} />
         </div>
-        <PublishNotifyFields defaultPublished={!!post?.published_at} />
-        <Button type="submit">{isEdit ? "Update" : "Create"}</Button>
+        <PublishNotifyFields
+          defaultPublished={!!post?.published_at}
+          notifiedAt={post?.subscribers_notified_at}
+          submitLabel={isEdit ? "Update" : "Create"}
+          sendKind="news"
+          sendId={post?.id}
+        />
       </form>
     </>
   );

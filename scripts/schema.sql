@@ -364,3 +364,10 @@ CREATE TABLE IF NOT EXISTS nav_menus (
   items JSONB NOT NULL DEFAULT '[]'::jsonb,
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+-- Whether sign-up update emails have been sent for this published item
+ALTER TABLE posts ADD COLUMN IF NOT EXISTS subscribers_notified_at TIMESTAMPTZ;
+ALTER TABLE planning_applications ADD COLUMN IF NOT EXISTS subscribers_notified_at TIMESTAMPTZ;
+ALTER TABLE site_events ADD COLUMN IF NOT EXISTS subscribers_notified_at TIMESTAMPTZ;
+ALTER TABLE site_agendas ADD COLUMN IF NOT EXISTS subscribers_notified_at TIMESTAMPTZ;
+ALTER TABLE site_minutes ADD COLUMN IF NOT EXISTS subscribers_notified_at TIMESTAMPTZ;

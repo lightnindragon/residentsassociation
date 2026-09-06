@@ -23,12 +23,13 @@ export default async function AdminEditMinutesPage({
     published_at: string | null;
     cover_image_url: string | null;
     archived_at: string | null;
+    subscribers_notified_at: string | null;
   };
   let entry: Row | null = null;
   try {
     const sql = getSql();
     const rows = await sql`
-      SELECT id, title, excerpt, body, external_url, published_at, cover_image_url, archived_at
+      SELECT id, title, excerpt, body, external_url, published_at, cover_image_url, archived_at, subscribers_notified_at
       FROM site_minutes WHERE id = ${id}::uuid LIMIT 1
     `;
     entry = (rows[0] as Row) ?? null;

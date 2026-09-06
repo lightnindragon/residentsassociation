@@ -23,12 +23,13 @@ export default async function AdminEditAgendaPage({
     published_at: string | null;
     cover_image_url: string | null;
     archived_at: string | null;
+    subscribers_notified_at: string | null;
   };
   let agenda: Row | null = null;
   try {
     const sql = getSql();
     const rows = await sql`
-      SELECT id, title, excerpt, body, external_url, published_at, cover_image_url, archived_at
+      SELECT id, title, excerpt, body, external_url, published_at, cover_image_url, archived_at, subscribers_notified_at
       FROM site_agendas WHERE id = ${id}::uuid LIMIT 1
     `;
     agenda = (rows[0] as Row) ?? null;
