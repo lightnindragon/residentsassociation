@@ -3,9 +3,12 @@
 import { put, del } from "@vercel/blob";
 import { getSql } from "@/lib/db";
 import { revalidatePath } from "next/cache";
+import { adminDenied } from "@/lib/admin-access";
 
 export async function saveAboutIntro(intro: string): Promise<{ ok: boolean; error?: string }> {
   try {
+    const denied = await adminDenied("about");
+    if (denied) return { ok: false, error: denied };
     const sql = getSql();
     await sql`
       INSERT INTO site_content (key, value) VALUES ('about_intro', ${intro})
@@ -24,6 +27,8 @@ export async function addCommitteeMember(
   formData: FormData
 ): Promise<{ ok: boolean; error?: string }> {
   try {
+    const denied = await adminDenied("about");
+    if (denied) return { ok: false, error: denied };
     const name = formData.get("name")?.toString() || "";
     const role = formData.get("role")?.toString() || "";
     const bio = formData.get("bio")?.toString() || "";
@@ -54,6 +59,8 @@ export async function updateCommitteeMember(
   formData: FormData
 ): Promise<{ ok: boolean; error?: string }> {
   try {
+    const denied = await adminDenied("about");
+    if (denied) return { ok: false, error: denied };
     const id = formData.get("id")?.toString();
     const name = formData.get("name")?.toString() || "";
     const role = formData.get("role")?.toString() || "";
@@ -93,6 +100,7 @@ export async function updateCommitteeMember(
 
 export async function deleteCommitteeMember(id: string): Promise<{ ok: boolean }> {
   try {
+    if (await adminDenied("about")) return { ok: false };
     const sql = getSql();
     const [row] = await sql`SELECT image_url FROM committee_members WHERE id = ${id}::uuid LIMIT 1`;
     const url = (row as { image_url: string | null })?.image_url;

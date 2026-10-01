@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { notifySubscribersNewPost } from "@/lib/notify-blog";
 import { sanitizeRichHtml } from "@/lib/rich-text";
 import { runPublishNotify, type PublishActionResult } from "@/lib/publish-notify";
+import { adminDenied } from "@/lib/admin-access";
 
 type PostActionResult = PublishActionResult;
 
@@ -19,6 +20,8 @@ export async function createPost(
   _prev: unknown,
   formData: FormData
 ): Promise<PostActionResult> {
+  const denied = await adminDenied("news");
+  if (denied) return { error: denied };
   const title = formData.get("title")?.toString()?.trim();
   const excerpt = formData.get("excerpt")?.toString()?.trim() ?? null;
   const rawBody = formData.get("body")?.toString() ?? "";
@@ -74,6 +77,8 @@ export async function updatePost(
   _prev: unknown,
   formData: FormData
 ): Promise<PostActionResult> {
+  const denied = await adminDenied("news");
+  if (denied) return { error: denied };
   const title = formData.get("title")?.toString()?.trim();
   const excerpt = formData.get("excerpt")?.toString()?.trim() ?? null;
   const rawBody = formData.get("body")?.toString() ?? "";
@@ -133,6 +138,7 @@ export async function updatePost(
 
 export async function deletePost(id: string): Promise<{ ok: boolean }> {
   try {
+    if (await adminDenied("news")) return { ok: false };
     const sql = getSql();
     await sql`DELETE FROM posts WHERE id = ${id}::uuid`;
     revalidatePath("/");
@@ -153,6 +159,8 @@ function revalidatePostPaths(slug: string | null) {
 
 export async function archivePost(postId: string): Promise<{ ok: boolean; error?: string }> {
   try {
+    const denied = await adminDenied("news");
+    if (denied) return { ok: false, error: denied };
     const sql = getSql();
     const [row] = await sql`SELECT slug FROM posts WHERE id = ${postId}::uuid LIMIT 1`;
     const slug = (row as { slug: string } | undefined)?.slug ?? null;
@@ -169,6 +177,8 @@ export async function archivePost(postId: string): Promise<{ ok: boolean; error?
 
 export async function unarchivePost(postId: string): Promise<{ ok: boolean; error?: string }> {
   try {
+    const denied = await adminDenied("news");
+    if (denied) return { ok: false, error: denied };
     const sql = getSql();
     const [row] = await sql`SELECT slug FROM posts WHERE id = ${postId}::uuid LIMIT 1`;
     const slug = (row as { slug: string } | undefined)?.slug ?? null;

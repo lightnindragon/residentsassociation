@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { sanitizeRichHtml } from "@/lib/rich-text";
 import { notifySubscribersNewEvent } from "@/lib/notify-blog";
 import { runPublishNotify, type PublishActionResult } from "@/lib/publish-notify";
+import { adminDenied } from "@/lib/admin-access";
 
 type EventActionResult = PublishActionResult;
 
@@ -40,6 +41,8 @@ export async function createEvent(
   _prev: unknown,
   formData: FormData
 ): Promise<EventActionResult> {
+  const denied = await adminDenied("events");
+  if (denied) return { error: denied };
   const title = formData.get("title")?.toString()?.trim();
   const excerpt = formData.get("excerpt")?.toString()?.trim() ?? null;
   const rawBody = formData.get("body")?.toString() ?? "";
@@ -94,6 +97,8 @@ export async function updateEvent(
   _prev: unknown,
   formData: FormData
 ): Promise<EventActionResult> {
+  const denied = await adminDenied("events");
+  if (denied) return { error: denied };
   const title = formData.get("title")?.toString()?.trim();
   const excerpt = formData.get("excerpt")?.toString()?.trim() ?? null;
   const rawBody = formData.get("body")?.toString() ?? "";
@@ -153,6 +158,7 @@ export async function updateEvent(
 
 export async function deleteEvent(id: string): Promise<{ ok: boolean }> {
   try {
+    if (await adminDenied("events")) return { ok: false };
     const sql = getSql();
     const [row] = await sql`SELECT slug FROM site_events WHERE id = ${id}::uuid LIMIT 1`;
     const slug = (row as { slug: string } | undefined)?.slug ?? null;
@@ -166,6 +172,8 @@ export async function deleteEvent(id: string): Promise<{ ok: boolean }> {
 
 export async function archiveEvent(eventId: string): Promise<{ ok: boolean; error?: string }> {
   try {
+    const denied = await adminDenied("events");
+    if (denied) return { ok: false, error: denied };
     const sql = getSql();
     const [row] = await sql`SELECT slug FROM site_events WHERE id = ${eventId}::uuid LIMIT 1`;
     const slug = (row as { slug: string } | undefined)?.slug ?? null;
@@ -182,6 +190,8 @@ export async function archiveEvent(eventId: string): Promise<{ ok: boolean; erro
 
 export async function unarchiveEvent(eventId: string): Promise<{ ok: boolean; error?: string }> {
   try {
+    const denied = await adminDenied("events");
+    if (denied) return { ok: false, error: denied };
     const sql = getSql();
     const [row] = await sql`SELECT slug FROM site_events WHERE id = ${eventId}::uuid LIMIT 1`;
     const slug = (row as { slug: string } | undefined)?.slug ?? null;

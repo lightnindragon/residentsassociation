@@ -1,14 +1,11 @@
 "use server";
 
 import { getSql } from "@/lib/db";
-import { auth } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
+import { requireAdminPermission } from "@/lib/admin-access";
 
 async function requireAdmin() {
-  const session = await auth();
-  const user = session?.user as { role?: string; id?: string } | undefined;
-  if (user?.role !== "admin" && user?.role !== "dev") throw new Error("Admin only");
-  return user;
+  return requireAdminPermission("calendar");
 }
 
 export type CalendarEvent = {

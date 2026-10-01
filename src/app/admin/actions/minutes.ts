@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { sanitizeRichHtml } from "@/lib/rich-text";
 import { notifySubscribersNewMinutes } from "@/lib/notify-blog";
 import { runPublishNotify, type PublishActionResult } from "@/lib/publish-notify";
+import { adminDenied } from "@/lib/admin-access";
 
 type MinutesActionResult = PublishActionResult;
 
@@ -40,6 +41,8 @@ export async function createMinutesEntry(
   _prev: unknown,
   formData: FormData
 ): Promise<MinutesActionResult> {
+  const denied = await adminDenied("minutes");
+  if (denied) return { error: denied };
   const title = formData.get("title")?.toString()?.trim();
   const excerpt = formData.get("excerpt")?.toString()?.trim() ?? null;
   const rawBody = formData.get("body")?.toString() ?? "";
@@ -94,6 +97,8 @@ export async function updateMinutesEntry(
   _prev: unknown,
   formData: FormData
 ): Promise<MinutesActionResult> {
+  const denied = await adminDenied("minutes");
+  if (denied) return { error: denied };
   const title = formData.get("title")?.toString()?.trim();
   const excerpt = formData.get("excerpt")?.toString()?.trim() ?? null;
   const rawBody = formData.get("body")?.toString() ?? "";
@@ -153,6 +158,7 @@ export async function updateMinutesEntry(
 
 export async function deleteMinutesEntry(id: string): Promise<{ ok: boolean }> {
   try {
+    if (await adminDenied("minutes")) return { ok: false };
     const sql = getSql();
     const [row] = await sql`SELECT slug FROM site_minutes WHERE id = ${id}::uuid LIMIT 1`;
     const slug = (row as { slug: string } | undefined)?.slug ?? null;
@@ -168,6 +174,8 @@ export async function archiveMinutesEntry(
   entryId: string
 ): Promise<{ ok: boolean; error?: string }> {
   try {
+    const denied = await adminDenied("minutes");
+    if (denied) return { ok: false, error: denied };
     const sql = getSql();
     const [row] = await sql`SELECT slug FROM site_minutes WHERE id = ${entryId}::uuid LIMIT 1`;
     const slug = (row as { slug: string } | undefined)?.slug ?? null;
@@ -186,6 +194,8 @@ export async function unarchiveMinutesEntry(
   entryId: string
 ): Promise<{ ok: boolean; error?: string }> {
   try {
+    const denied = await adminDenied("minutes");
+    if (denied) return { ok: false, error: denied };
     const sql = getSql();
     const [row] = await sql`SELECT slug FROM site_minutes WHERE id = ${entryId}::uuid LIMIT 1`;
     const slug = (row as { slug: string } | undefined)?.slug ?? null;

@@ -3,6 +3,7 @@
 import { put, del } from "@vercel/blob";
 import { getSql } from "@/lib/db";
 import { revalidatePath } from "next/cache";
+import { adminDenied } from "@/lib/admin-access";
 
 export async function uploadImage(
   _prev: { error?: string } | null,
@@ -11,6 +12,9 @@ export async function uploadImage(
   const file = formData.get("file") as File | null;
   const caption = formData.get("caption")?.toString()?.trim() ?? null;
   if (!file?.size) return { error: "Choose a file." };
+
+  const denied = await adminDenied("gallery");
+  if (denied) return { error: denied };
 
   try {
     const blob = await put(`gallery/${Date.now()}-${file.name}`, file, {
@@ -41,6 +45,7 @@ export async function uploadImage(
 
 export async function deleteImage(id: string): Promise<{ ok: boolean }> {
   try {
+    if (await adminDenied("gallery")) return { ok: false };
     const sql = getSql();
     const [row] = await sql`
       SELECT url FROM gallery_images WHERE id = ${id}::uuid LIMIT 1

@@ -1,13 +1,11 @@
 "use server";
 
-import { auth } from "@/lib/auth";
 import { saveEmailTemplate } from "@/lib/email-templates";
 import { revalidatePath } from "next/cache";
+import { requireAdminPermission } from "@/lib/admin-access";
 
 async function requireAdmin() {
-  const session = await auth();
-  const r = (session?.user as { role?: string })?.role;
-  if (r !== "admin" && r !== "dev") throw new Error("Forbidden");
+  await requireAdminPermission("email-templates");
 }
 
 export async function saveEmailTemplateForm(

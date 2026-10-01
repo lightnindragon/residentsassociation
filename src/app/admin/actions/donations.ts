@@ -2,6 +2,7 @@
 
 import { getSql } from "@/lib/db";
 import { revalidatePath } from "next/cache";
+import { adminDenied } from "@/lib/admin-access";
 
 export async function saveDonationSettings(data: {
   enabled: boolean;
@@ -11,6 +12,8 @@ export async function saveDonationSettings(data: {
   accountName: string;
 }): Promise<{ ok: boolean; error?: string }> {
   try {
+    const denied = await adminDenied("donations");
+    if (denied) return { ok: false, error: denied };
     const sql = getSql();
     const rows = await sql`SELECT id FROM donation_settings LIMIT 1`;
     const id = (rows[0] as { id: string } | undefined)?.id;

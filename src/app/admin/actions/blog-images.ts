@@ -3,6 +3,7 @@
 import { put } from "@vercel/blob";
 import { getSql } from "@/lib/db";
 import { revalidatePath } from "next/cache";
+import { requireAdmin } from "@/lib/admin-access";
 
 export async function uploadBlogImage(
   _prev: { error?: string; url?: string } | null,
@@ -12,6 +13,7 @@ export async function uploadBlogImage(
   if (!file?.size) return { error: "Choose a file." };
 
   try {
+    await requireAdmin();
     const blob = await put(`blog/${Date.now()}-${file.name}`, file, {
       access: "public",
     });

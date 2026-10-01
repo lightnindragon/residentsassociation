@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { sanitizeRichHtml } from "@/lib/rich-text";
 import { notifySubscribersNewAgenda } from "@/lib/notify-blog";
 import { runPublishNotify, type PublishActionResult } from "@/lib/publish-notify";
+import { adminDenied } from "@/lib/admin-access";
 
 type AgendaActionResult = PublishActionResult;
 
@@ -40,6 +41,8 @@ export async function createAgenda(
   _prev: unknown,
   formData: FormData
 ): Promise<AgendaActionResult> {
+  const denied = await adminDenied("agendas");
+  if (denied) return { error: denied };
   const title = formData.get("title")?.toString()?.trim();
   const excerpt = formData.get("excerpt")?.toString()?.trim() ?? null;
   const rawBody = formData.get("body")?.toString() ?? "";
@@ -94,6 +97,8 @@ export async function updateAgenda(
   _prev: unknown,
   formData: FormData
 ): Promise<AgendaActionResult> {
+  const denied = await adminDenied("agendas");
+  if (denied) return { error: denied };
   const title = formData.get("title")?.toString()?.trim();
   const excerpt = formData.get("excerpt")?.toString()?.trim() ?? null;
   const rawBody = formData.get("body")?.toString() ?? "";
@@ -153,6 +158,7 @@ export async function updateAgenda(
 
 export async function deleteAgenda(id: string): Promise<{ ok: boolean }> {
   try {
+    if (await adminDenied("agendas")) return { ok: false };
     const sql = getSql();
     const [row] = await sql`SELECT slug FROM site_agendas WHERE id = ${id}::uuid LIMIT 1`;
     const slug = (row as { slug: string } | undefined)?.slug ?? null;
@@ -166,6 +172,8 @@ export async function deleteAgenda(id: string): Promise<{ ok: boolean }> {
 
 export async function archiveAgenda(agendaId: string): Promise<{ ok: boolean; error?: string }> {
   try {
+    const denied = await adminDenied("agendas");
+    if (denied) return { ok: false, error: denied };
     const sql = getSql();
     const [row] = await sql`SELECT slug FROM site_agendas WHERE id = ${agendaId}::uuid LIMIT 1`;
     const slug = (row as { slug: string } | undefined)?.slug ?? null;
@@ -182,6 +190,8 @@ export async function archiveAgenda(agendaId: string): Promise<{ ok: boolean; er
 
 export async function unarchiveAgenda(agendaId: string): Promise<{ ok: boolean; error?: string }> {
   try {
+    const denied = await adminDenied("agendas");
+    if (denied) return { ok: false, error: denied };
     const sql = getSql();
     const [row] = await sql`SELECT slug FROM site_agendas WHERE id = ${agendaId}::uuid LIMIT 1`;
     const slug = (row as { slug: string } | undefined)?.slug ?? null;

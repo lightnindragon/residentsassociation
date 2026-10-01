@@ -1,6 +1,5 @@
 "use server";
 
-import { auth } from "@/lib/auth";
 import { getSql } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import {
@@ -11,11 +10,19 @@ import {
   notifySubscribersNewPost,
 } from "@/lib/notify-blog";
 import type { SignUpNotifyKind } from "@/lib/publish-notify";
+import { requireAdminPermission } from "@/lib/admin-access";
+import type { AdminPermissionKey } from "@/lib/admin-nav";
 
-async function requireAdmin() {
-  const session = await auth();
-  const user = session?.user as { role?: string } | undefined;
-  if (user?.role !== "admin" && user?.role !== "dev") throw new Error("Admin only");
+const KIND_PERMISSION: Record<SignUpNotifyKind, AdminPermissionKey> = {
+  news: "news",
+  planning: "planning-applications",
+  event: "events",
+  agenda: "agendas",
+  minutes: "minutes",
+};
+
+async function requireAdmin(kind: SignUpNotifyKind) {
+  await requireAdminPermission(KIND_PERMISSION[kind]);
 }
 
 type ClaimedRow = { title: string; slug: string };
@@ -118,7 +125,7 @@ export async function sendToSignUps(
   id: string
 ): Promise<{ ok: boolean; error?: string; sent?: number; alreadySent?: boolean }> {
   try {
-    await requireAdmin();
+    await requireAdmin(kind);
   } catch {
     return { ok: false, error: "Forbidden." };
   }

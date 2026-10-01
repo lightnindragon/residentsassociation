@@ -3,6 +3,7 @@
 import { put, del } from "@vercel/blob";
 import { getSql } from "@/lib/db";
 import { revalidatePath } from "next/cache";
+import { adminDenied } from "@/lib/admin-access";
 
 export async function uploadMediaAsset(
   _prev: { error?: string } | null,
@@ -11,6 +12,9 @@ export async function uploadMediaAsset(
   const file = formData.get("file") as File | null;
   const label = formData.get("label")?.toString()?.trim() ?? null;
   if (!file?.size) return { error: "Choose a file." };
+
+  const denied = await adminDenied("media");
+  if (denied) return { error: denied };
 
   try {
     const blob = await put(`blog/${Date.now()}-${file.name}`, file, {
@@ -31,6 +35,8 @@ export async function uploadMediaAsset(
 
 export async function deleteMediaAsset(id: string): Promise<{ ok: boolean; error?: string }> {
   try {
+    const denied = await adminDenied("media");
+    if (denied) return { ok: false, error: denied };
     const sql = getSql();
     const [row] = await sql`
       SELECT url FROM media_assets WHERE id = ${id}::uuid LIMIT 1
@@ -53,6 +59,8 @@ export async function deleteMediaAsset(id: string): Promise<{ ok: boolean; error
 
 export async function deleteGalleryMediaItem(id: string): Promise<{ ok: boolean; error?: string }> {
   try {
+    const denied = await adminDenied("media");
+    if (denied) return { ok: false, error: denied };
     const sql = getSql();
     const [row] = await sql`
       SELECT url FROM gallery_images WHERE id = ${id}::uuid LIMIT 1

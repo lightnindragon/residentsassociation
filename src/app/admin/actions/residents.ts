@@ -1,7 +1,7 @@
 "use server";
 
 import { getSql } from "@/lib/db";
-import { auth } from "@/lib/auth";
+import { requireAdminPermission } from "@/lib/admin-access";
 import { revalidatePath } from "next/cache";
 import bcrypt from "bcryptjs";
 import { applyTemplate, getEmailTemplate } from "@/lib/email-templates";
@@ -9,9 +9,7 @@ import { getSmtpConfig } from "@/lib/email";
 import nodemailer from "nodemailer";
 
 async function requireAdminRole() {
-  const session = await auth();
-  const role = (session?.user as { role?: string })?.role;
-  if (role !== "admin" && role !== "dev") throw new Error("Forbidden");
+  await requireAdminPermission("residents");
 }
 
 export async function addResident(formData: FormData): Promise<{ ok: boolean; error?: string }> {

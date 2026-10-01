@@ -3,6 +3,7 @@
 import { getSql } from "@/lib/db";
 import { encrypt } from "@/lib/encrypt";
 import { getEncryptionKey } from "@/lib/server-env";
+import { adminDenied } from "@/lib/admin-access";
 
 export type SettingsResult = { ok?: boolean; error?: string };
 
@@ -10,6 +11,8 @@ export async function saveSmtpConfig(
   _prev: SettingsResult | null,
   formData: FormData
 ): Promise<SettingsResult | null> {
+  const denied = await adminDenied("settings");
+  if (denied) return { error: denied };
   const host = formData.get("host")?.toString()?.trim() ?? "";
   const port = parseInt(formData.get("port")?.toString() ?? "587", 10);
   const user = formData.get("user")?.toString()?.trim() ?? "";

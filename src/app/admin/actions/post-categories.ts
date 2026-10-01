@@ -1,8 +1,8 @@
 "use server";
 
 import { getSql } from "@/lib/db";
-import { auth } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
+import { requireAdminPermission } from "@/lib/admin-access";
 
 function slugify(s: string): string {
   return s
@@ -12,9 +12,7 @@ function slugify(s: string): string {
 }
 
 async function requireAdmin() {
-  const session = await auth();
-  const r = (session?.user as { role?: string })?.role;
-  if (r !== "admin" && r !== "dev") throw new Error("Forbidden");
+  await requireAdminPermission("news");
 }
 
 export async function addPostCategory(

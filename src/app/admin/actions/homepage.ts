@@ -1,22 +1,16 @@
 "use server";
 
 import { put, del } from "@vercel/blob";
-import { auth } from "@/lib/auth";
 import { getSql } from "@/lib/db";
 import { revalidatePath } from "next/cache";
-
-async function requireAdmin() {
-  const session = await auth();
-  const r = (session?.user as { role?: string })?.role;
-  if (r !== "admin" && r !== "dev") throw new Error("Forbidden");
-}
+import { requireAdminPermission } from "@/lib/admin-access";
 
 export async function saveHomepageContent(
   _prev: { ok?: boolean; error?: string } | null,
   formData: FormData
 ): Promise<{ ok?: boolean; error?: string } | null> {
   try {
-    await requireAdmin();
+    await requireAdminPermission("homepage");
     const intro = formData.get("intro")?.toString() ?? "";
     const heroAlt = formData.get("heroAlt")?.toString() ?? "";
     const getInvolvedTitle = formData.get("getInvolvedTitle")?.toString() ?? "";

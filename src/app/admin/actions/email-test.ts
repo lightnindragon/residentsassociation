@@ -2,6 +2,7 @@
 
 import { getSmtpConfig } from "@/lib/email";
 import nodemailer from "nodemailer";
+import { adminDenied } from "@/lib/admin-access";
 
 function getTransport(config: { host: string; port: number; user: string; password: string }) {
   return nodemailer.createTransport({
@@ -13,6 +14,8 @@ function getTransport(config: { host: string; port: number; user: string; passwo
 }
 
 export async function testConnection(): Promise<{ ok: boolean; error?: string }> {
+  const denied = await adminDenied("settings");
+  if (denied) return { ok: false, error: denied };
   const config = await getSmtpConfig();
   if (!config) return { ok: false, error: "SMTP not configured. Save settings first." };
   try {
@@ -28,6 +31,8 @@ export async function testConnection(): Promise<{ ok: boolean; error?: string }>
 }
 
 export async function sendTestEmail(): Promise<{ ok: boolean; error?: string }> {
+  const denied = await adminDenied("settings");
+  if (denied) return { ok: false, error: denied };
   const config = await getSmtpConfig();
   if (!config) return { ok: false, error: "SMTP not configured" };
   try {

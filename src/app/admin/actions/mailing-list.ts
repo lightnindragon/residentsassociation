@@ -1,13 +1,11 @@
 "use server";
 
 import { getSql } from "@/lib/db";
-import { auth } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
+import { requireAdminPermission } from "@/lib/admin-access";
 
 async function requireAdmin() {
-  const session = await auth();
-  const user = session?.user as { role?: string } | undefined;
-  if (user?.role !== "admin" && user?.role !== "dev") throw new Error("Admin only");
+  await requireAdminPermission("mailing-list");
 }
 
 function normalizeEmail(raw: string): string | null {

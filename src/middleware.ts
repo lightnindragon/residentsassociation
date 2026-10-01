@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { neon } from "@neondatabase/serverless";
+import { canAccessAdminPath } from "@/lib/admin-permissions";
 
 export async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
@@ -11,6 +12,9 @@ export async function middleware(req: NextRequest) {
   const { auth } = await import("@/lib/auth");
   const session = await auth();
 
+  const requestHeaders = new Headers(req.headers);
+  requestHeaders.set("x-admin-path", path);
+
   if (isAdmin) {
     if (isAdminLogin) {
       if (session?.user) {
@@ -20,7 +24,7 @@ export async function middleware(req: NextRequest) {
         }
         return NextResponse.redirect(new URL("/", req.url));
       }
-      return NextResponse.next();
+      return NextResponse.next({ request: { headers: requestHeaders } });
     }
     if (!session?.user) {
       const login = new URL("/admin/login", req.url);
@@ -31,6 +35,23 @@ export async function middleware(req: NextRequest) {
     if (role !== "admin" && role !== "dev") {
       return NextResponse.redirect(new URL("/", req.url));
     }
+    const userId = (session.user as { id?: string }).id;
+    const dbUrl = process.env.DATABASE_URL;
+    if (userId && dbUrl && path !== "/admin") {
+      try {
+        const sql = neon(dbUrl);
+        const rows = await sql`
+          SELECT role, admin_permissions FROM users WHERE id = ${userId}::uuid LIMIT 1
+        `;
+        const row = rows[0] as { role: string; admin_permissions: string[] | null } | undefined;
+        if (row && !canAccessAdminPath(path, row.role, row.admin_permissions)) {
+          return NextResponse.redirect(new URL("/admin?denied=1", req.url));
+        }
+      } catch {
+        // Column may not exist yet, or DB error — allow through
+      }
+    }
+    return NextResponse.next({ request: { headers: requestHeaders } });
   }
 
   if (isForum) {

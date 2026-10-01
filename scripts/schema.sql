@@ -371,3 +371,4 @@ ALTER TABLE planning_applications ADD COLUMN IF NOT EXISTS subscribers_notified_
 ALTER TABLE site_events ADD COLUMN IF NOT EXISTS subscribers_notified_at TIMESTAMPTZ;
 ALTER TABLE site_agendas ADD COLUMN IF NOT EXISTS subscribers_notified_at TIMESTAMPTZ;
 ALTER TABLE site_minutes ADD COLUMN IF NOT EXISTS subscribers_notified_at TIMESTAMPTZ;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS admin_permissions TEXT[];

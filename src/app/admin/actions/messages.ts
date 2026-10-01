@@ -2,12 +2,15 @@
 
 import { getSql } from "@/lib/db";
 import { sendAssignmentNotification, sendAssignmentToGeneral } from "@/lib/email";
+import { adminDenied } from "@/lib/admin-access";
 
 export async function assignMessage(
   messageId: string,
   assignedToId: string | null
 ): Promise<{ ok: boolean; error?: string }> {
   try {
+    const denied = await adminDenied("messages");
+    if (denied) return { ok: false, error: denied };
     const sql = getSql();
     const baseUrl =
       process.env.NEXTAUTH_URL ||
@@ -74,6 +77,7 @@ export async function updateMessageStatus(
   status: MessageStatus
 ): Promise<{ ok: boolean }> {
   try {
+    if (await adminDenied("messages")) return { ok: false };
     const sql = getSql();
     await sql`
       UPDATE contact_messages SET status = ${status}, updated_at = NOW()
@@ -87,6 +91,8 @@ export async function updateMessageStatus(
 
 export async function addAdminReply(messageId: string, body: string): Promise<{ ok: boolean; error?: string }> {
   try {
+    const denied = await adminDenied("messages");
+    if (denied) return { ok: false, error: denied };
     const { auth } = await import("@/lib/auth");
     const session = await auth();
     const userId = (session?.user as { id?: string })?.id;

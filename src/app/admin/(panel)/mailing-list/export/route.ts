@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
 import { getSql } from "@/lib/db";
+import { adminDenied } from "@/lib/admin-access";
 
 function csvCell(value: string): string {
   if (/[",\n\r]/.test(value)) return `"${value.replace(/"/g, '""')}"`;
@@ -8,10 +8,9 @@ function csvCell(value: string): string {
 }
 
 export async function GET() {
-  const session = await auth();
-  const role = (session?.user as { role?: string } | undefined)?.role;
-  if (role !== "admin" && role !== "dev") {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  const denied = await adminDenied("mailing-list");
+  if (denied) {
+    return NextResponse.json({ error: denied }, { status: 403 });
   }
 
   const sql = getSql();

@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { sanitizeRichHtml } from "@/lib/rich-text";
 import { notifySubscribersNewPlanningApplication } from "@/lib/notify-blog";
 import { runPublishNotify, type PublishActionResult } from "@/lib/publish-notify";
+import { adminDenied } from "@/lib/admin-access";
 
 type PlanningActionResult = PublishActionResult;
 
@@ -40,6 +41,8 @@ export async function createPlanningApplication(
   _prev: unknown,
   formData: FormData
 ): Promise<PlanningActionResult> {
+  const denied = await adminDenied("planning-applications");
+  if (denied) return { error: denied };
   const title = formData.get("title")?.toString()?.trim();
   const excerpt = formData.get("excerpt")?.toString()?.trim() ?? null;
   const rawBody = formData.get("body")?.toString() ?? "";
@@ -94,6 +97,8 @@ export async function updatePlanningApplication(
   _prev: unknown,
   formData: FormData
 ): Promise<PlanningActionResult> {
+  const denied = await adminDenied("planning-applications");
+  if (denied) return { error: denied };
   const title = formData.get("title")?.toString()?.trim();
   const excerpt = formData.get("excerpt")?.toString()?.trim() ?? null;
   const rawBody = formData.get("body")?.toString() ?? "";
@@ -153,6 +158,7 @@ export async function updatePlanningApplication(
 
 export async function deletePlanningApplication(id: string): Promise<{ ok: boolean }> {
   try {
+    if (await adminDenied("planning-applications")) return { ok: false };
     const sql = getSql();
     const [row] = await sql`SELECT slug FROM planning_applications WHERE id = ${id}::uuid LIMIT 1`;
     const slug = (row as { slug: string } | undefined)?.slug ?? null;
@@ -168,6 +174,8 @@ export async function archivePlanningApplication(
   applicationId: string
 ): Promise<{ ok: boolean; error?: string }> {
   try {
+    const denied = await adminDenied("planning-applications");
+    if (denied) return { ok: false, error: denied };
     const sql = getSql();
     const [row] =
       await sql`SELECT slug FROM planning_applications WHERE id = ${applicationId}::uuid LIMIT 1`;
@@ -187,6 +195,8 @@ export async function unarchivePlanningApplication(
   applicationId: string
 ): Promise<{ ok: boolean; error?: string }> {
   try {
+    const denied = await adminDenied("planning-applications");
+    if (denied) return { ok: false, error: denied };
     const sql = getSql();
     const [row] =
       await sql`SELECT slug FROM planning_applications WHERE id = ${applicationId}::uuid LIMIT 1`;

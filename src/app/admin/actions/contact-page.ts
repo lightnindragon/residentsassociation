@@ -2,6 +2,7 @@
 
 import { getSql } from "@/lib/db";
 import { revalidatePath } from "next/cache";
+import { adminDenied } from "@/lib/admin-access";
 
 type ContactContent = {
   title: string;
@@ -15,6 +16,8 @@ type ContactContent = {
 
 export async function saveContactContent(data: ContactContent): Promise<{ ok: boolean; error?: string }> {
   try {
+    const denied = await adminDenied("contact");
+    if (denied) return { ok: false, error: denied };
     const sql = getSql();
     const entries: [string, string][] = [
       ["contact_title", data.title],

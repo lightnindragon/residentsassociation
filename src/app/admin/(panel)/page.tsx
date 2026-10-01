@@ -1,8 +1,18 @@
 import Link from "next/link";
 import { getSql } from "@/lib/db";
 import { formatUkDate, formatUkDateTime } from "@/lib/date-format";
+import { getAdminAccess } from "@/lib/admin-access";
+import { hasAdminPermission } from "@/lib/admin-permissions";
 
-export default async function AdminDashboardPage() {
+export default async function AdminDashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ denied?: string }>;
+}) {
+  const { denied } = await searchParams;
+  const access = await getAdminAccess();
+  const can = (key: "messages" | "news" | "gallery" | "settings" | "calendar" | "forum") =>
+    !!access && hasAdminPermission(access.role, access.permissions, key);
   let messageCount = 0;
   let newMessageCount = 0;
   let postCount = 0;
@@ -70,7 +80,13 @@ export default async function AdminDashboardPage() {
       <p className="mt-1 text-[var(--color-muted)]">
         Overview of your site and quick links.
       </p>
+      {denied === "1" && (
+        <p className="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950 dark:border-amber-900/40 dark:bg-amber-950/30 dark:text-amber-100">
+          You don&apos;t have access to that section. Ask a full admin to enable it on your account.
+        </p>
+      )}
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {can("messages") && (
         <Link
           href="/admin/messages"
           className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-6 shadow-sm hover:shadow-md"
@@ -87,6 +103,8 @@ export default async function AdminDashboardPage() {
             )}
           </p>
         </Link>
+        )}
+        {can("news") && (
         <Link
           href="/admin/news"
           className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-6 shadow-sm hover:shadow-md"
@@ -96,6 +114,8 @@ export default async function AdminDashboardPage() {
           </p>
           <p className="mt-1 text-sm text-[var(--color-muted)]">News posts</p>
         </Link>
+        )}
+        {can("gallery") && (
         <Link
           href="/admin/gallery"
           className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-6 shadow-sm hover:shadow-md"
@@ -105,6 +125,8 @@ export default async function AdminDashboardPage() {
           </p>
           <p className="mt-1 text-sm text-[var(--color-muted)]">Gallery images</p>
         </Link>
+        )}
+        {can("settings") && (
         <Link
           href="/admin/settings"
           className="rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] p-6 shadow-sm hover:shadow-md"
@@ -114,9 +136,11 @@ export default async function AdminDashboardPage() {
           </p>
           <p className="mt-1 text-sm text-[var(--color-muted)]">Email / SMTP</p>
         </Link>
+        )}
       </div>
 
       <div className="mt-10 grid gap-8 lg:grid-cols-3">
+        {can("news") && (
         <div>
           <h2 className="font-heading text-lg font-semibold text-[var(--foreground)]">
             Recent News
@@ -143,6 +167,8 @@ export default async function AdminDashboardPage() {
             )}
           </ul>
         </div>
+        )}
+        {can("forum") && (
         <div>
           <h2 className="font-heading text-lg font-semibold text-[var(--foreground)]">
             Latest Forum Activity
@@ -167,6 +193,8 @@ export default async function AdminDashboardPage() {
             )}
           </ul>
         </div>
+        )}
+        {can("calendar") && (
         <div>
           <h2 className="font-heading text-lg font-semibold text-[var(--foreground)]">
             Upcoming calendar
@@ -196,6 +224,7 @@ export default async function AdminDashboardPage() {
             )}
           </ul>
         </div>
+        )}
       </div>
     </div>
   );
