@@ -5,6 +5,34 @@ import { getEmailTemplate, applyTemplate } from "@/lib/email-templates";
 
 export type NotifySignUpsResult = { sent: number; error?: string };
 
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function isTransientSmtpError(error: unknown): boolean {
+  const msg = error instanceof Error ? error.message : String(error);
+  return /432|4\.3\.2|4\.7\.0|421|concurrent|throttl|rate.?limit|try again/i.test(msg);
+}
+
+async function sendMailWithRetry(
+  transport: { sendMail: (mail: nodemailer.SendMailOptions) => Promise<unknown> },
+  mail: nodemailer.SendMailOptions,
+  attempts = 5
+) {
+  let lastError: unknown;
+  for (let i = 0; i < attempts; i++) {
+    try {
+      await transport.sendMail(mail);
+      return;
+    } catch (e) {
+      lastError = e;
+      if (!isTransientSmtpError(e) || i === attempts - 1) throw e;
+      await sleep(1500 * (i + 1));
+    }
+  }
+  throw lastError;
+}
+
 function getSiteBaseUrl(): string {
   return (
     process.env.NEXTAUTH_URL ||
@@ -31,49 +59,39 @@ async function notifyNewsOptInSubscribers(params: {
   const list = users as Array<{ email: string; name: string }>;
   if (list.length === 0) return { sent: 0 };
 
+  // Microsoft 365 allows only a few concurrent SMTP connections (432 4.3.2).
+  // Send one message at a time on a single reused connection.
   const transport = nodemailer.createTransport({
     host: config.host,
     port: config.port,
     secure: config.port === 465,
     auth: config.user && config.password ? { user: config.user, pass: config.password } : undefined,
     pool: true,
-    maxConnections: 5,
-    maxMessages: list.length + 2,
-    connectionTimeout: 10000,
-    greetingTimeout: 10000,
-    socketTimeout: 20000,
+    maxConnections: 1,
+    maxMessages: 500,
+    connectionTimeout: 15000,
+    greetingTimeout: 15000,
+    socketTimeout: 30000,
   });
 
-  const CHUNK = 5;
   let sent = 0;
   let lastError: string | undefined;
   try {
-    for (let i = 0; i < list.length; i += CHUNK) {
-      const chunk = list.slice(i, i + CHUNK);
-      const results = await Promise.all(
-        chunk.map(async (row) => {
-          try {
-            const vars = { name: row.name, title: params.title, link: params.link };
-            await transport.sendMail({
-              from: config.from_address || config.contact_inbox,
-              to: row.email,
-              subject: applyTemplate(tpl.subject, vars),
-              text: applyTemplate(tpl.body_text, vars),
-              html: applyTemplate(tpl.body_html, vars),
-            });
-            return { ok: true as const };
-          } catch (e) {
-            console.error("notify subscribers email", params.templateKey, e);
-            return {
-              ok: false as const,
-              error: e instanceof Error ? e.message : "Send failed",
-            };
-          }
-        })
-      );
-      for (const r of results) {
-        if (r.ok) sent += 1;
-        else lastError = r.error;
+    for (const row of list) {
+      const vars = { name: row.name, title: params.title, link: params.link };
+      const mail = {
+        from: config.from_address || config.contact_inbox,
+        to: row.email,
+        subject: applyTemplate(tpl.subject, vars),
+        text: applyTemplate(tpl.body_text, vars),
+        html: applyTemplate(tpl.body_html, vars),
+      };
+      try {
+        await sendMailWithRetry(transport, mail);
+        sent += 1;
+      } catch (e) {
+        console.error("notify subscribers email", params.templateKey, e);
+        lastError = e instanceof Error ? e.message : "Send failed";
       }
     }
   } finally {
