@@ -98,11 +98,28 @@ export function MobileNav({
                       {expanded && (
                         <div className="flex flex-col border-t border-[var(--color-border)] bg-[var(--color-surface)]/40">
                           {item.href && !children.some((c) => c.href === item.href) ? (
-                            <MobLink item={item} onClick={close} sub />
+                            <MobLink item={item} onClick={close} indent={1} />
                           ) : null}
-                          {children.map((child) => (
-                            <MobLink key={child.id} item={child} onClick={close} sub />
-                          ))}
+                          {children.map((child) => {
+                            const grand = child.children ?? [];
+                            if (grand.length === 0) {
+                              return <MobLink key={child.id} item={child} onClick={close} indent={1} />;
+                            }
+                            return (
+                              <div key={child.id}>
+                                {child.href ? (
+                                  <MobLink item={child} onClick={close} indent={1} />
+                                ) : (
+                                  <p className="py-3 pl-4 text-xs font-semibold uppercase tracking-wide text-[var(--color-muted)]">
+                                    {child.label}
+                                  </p>
+                                )}
+                                {grand.map((g) => (
+                                  <MobLink key={g.id} item={g} onClick={close} indent={2} />
+                                ))}
+                              </div>
+                            );
+                          })}
                         </div>
                       )}
                     </div>
@@ -155,26 +172,27 @@ export function MobileNav({
 function MobLink({
   item,
   onClick,
-  sub,
+  indent = 0,
   accent,
 }: {
   item: NavItem;
   onClick: () => void;
-  sub?: boolean;
+  indent?: 0 | 1 | 2;
   accent?: boolean;
 }) {
   const extra = item.openInNewTab
     ? { target: "_blank" as const, rel: "noopener noreferrer" }
     : {};
+  const pad = indent === 2 ? "pl-8" : indent === 1 ? "pl-4" : "";
   return (
     <Link
       href={item.href || "#"}
       onClick={onClick}
-      className={`py-4 text-sm font-medium ${
+      className={`py-4 text-sm font-medium ${pad} ${
         accent
           ? "text-[var(--color-primary)] hover:underline"
-          : sub
-          ? "pl-4 text-[var(--color-muted)] hover:text-[var(--color-primary)]"
+          : indent
+          ? "text-[var(--color-muted)] hover:text-[var(--color-primary)]"
           : "text-[var(--foreground)] hover:text-[var(--color-primary)]"
       }`}
       {...extra}

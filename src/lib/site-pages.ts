@@ -40,6 +40,24 @@ export function normalizePageSlug(raw: string): string | null {
   return slug;
 }
 
+export async function getPublishedPlanningApplicationOptions(): Promise<SitePageOption[]> {
+  try {
+    const sql = getSql();
+    const rows = await sql`
+      SELECT title, slug FROM planning_applications
+      WHERE published_at IS NOT NULL AND published_at <= NOW() AND archived_at IS NULL
+      ORDER BY published_at DESC
+      LIMIT 100
+    `;
+    return (rows as { title: string; slug: string }[]).map((row) => ({
+      label: row.title,
+      href: `/planning-applications/${row.slug}`,
+    }));
+  } catch {
+    return [];
+  }
+}
+
 export async function getPublishedSitePageOptions(): Promise<SitePageOption[]> {
   try {
     const sql = getSql();

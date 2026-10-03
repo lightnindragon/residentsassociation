@@ -22,13 +22,15 @@ import {
 import type { SitePageOption } from "@/lib/site-pages";
 import Link from "next/link";
 
+type Depth = 0 | 1 | 2;
+
 type FlatRow = {
   id: string;
   label: string;
   href: string;
   openInNewTab?: boolean;
   includeNewsCategories?: boolean;
-  depth: 0 | 1;
+  depth: Depth;
 };
 
 function newId(): string {
@@ -50,20 +52,24 @@ function regenIds(items: NavItem[]): NavItem[] {
   }));
 }
 
-function toFlat(items: NavItem[]): FlatRow[] {
+function toItem(row: FlatRow): NavItem {
+  const item: NavItem = {
+    id: row.id,
+    label: row.label.trim() || "Untitled",
+    href: row.href,
+  };
+  if (row.openInNewTab) item.openInNewTab = true;
+  if (row.includeNewsCategories) item.includeNewsCategories = true;
+  return item;
+}
+
+function toFlat(items: NavItem[], depth: Depth = 0): FlatRow[] {
   const rows: FlatRow[] = [];
   for (const item of items) {
     const { children, ...rest } = item;
-    rows.push({ ...rest, depth: 0 });
-    for (const child of children ?? []) {
-      rows.push({
-        id: child.id,
-        label: child.label,
-        href: child.href,
-        openInNewTab: child.openInNewTab,
-        includeNewsCategories: child.includeNewsCategories,
-        depth: 1,
-      });
+    rows.push({ ...rest, depth });
+    if (children && depth < 2) {
+      rows.push(...toFlat(children, (depth + 1) as Depth));
     }
   }
   return rows;
@@ -71,36 +77,63 @@ function toFlat(items: NavItem[]): FlatRow[] {
 
 function fromFlat(rows: FlatRow[]): NavItem[] {
   const items: NavItem[] = [];
-  let current: NavItem | null = null;
+  const at: Array<NavItem | undefined> = [];
   for (const row of rows) {
-    const item: NavItem = {
-      id: row.id,
-      label: row.label.trim() || "Untitled",
-      href: row.href,
-    };
-    if (row.openInNewTab) item.openInNewTab = true;
-    if (row.includeNewsCategories) item.includeNewsCategories = true;
-    if (row.depth === 0 || !current) {
-      current = item;
-      items.push(current);
-    } else {
-      current.children = [...(current.children ?? []), item];
+    const item = toItem(row);
+    let depth: Depth = row.depth;
+    if (depth > 0 && !at[depth - 1]) depth = at[0] ? 1 : 0;
+    if (depth === 0) {
+      items.push(item);
+      at.length = 0;
+      at[0] = item;
+      continue;
     }
+    const parent = at[depth - 1];
+    if (!parent) {
+      items.push(item);
+      at.length = 0;
+      at[0] = item;
+      continue;
+    }
+    parent.children = [...(parent.children ?? []), item];
+    at.length = depth;
+    at[depth] = item;
   }
   return items;
 }
 
 function blockRange(rows: FlatRow[], index: number): { start: number; end: number } {
-  if (rows[index]?.depth === 1) return { start: index, end: index };
+  const depth = rows[index]?.depth ?? 0;
   let end = index;
-  while (end + 1 < rows.length && rows[end + 1].depth === 1) end += 1;
+  while (end + 1 < rows.length && rows[end + 1].depth > depth) end += 1;
   return { start: index, end };
 }
 
-function pageTypeLabel(href: string, customPages: SitePageOption[]): string {
+function clampDepth(n: number): Depth {
+  if (n <= 0) return 0;
+  if (n >= 2) return 2;
+  return 1;
+}
+
+function maxDepthAt(rows: FlatRow[], insertAt: number): Depth {
+  if (insertAt <= 0) return 0;
+  return clampDepth((rows[insertAt - 1]?.depth ?? 0) + 1);
+}
+
+function indentClass(depth: Depth): string {
+  if (depth === 2) return "ml-16";
+  if (depth === 1) return "ml-8";
+  return "";
+}
+
+function pageTypeLabel(
+  href: string,
+  extraPages: SitePageOption[]
+): string {
   if (!href) return "Heading";
   if (NAV_PAGE_OPTIONS.some((p) => p.href === href)) return "Page";
-  if (customPages.some((p) => p.href === href)) return "Page";
+  if (href.startsWith("/planning-applications/")) return "Planning";
+  if (extraPages.some((p) => p.href === href)) return "Page";
   return "Custom";
 }
 
@@ -108,10 +141,12 @@ export function HeaderMenuEditor({
   desktop,
   mobile,
   customPages = [],
+  planningPages = [],
 }: {
   desktop: NavItem[];
   mobile: NavItem[];
   customPages?: SitePageOption[];
+  planningPages?: SitePageOption[];
 }) {
   const [tab, setTab] = useState<NavMenuKey>("desktop");
   const [desktopItems, setDesktopItems] = useState(() => cloneItems(desktop));
@@ -130,14 +165,16 @@ export function HeaderMenuEditor({
         </TabButton>
       </div>
       <p className="mt-3 text-sm text-[var(--color-muted)]">
-        Drag to reorder. Drag slightly right to nest a submenu. Click an item to edit it.
-        Sign in, Account, Forum and Admin stay in the header automatically.
+        Drag to reorder. Drag right for a submenu, or further right for a sub-heading under that
+        (for example Planning → Redrow → an application). Click an item to edit it. Sign in,
+        Account, Forum and Admin stay in the header automatically.
       </p>
       <MenuEditor
         key={tab}
         menuKey={tab}
         items={items}
         customPages={customPages}
+        planningPages={planningPages}
         setItems={setItems}
         onCopyFromOther={() => {
           if (tab === "mobile") setMobileItems(regenIds(desktopItems));
@@ -177,6 +214,7 @@ function MenuEditor({
   menuKey,
   items,
   customPages,
+  planningPages,
   setItems,
   onCopyFromOther,
   copyLabel,
@@ -184,6 +222,7 @@ function MenuEditor({
   menuKey: NavMenuKey;
   items: NavItem[];
   customPages: SitePageOption[];
+  planningPages: SitePageOption[];
   setItems: Dispatch<SetStateAction<NavItem[]>>;
   onCopyFromOther: () => void;
   copyLabel: string;
@@ -191,7 +230,7 @@ function MenuEditor({
   const rows = useMemo(() => toFlat(items), [items]);
   const [openId, setOpenId] = useState<string | null>(null);
   const [dragIndex, setDragIndex] = useState<number | null>(null);
-  const [drop, setDrop] = useState<{ insertAt: number; depth: 0 | 1 } | null>(null);
+  const [drop, setDrop] = useState<{ insertAt: number; depth: Depth } | null>(null);
   const [state, formAction] = useActionState(saveNavMenu, null);
   const last = useRef<typeof state>(null);
 
@@ -218,18 +257,18 @@ function MenuEditor({
     }
   }
 
-  function applyDrop(fromIndex: number, insertAt: number, depth: 0 | 1) {
+  function applyDrop(fromIndex: number, insertAt: number, depth: Depth) {
     const { start, end } = blockRange(rows, fromIndex);
     const block = rows.slice(start, end + 1);
     const without = [...rows.slice(0, start), ...rows.slice(end + 1)];
     let at = insertAt;
     if (insertAt > start) at = insertAt - (end - start + 1);
     at = Math.max(0, Math.min(at, without.length));
-    let nextDepth: 0 | 1 = depth;
-    if (at === 0) nextDepth = 0;
-    const moved = block.map((row, i) => ({
+    const nextDepth = at === 0 ? 0 : clampDepth(Math.min(depth, maxDepthAt(without, at)));
+    const base = block[0]?.depth ?? 0;
+    const moved = block.map((row) => ({
       ...row,
-      depth: (nextDepth === 1 ? 1 : i === 0 ? 0 : 1) as 0 | 1,
+      depth: clampDepth(row.depth - base + nextDepth),
     }));
     commit([...without.slice(0, at), ...moved, ...without.slice(at)]);
   }
@@ -238,9 +277,11 @@ function MenuEditor({
     const rect = el.getBoundingClientRect();
     const after = clientY > rect.top + rect.height / 2;
     const insertAt = after ? targetIndex + 1 : targetIndex;
-    const indent = clientX > rect.left + 36;
-    const depth: 0 | 1 = insertAt === 0 || !indent ? 0 : 1;
-    setDrop({ insertAt, depth });
+    const x = clientX - rect.left;
+    let wanted: Depth = 0;
+    if (x > 72) wanted = 2;
+    else if (x > 36) wanted = 1;
+    setDrop({ insertAt, depth: clampDepth(Math.min(wanted, maxDepthAt(rows, insertAt))) });
   }
 
   return (
@@ -264,26 +305,14 @@ function MenuEditor({
             ))}
           </div>
         ) : (
-          <ul className="text-sm font-medium text-[var(--color-chrome-foreground)]">
-            {items.map((item) => (
-              <li key={item.id}>
-                {item.label}
-                {item.children && item.children.length > 0 && (
-                  <ul className="pl-4 text-[var(--color-chrome-muted)]">
-                    {item.children.map((c) => (
-                      <li key={c.id}>{c.label}</li>
-                    ))}
-                  </ul>
-                )}
-              </li>
-            ))}
-          </ul>
+          <PreviewList items={items} />
         )}
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[16.5rem_minmax(0,1fr)]">
         <AddItemsPanel
           customPages={customPages}
+          planningPages={planningPages}
           onAdd={(added) => commit([...rows, ...added])}
         />
 
@@ -316,10 +345,9 @@ function MenuEditor({
                     {showLine && <DropLine depth={drop.depth} />}
                     <MenuRow
                       row={row}
-                      customPages={customPages}
+                      extraPages={[...customPages, ...planningPages]}
                       open={openId === row.id}
                       dragging={dragging}
-                      isSub={row.depth === 1}
                       canNestNews={row.depth === 0}
                       onToggle={() => setOpenId((id) => (id === row.id ? null : row.id))}
                       onChange={(patch) => patchRow(row.id, patch)}
@@ -361,9 +389,37 @@ function MenuEditor({
   );
 }
 
-function DropLine({ depth }: { depth: 0 | 1 }) {
+function PreviewList({ items }: { items: NavItem[] }) {
   return (
-    <div className={depth === 1 ? "ml-8" : ""}>
+    <ul className="text-sm font-medium text-[var(--color-chrome-foreground)]">
+      {items.map((item) => (
+        <li key={item.id}>
+          {item.label}
+          {item.children && item.children.length > 0 && (
+            <ul className="pl-4 text-[var(--color-chrome-muted)]">
+              {item.children.map((child) => (
+                <li key={child.id}>
+                  {child.label}
+                  {child.children && child.children.length > 0 && (
+                    <ul className="pl-4">
+                      {child.children.map((grand) => (
+                        <li key={grand.id}>{grand.label}</li>
+                      ))}
+                    </ul>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function DropLine({ depth }: { depth: Depth }) {
+  return (
+    <div className={indentClass(depth)}>
       <div className="h-0.5 bg-[var(--color-primary)]" />
     </div>
   );
@@ -371,16 +427,18 @@ function DropLine({ depth }: { depth: 0 | 1 }) {
 
 function AddItemsPanel({
   customPages,
+  planningPages,
   onAdd,
 }: {
   customPages: SitePageOption[];
+  planningPages: SitePageOption[];
   onAdd: (rows: FlatRow[]) => void;
 }) {
   const [checked, setChecked] = useState<Record<string, boolean>>({});
   const [customLabel, setCustomLabel] = useState("");
   const [customHref, setCustomHref] = useState("");
   const [headingLabel, setHeadingLabel] = useState("");
-  const allPages = [...NAV_PAGE_OPTIONS, ...customPages];
+  const allPages = [...NAV_PAGE_OPTIONS, ...customPages, ...planningPages];
 
   return (
     <div className="space-y-4">
@@ -409,6 +467,25 @@ function AddItemsPanel({
             </li>
           )}
           {customPages.map((p) => (
+            <li key={p.href}>
+              <label className="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-[var(--color-surface)]/60">
+                <input
+                  type="checkbox"
+                  checked={!!checked[p.href]}
+                  onChange={(e) =>
+                    setChecked((c) => ({ ...c, [p.href]: e.target.checked }))
+                  }
+                />
+                {p.label}
+              </label>
+            </li>
+          ))}
+          {planningPages.length > 0 && (
+            <li className="px-2 pb-1 pt-2 text-[0.65rem] font-semibold uppercase tracking-wider text-[var(--color-muted)]">
+              Planning applications
+            </li>
+          )}
+          {planningPages.map((p) => (
             <li key={p.href}>
               <label className="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-[var(--color-surface)]/60">
                 <input
@@ -469,7 +546,8 @@ function AddItemsPanel({
             />
           </label>
           <p className="text-xs text-[var(--color-muted)]">
-            A top-level header with no page of its own. Drag other items under it to make a submenu.
+            A heading with no page of its own. Drag it under Planning, then drag applications under
+            it for a sub-heading such as Redrow.
           </p>
           <Button
             type="button"
@@ -537,10 +615,9 @@ function AddItemsPanel({
 
 function MenuRow({
   row,
-  customPages,
+  extraPages,
   open,
   dragging,
-  isSub,
   canNestNews,
   onToggle,
   onChange,
@@ -550,10 +627,9 @@ function MenuRow({
   onDragOverRow,
 }: {
   row: FlatRow;
-  customPages: SitePageOption[];
+  extraPages: SitePageOption[];
   open: boolean;
   dragging: boolean;
-  isSub: boolean;
   canNestNews: boolean;
   onToggle: () => void;
   onChange: (patch: Partial<FlatRow>) => void;
@@ -562,13 +638,15 @@ function MenuRow({
   onDragEnd: () => void;
   onDragOverRow: (e: DragEvent<HTMLDivElement>) => void;
 }) {
-  const allPages = [...NAV_PAGE_OPTIONS, ...customPages];
+  const customPages = extraPages.filter((p) => !p.href.startsWith("/planning-applications/"));
+  const planningPages = extraPages.filter((p) => p.href.startsWith("/planning-applications/"));
+  const allPages = [...NAV_PAGE_OPTIONS, ...extraPages];
   const known = allPages.some((p) => p.href === row.href);
   const selectValue = !row.href ? "__heading__" : known ? row.href : "__custom__";
 
   return (
     <div
-      className={`${isSub ? "ml-8" : ""} ${dragging ? "opacity-40" : ""}`}
+      className={`${indentClass(row.depth)} ${dragging ? "opacity-40" : ""}`}
       onDragOver={onDragOverRow}
     >
       <div className="flex items-stretch border-b border-[var(--color-border)] bg-[var(--color-surface)]/50">
@@ -594,7 +672,7 @@ function MenuRow({
         >
           <span className="truncate text-sm font-medium text-[var(--foreground)]">{row.label}</span>
           <span className="flex shrink-0 items-center gap-2 text-xs text-[var(--color-muted)]">
-            {pageTypeLabel(row.href, customPages)}
+            {pageTypeLabel(row.href, extraPages)}
             <span aria-hidden>{open ? "▴" : "▾"}</span>
           </span>
         </button>
@@ -639,6 +717,15 @@ function MenuRow({
               {customPages.length > 0 && (
                 <optgroup label="Your pages">
                   {customPages.map((p) => (
+                    <option key={p.href} value={p.href}>
+                      {p.label}
+                    </option>
+                  ))}
+                </optgroup>
+              )}
+              {planningPages.length > 0 && (
+                <optgroup label="Planning applications">
+                  {planningPages.map((p) => (
                     <option key={p.href} value={p.href}>
                       {p.label}
                     </option>

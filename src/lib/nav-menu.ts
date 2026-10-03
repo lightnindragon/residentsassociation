@@ -103,7 +103,7 @@ function sanitizeItem(raw: unknown, depth: number): NavItem | null {
   const item: NavItem = { id, label, href };
   if (raw.openInNewTab === true) item.openInNewTab = true;
   if (raw.includeNewsCategories === true) item.includeNewsCategories = true;
-  if (depth < 1 && Array.isArray(raw.children)) {
+  if (depth < 2 && Array.isArray(raw.children)) {
     const children = raw.children
       .map((child) => sanitizeItem(child, depth + 1))
       .filter((c): c is NavItem => c !== null);
