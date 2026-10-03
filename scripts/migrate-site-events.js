@@ -41,7 +41,7 @@ async function main() {
       slug TEXT NOT NULL UNIQUE,
       excerpt TEXT,
       body TEXT NOT NULL,
-      external_url TEXT NOT NULL,
+      external_url TEXT,
       cover_image_url TEXT,
       author_id UUID REFERENCES users(id) ON DELETE SET NULL,
       published_at TIMESTAMPTZ,

@@ -1,4 +1,3 @@
-import Link from "next/link";
 import Image from "next/image";
 import { getSql } from "@/lib/db";
 import { notFound } from "next/navigation";
@@ -7,78 +6,63 @@ import { getDonationSettings } from "@/lib/donations";
 import { DonateButton } from "@/components/DonateButton";
 import { normalizeSiteImageUrl } from "@/lib/site-content";
 import { sanitizeRichHtml } from "@/lib/rich-text";
-import { formatUkDate } from "@/lib/date-format";
+import { RESERVED_PAGE_SLUGS } from "@/lib/site-pages";
+import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
 
-export default async function AgendaDetailPage({
+type Row = {
+  id: string;
+  title: string;
+  slug: string;
+  body: string;
+  cover_image_url: string | null;
+};
+
+async function getPublishedPage(slug: string): Promise<Row | null> {
+  if (!slug || RESERVED_PAGE_SLUGS.has(slug)) return null;
+  try {
+    const sql = getSql();
+    const rows = await sql`
+      SELECT id, title, slug, body, cover_image_url
+      FROM site_pages
+      WHERE slug = ${slug} AND published_at IS NOT NULL AND published_at <= NOW()
+      LIMIT 1
+    `;
+    return (rows[0] as Row) ?? null;
+  } catch {
+    return null;
+  }
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const row = await getPublishedPage(slug);
+  if (!row) return { title: "Page not found" };
+  return { title: `${row.title} · Culcheth & Glazebury Residents Association` };
+}
+
+export default async function CustomSitePage({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  type Row = {
-    id: string;
-    title: string;
-    slug: string;
-    body: string;
-    external_url: string | null;
-    cover_image_url: string | null;
-    published_at: string | null;
-    created_at: string;
-    author_name: string | null;
-  };
-  let row: Row | null = null;
-  try {
-    const sql = getSql();
-    const rows = await sql`
-      SELECT a.id, a.title, a.slug, a.body, a.external_url, a.cover_image_url, a.published_at, a.created_at,
-        u.name AS author_name
-      FROM site_agendas a
-      LEFT JOIN users u ON u.id = a.author_id
-      WHERE a.slug = ${slug} AND a.published_at IS NOT NULL AND a.published_at <= NOW()
-        AND a.archived_at IS NULL
-      LIMIT 1
-    `;
-    row = (rows[0] as Row) ?? null;
-  } catch (err) {
-    console.error("AgendaDetailPage DB fetch:", err);
-  }
+  const row = await getPublishedPage(slug);
   if (!row) notFound();
 
   const session = await auth();
   const donationSettings = await getDonationSettings();
   const showDonate = !!session?.user && donationSettings?.enabled === true;
-
   const safeHtml = sanitizeRichHtml(row.body);
 
   return (
     <article className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
-      <Link href="/agendas" className="text-sm text-[var(--color-primary)] hover:underline">
-        ← Agendas
-      </Link>
-      <h1 className="mt-4 font-heading text-3xl font-semibold text-[var(--foreground)]">{row.title}</h1>
-      <p className="mt-2 text-sm text-[var(--color-muted)]">
-        {row.published_at ? formatUkDate(row.published_at) : formatUkDate(row.created_at)}
-        {row.author_name && ` · ${row.author_name}`}
-      </p>
-
-      {row.external_url && (
-        <div className="mt-6">
-          <a
-            href={row.external_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex w-full items-center justify-center rounded-lg bg-[var(--color-primary)] px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-[var(--color-primary-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2 sm:w-auto"
-          >
-            Open agenda link
-          </a>
-          <p className="mt-2 text-xs text-[var(--color-muted)]">
-            You may leave this site to view or download the full agenda.
-          </p>
-        </div>
-      )}
-
+      <h1 className="font-heading text-3xl font-semibold text-[var(--foreground)]">{row.title}</h1>
       {row.cover_image_url && (
         <div className="relative mt-8 h-64 w-full overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-border)] sm:h-[400px]">
           <Image
@@ -90,7 +74,6 @@ export default async function AgendaDetailPage({
           />
         </div>
       )}
-
       <div className="rich-content mt-8" dangerouslySetInnerHTML={{ __html: safeHtml }} />
 
       {showDonate && donationSettings && (

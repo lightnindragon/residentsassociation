@@ -15,6 +15,7 @@ export type AdminPermissionKey =
   | "gallery"
   | "media"
   | "homepage"
+  | "pages"
   | "header-menus"
   | "about"
   | "contact"
@@ -66,6 +67,7 @@ export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
     title: "Website",
     items: [
       { href: "/admin/homepage", label: "Homepage", key: "homepage" },
+      { href: "/admin/pages", label: "Pages", key: "pages" },
       { href: "/admin/header-menus", label: "Header Menus", key: "header-menus" },
       { href: "/admin/about", label: "About Us", key: "about" },
       { href: "/admin/contact", label: "Contact Page", key: "contact" },

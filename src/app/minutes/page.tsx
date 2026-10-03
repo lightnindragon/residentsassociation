@@ -33,7 +33,8 @@ export default async function MinutesPage() {
       <div className="mb-10 border-l-4 border-[var(--color-primary)] pl-4">
         <h1 className="font-heading text-3xl font-semibold text-[var(--foreground)]">Minutes</h1>
         <p className="mt-2 text-[var(--color-muted)]">
-          Approved meeting minutes from the Residents Association, with links to full documents.
+          Approved meeting minutes from the Residents Association, with links to full documents
+          where available.
         </p>
       </div>
       <div className="flex flex-col gap-6">
@@ -57,7 +58,7 @@ export default async function MinutesPage() {
                   )}
                   <CardHeader>{p.title}</CardHeader>
                   <CardContent>
-                    {p.excerpt || "Read more for details and the minutes document link."}
+                    {p.excerpt || "Read more for details."}
                     <span className="mt-2 block text-xs text-[var(--color-muted)]">
                       {p.published_at
                         ? formatUkDate(p.published_at)

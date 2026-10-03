@@ -33,7 +33,8 @@ export default async function EventsPage() {
       <div className="mb-10 border-l-4 border-[var(--color-primary)] pl-4">
         <h1 className="font-heading text-3xl font-semibold text-[var(--foreground)]">Events</h1>
         <p className="mt-2 text-[var(--color-muted)]">
-          Upcoming and recent association and Community events, with links for more details or booking.
+          Upcoming and recent association and Community events, with booking or details links where
+          available.
         </p>
       </div>
       <div className="flex flex-col gap-6">
@@ -57,7 +58,7 @@ export default async function EventsPage() {
                   )}
                   <CardHeader>{p.title}</CardHeader>
                   <CardContent>
-                    {p.excerpt || "Read more for details and the event link."}
+                    {p.excerpt || "Read more for details."}
                     <span className="mt-2 block text-xs text-[var(--color-muted)]">
                       {p.published_at
                         ? formatUkDate(p.published_at)

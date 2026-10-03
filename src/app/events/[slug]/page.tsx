@@ -22,7 +22,7 @@ export default async function EventDetailPage({
     title: string;
     slug: string;
     body: string;
-    external_url: string;
+    external_url: string | null;
     cover_image_url: string | null;
     published_at: string | null;
     created_at: string;
@@ -63,19 +63,21 @@ export default async function EventDetailPage({
         {row.author_name && ` · ${row.author_name}`}
       </p>
 
-      <div className="mt-6">
-        <a
-          href={row.external_url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex w-full items-center justify-center rounded-lg bg-[var(--color-primary)] px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-[var(--color-primary-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2 sm:w-auto"
-        >
-          Open event link
-        </a>
-        <p className="mt-2 text-xs text-[var(--color-muted)]">
-          You may leave this site to view tickets, registration, or more information.
-        </p>
-      </div>
+      {row.external_url && (
+        <div className="mt-6">
+          <a
+            href={row.external_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex w-full items-center justify-center rounded-lg bg-[var(--color-primary)] px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-[var(--color-primary-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2 sm:w-auto"
+          >
+            Open event link
+          </a>
+          <p className="mt-2 text-xs text-[var(--color-muted)]">
+            You may leave this site to view tickets, registration, or more information.
+          </p>
+        </div>
+      )}
 
       {row.cover_image_url && (
         <div className="relative mt-8 h-64 w-full overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-border)] sm:h-[400px]">

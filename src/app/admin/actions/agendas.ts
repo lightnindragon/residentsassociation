@@ -50,11 +50,14 @@ export async function createAgenda(
   const authorId = formData.get("authorId")?.toString();
   const publish = formData.get("published") === "1";
   const coverImageUrl = formData.get("cover_image_url")?.toString()?.trim() || null;
-  const externalUrl = normalizeAgendaUrl(formData.get("external_url")?.toString() ?? "");
+  const rawUrl = formData.get("external_url")?.toString() ?? "";
+  const externalUrl = normalizeAgendaUrl(rawUrl);
 
   if (!title || !authorId) return { error: "Title and author are required." };
   if (!body.replace(/<[^>]+>/g, "").trim()) return { error: "Description is required." };
-  if (!externalUrl) return { error: "Enter a valid agenda link URL (e.g. https://…)." };
+  if (rawUrl.trim() && !externalUrl) {
+    return { error: "Enter a valid agenda link URL (e.g. https://…)." };
+  }
 
   try {
     const sql = getSql();
@@ -105,11 +108,14 @@ export async function updateAgenda(
   const body = sanitizeRichHtml(rawBody);
   const publish = formData.get("published") === "1";
   const coverImageUrl = formData.get("cover_image_url")?.toString()?.trim() || null;
-  const externalUrl = normalizeAgendaUrl(formData.get("external_url")?.toString() ?? "");
+  const rawUrl = formData.get("external_url")?.toString() ?? "";
+  const externalUrl = normalizeAgendaUrl(rawUrl);
 
   if (!title) return { error: "Title is required." };
   if (!body.replace(/<[^>]+>/g, "").trim()) return { error: "Description is required." };
-  if (!externalUrl) return { error: "Enter a valid agenda link URL (e.g. https://…)." };
+  if (rawUrl.trim() && !externalUrl) {
+    return { error: "Enter a valid agenda link URL (e.g. https://…)." };
+  }
 
   try {
     const sql = getSql();

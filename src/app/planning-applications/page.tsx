@@ -35,8 +35,8 @@ export default async function PlanningApplicationsPage() {
           Planning Applications
         </h1>
         <p className="mt-2 text-[var(--color-muted)]">
-          Local planning notices with links to the official council or planning portal for each
-          application.
+          Local planning notices, with links to the official council or planning portal where
+          available.
         </p>
       </div>
       <div className="flex flex-col gap-6">
@@ -60,7 +60,7 @@ export default async function PlanningApplicationsPage() {
                   )}
                   <CardHeader>{p.title}</CardHeader>
                   <CardContent>
-                    {p.excerpt || "Read more for details and the official planning link."}
+                    {p.excerpt || "Read more for details."}
                     <span className="mt-2 block text-xs text-[var(--color-muted)]">
                       {p.published_at
                         ? formatUkDate(p.published_at)

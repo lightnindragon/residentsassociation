@@ -148,6 +148,67 @@ export async function getNavMenu(key: NavMenuKey): Promise<NavItem[]> {
   return (await getStoredNavMenu(key)) ?? defaultNavFor(key);
 }
 
+export async function persistNavMenu(key: NavMenuKey, items: NavItem[]): Promise<void> {
+  const sql = getSql();
+  const payload = JSON.stringify(sanitizeNavItems(items));
+  await sql.query(
+    `INSERT INTO nav_menus (menu_key, items, updated_at)
+     VALUES ($1, $2::jsonb, NOW())
+     ON CONFLICT (menu_key) DO UPDATE
+     SET items = EXCLUDED.items, updated_at = NOW()`,
+    [key, payload]
+  );
+}
+
+function hrefExists(items: NavItem[], href: string): boolean {
+  return items.some((item) => item.href === href || (item.children && hrefExists(item.children, href)));
+}
+
+export async function appendNavItemIfMissing(key: NavMenuKey, item: NavItem): Promise<boolean> {
+  const items = cloneItems(await getNavMenu(key));
+  if (item.href && hrefExists(items, item.href)) return false;
+  items.push(item);
+  await persistNavMenu(key, items);
+  return true;
+}
+
+export async function rewriteNavHrefs(oldHref: string, newHref: string): Promise<void> {
+  if (!oldHref || oldHref === newHref) return;
+  for (const key of ["desktop", "mobile"] as NavMenuKey[]) {
+    const items = cloneItems(await getNavMenu(key));
+    let changed = false;
+    const walk = (list: NavItem[]) => {
+      for (const item of list) {
+        if (item.href === oldHref) {
+          item.href = newHref;
+          changed = true;
+        }
+        if (item.children) walk(item.children);
+      }
+    };
+    walk(items);
+    if (changed) await persistNavMenu(key, items);
+  }
+}
+
+export async function removeNavHrefs(href: string): Promise<void> {
+  if (!href) return;
+  const strip = (list: NavItem[]): NavItem[] =>
+    list
+      .filter((item) => item.href !== href)
+      .map((item) => ({
+        ...item,
+        children: item.children ? strip(item.children) : undefined,
+      }));
+  for (const key of ["desktop", "mobile"] as NavMenuKey[]) {
+    const items = cloneItems(await getNavMenu(key));
+    const next = strip(items);
+    if (JSON.stringify(next) !== JSON.stringify(items)) {
+      await persistNavMenu(key, next);
+    }
+  }
+}
+
 function cloneItems(items: NavItem[]): NavItem[] {
   return items.map((item) => ({
     ...item,

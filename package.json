@@ -20,7 +20,9 @@
     "dedupe-gallery": "node --env-file=.env.local scripts/dedupe-gallery-images.js",
     "migrate-calendar-mailing-nav": "node --env-file=.env.local scripts/migrate-calendar-mailing-nav.js",
     "migrate-subscribers-notified": "node --env-file=.env.local scripts/migrate-subscribers-notified.js",
-    "migrate-admin-permissions": "node --env-file=.env.local scripts/migrate-admin-permissions.js"
+    "migrate-admin-permissions": "node --env-file=.env.local scripts/migrate-admin-permissions.js",
+    "migrate-optional-external-urls": "node --env-file=.env.local scripts/migrate-optional-external-urls.js",
+    "migrate-site-pages": "node --env-file=.env.local scripts/migrate-site-pages.js"
   },
   "dependencies": {
     "@marsidev/react-turnstile": "^1.4.2",

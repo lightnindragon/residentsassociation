@@ -21,7 +21,7 @@ export function AgendaForm({
     title: string;
     excerpt: string | null;
     body: string;
-    external_url: string;
+    external_url: string | null;
     published_at: string | null;
     cover_image_url: string | null;
     subscribers_notified_at?: string | null;
@@ -65,14 +65,13 @@ export function AgendaForm({
           placeholder="e.g. Committee meeting — March 2026"
         />
         <Input
-          label="Agenda link URL"
+          label="Agenda link URL (optional)"
           name="external_url"
           defaultValue={agenda?.external_url ?? ""}
-          required
           placeholder="https://…"
         />
         <p className="-mt-2 text-xs text-[var(--color-muted)]">
-          Link to PDF, shared document, or page where the agenda is published.
+          Optional link to a PDF, shared document, or page where the agenda is published.
         </p>
         <Input
           label="Excerpt"

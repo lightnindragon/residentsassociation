@@ -19,7 +19,7 @@ export default async function AdminEditMinutesPage({
     title: string;
     excerpt: string | null;
     body: string;
-    external_url: string;
+    external_url: string | null;
     published_at: string | null;
     cover_image_url: string | null;
     archived_at: string | null;

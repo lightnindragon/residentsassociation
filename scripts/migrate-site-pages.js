@@ -1,6 +1,6 @@
 /**
- * Planning applications (content + link to official portal).
- * Run: node --env-file=.env.local scripts/migrate-planning-applications.js
+ * Custom website pages that can be added to the header menu.
+ * Run: node --env-file=.env.local scripts/migrate-site-pages.js
  */
 const { neon } = require("@neondatabase/serverless");
 const fs = require("fs");
@@ -16,8 +16,12 @@ function loadEnv() {
         if (m) {
           const key = m[1].trim();
           let val = m[2].trim();
-          if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'")))
+          if (
+            (val.startsWith('"') && val.endsWith('"')) ||
+            (val.startsWith("'") && val.endsWith("'"))
+          ) {
             val = val.slice(1, -1);
+          }
           process.env[key] = val;
         }
       }
@@ -34,36 +38,24 @@ if (!process.env.DATABASE_URL) {
 const sql = neon(process.env.DATABASE_URL);
 
 async function main() {
-  await sql`
-    CREATE TABLE IF NOT EXISTS planning_applications (
+  await sql.query(`
+    CREATE TABLE IF NOT EXISTS site_pages (
       id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
       title TEXT NOT NULL,
       slug TEXT NOT NULL UNIQUE,
       excerpt TEXT,
       body TEXT NOT NULL,
-      external_url TEXT,
       cover_image_url TEXT,
       author_id UUID REFERENCES users(id) ON DELETE SET NULL,
       published_at TIMESTAMPTZ,
-      archived_at TIMESTAMPTZ,
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
       updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     )
-  `;
-  await sql`CREATE INDEX IF NOT EXISTS idx_planning_published ON planning_applications (published_at DESC) WHERE archived_at IS NULL`;
-
-  await sql`
-    INSERT INTO email_templates (template_key, subject, body_html, body_text)
-    VALUES (
-      ${"planning_new_application"},
-      ${"New planning application: {{title}}"},
-      ${'<p>Hi {{name}},</p><p>New planning application: <strong>{{title}}</strong></p><p><a href="{{link}}">View on our site</a></p>'},
-      ${"Hi {{name}},\n\nNew planning application: {{title}}\n{{link}}"}
-    )
-    ON CONFLICT (template_key) DO NOTHING
-  `;
-
-  console.log("migrate-planning-applications done.");
+  `);
+  await sql.query(
+    `CREATE INDEX IF NOT EXISTS idx_site_pages_published ON site_pages (published_at DESC)`
+  );
+  console.log("site_pages table ready.");
 }
 
 main().catch((e) => {

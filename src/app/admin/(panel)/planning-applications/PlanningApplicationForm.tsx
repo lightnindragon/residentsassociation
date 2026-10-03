@@ -24,7 +24,7 @@ export function PlanningApplicationForm({
     title: string;
     excerpt: string | null;
     body: string;
-    external_url: string;
+    external_url: string | null;
     published_at: string | null;
     cover_image_url: string | null;
     subscribers_notified_at?: string | null;
@@ -73,14 +73,13 @@ export function PlanningApplicationForm({
           placeholder="e.g. Application at Main Street"
         />
         <Input
-          label="Planning portal URL"
+          label="Planning portal URL (optional)"
           name="external_url"
           defaultValue={application?.external_url ?? ""}
-          required
           placeholder="https://…"
         />
         <p className="-mt-2 text-xs text-[var(--color-muted)]">
-          Link to the council or planning website entry for this application.
+          Optional link to the council or planning website entry for this application.
         </p>
         <Input
           label="Excerpt"

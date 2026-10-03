@@ -21,7 +21,7 @@ export function MinutesForm({
     title: string;
     excerpt: string | null;
     body: string;
-    external_url: string;
+    external_url: string | null;
     published_at: string | null;
     cover_image_url: string | null;
     subscribers_notified_at?: string | null;
@@ -67,14 +67,13 @@ export function MinutesForm({
           placeholder="e.g. Committee minutes — March 2026"
         />
         <Input
-          label="Minutes document URL"
+          label="Minutes document URL (optional)"
           name="external_url"
           defaultValue={entry?.external_url ?? ""}
-          required
           placeholder="https://…"
         />
         <p className="-mt-2 text-xs text-[var(--color-muted)]">
-          Link to approved minutes (PDF, shared file, or external page).
+          Optional link to approved minutes (PDF, shared file, or external page).
         </p>
         <Input
           label="Excerpt"

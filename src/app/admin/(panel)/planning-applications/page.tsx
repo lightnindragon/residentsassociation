@@ -83,7 +83,7 @@ export default async function AdminPlanningApplicationsPage({
         </Link>
       </div>
       <p className="mt-1 text-[var(--color-muted)]">
-        Post summaries with a link to the official planning portal. Archived items stay here but are
+        Post summaries with an optional link to the official planning portal. Archived items stay here but are
         hidden from the public site.
       </p>
 

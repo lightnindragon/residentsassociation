@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS planning_applications (
   slug TEXT NOT NULL UNIQUE,
   excerpt TEXT,
   body TEXT NOT NULL,
-  external_url TEXT NOT NULL,
+  external_url TEXT,
   cover_image_url TEXT,
   author_id UUID REFERENCES users(id) ON DELETE SET NULL,
   published_at TIMESTAMPTZ,
@@ -59,7 +59,7 @@ CREATE TABLE IF NOT EXISTS site_events (
   slug TEXT NOT NULL UNIQUE,
   excerpt TEXT,
   body TEXT NOT NULL,
-  external_url TEXT NOT NULL,
+  external_url TEXT,
   cover_image_url TEXT,
   author_id UUID REFERENCES users(id) ON DELETE SET NULL,
   published_at TIMESTAMPTZ,
@@ -77,7 +77,7 @@ CREATE TABLE IF NOT EXISTS site_agendas (
   slug TEXT NOT NULL UNIQUE,
   excerpt TEXT,
   body TEXT NOT NULL,
-  external_url TEXT NOT NULL,
+  external_url TEXT,
   cover_image_url TEXT,
   author_id UUID REFERENCES users(id) ON DELETE SET NULL,
   published_at TIMESTAMPTZ,
@@ -95,7 +95,7 @@ CREATE TABLE IF NOT EXISTS site_minutes (
   slug TEXT NOT NULL UNIQUE,
   excerpt TEXT,
   body TEXT NOT NULL,
-  external_url TEXT NOT NULL,
+  external_url TEXT,
   cover_image_url TEXT,
   author_id UUID REFERENCES users(id) ON DELETE SET NULL,
   published_at TIMESTAMPTZ,
@@ -364,6 +364,22 @@ CREATE TABLE IF NOT EXISTS nav_menus (
   items JSONB NOT NULL DEFAULT '[]'::jsonb,
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+-- Custom website pages (public URLs are /{slug})
+CREATE TABLE IF NOT EXISTS site_pages (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  title TEXT NOT NULL,
+  slug TEXT NOT NULL UNIQUE,
+  excerpt TEXT,
+  body TEXT NOT NULL,
+  cover_image_url TEXT,
+  author_id UUID REFERENCES users(id) ON DELETE SET NULL,
+  published_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_site_pages_published ON site_pages (published_at DESC);
 
 -- Whether sign-up update emails have been sent for this published item
 ALTER TABLE posts ADD COLUMN IF NOT EXISTS subscribers_notified_at TIMESTAMPTZ;

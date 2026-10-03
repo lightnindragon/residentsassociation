@@ -81,7 +81,7 @@ export default async function AdminMinutesPage({
         </Link>
       </div>
       <p className="mt-1 text-[var(--color-muted)]">
-        Meeting minutes with a link to the full document. Archived items stay here but are hidden
+        Meeting minutes with an optional link to the full document. Archived items stay here but are hidden
         from the public site.
       </p>
 

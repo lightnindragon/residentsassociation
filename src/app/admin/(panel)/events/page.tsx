@@ -81,7 +81,7 @@ export default async function AdminEventsPage({
         </Link>
       </div>
       <p className="mt-1 text-[var(--color-muted)]">
-        Community events with a link for tickets or more information. Archived items stay here but are
+        Community events with an optional link for tickets or more information. Archived items stay here but are
         hidden from the public site.
       </p>
 

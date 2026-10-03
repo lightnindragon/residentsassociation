@@ -1,8 +1,8 @@
 "use server";
 
-import { getSql } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import {
+  persistNavMenu,
   sanitizeNavItems,
   type NavMenuKey,
 } from "@/lib/nav-menu";
@@ -33,16 +33,7 @@ export async function saveNavMenu(
       return { error: "Menu data was invalid." };
     }
     const items = sanitizeNavItems(parsed);
-    const payload = JSON.stringify(items);
-
-    const sql = getSql();
-    await sql.query(
-      `INSERT INTO nav_menus (menu_key, items, updated_at)
-       VALUES ($1, $2::jsonb, NOW())
-       ON CONFLICT (menu_key) DO UPDATE
-       SET items = EXCLUDED.items, updated_at = NOW()`,
-      [keyRaw, payload]
-    );
+    await persistNavMenu(keyRaw, items);
 
     revalidatePath("/", "layout");
     return { ok: true };

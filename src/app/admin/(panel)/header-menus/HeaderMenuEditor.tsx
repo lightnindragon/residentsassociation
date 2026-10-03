@@ -19,6 +19,8 @@ import {
   type NavItem,
   type NavMenuKey,
 } from "@/lib/nav-menu";
+import type { SitePageOption } from "@/lib/site-pages";
+import Link from "next/link";
 
 type FlatRow = {
   id: string;
@@ -95,17 +97,21 @@ function blockRange(rows: FlatRow[], index: number): { start: number; end: numbe
   return { start: index, end };
 }
 
-function pageTypeLabel(href: string): string {
-  const match = NAV_PAGE_OPTIONS.find((p) => p.href === href);
-  return match ? "Page" : href ? "Custom" : "Link";
+function pageTypeLabel(href: string, customPages: SitePageOption[]): string {
+  if (!href) return "Heading";
+  if (NAV_PAGE_OPTIONS.some((p) => p.href === href)) return "Page";
+  if (customPages.some((p) => p.href === href)) return "Page";
+  return "Custom";
 }
 
 export function HeaderMenuEditor({
   desktop,
   mobile,
+  customPages = [],
 }: {
   desktop: NavItem[];
   mobile: NavItem[];
+  customPages?: SitePageOption[];
 }) {
   const [tab, setTab] = useState<NavMenuKey>("desktop");
   const [desktopItems, setDesktopItems] = useState(() => cloneItems(desktop));
@@ -131,6 +137,7 @@ export function HeaderMenuEditor({
         key={tab}
         menuKey={tab}
         items={items}
+        customPages={customPages}
         setItems={setItems}
         onCopyFromOther={() => {
           if (tab === "mobile") setMobileItems(regenIds(desktopItems));
@@ -169,12 +176,14 @@ function TabButton({
 function MenuEditor({
   menuKey,
   items,
+  customPages,
   setItems,
   onCopyFromOther,
   copyLabel,
 }: {
   menuKey: NavMenuKey;
   items: NavItem[];
+  customPages: SitePageOption[];
   setItems: Dispatch<SetStateAction<NavItem[]>>;
   onCopyFromOther: () => void;
   copyLabel: string;
@@ -274,6 +283,7 @@ function MenuEditor({
 
       <div className="grid gap-6 lg:grid-cols-[16.5rem_minmax(0,1fr)]">
         <AddItemsPanel
+          customPages={customPages}
           onAdd={(added) => commit([...rows, ...added])}
         />
 
@@ -306,6 +316,7 @@ function MenuEditor({
                     {showLine && <DropLine depth={drop.depth} />}
                     <MenuRow
                       row={row}
+                      customPages={customPages}
                       open={openId === row.id}
                       dragging={dragging}
                       isSub={row.depth === 1}
@@ -358,10 +369,18 @@ function DropLine({ depth }: { depth: 0 | 1 }) {
   );
 }
 
-function AddItemsPanel({ onAdd }: { onAdd: (rows: FlatRow[]) => void }) {
+function AddItemsPanel({
+  customPages,
+  onAdd,
+}: {
+  customPages: SitePageOption[];
+  onAdd: (rows: FlatRow[]) => void;
+}) {
   const [checked, setChecked] = useState<Record<string, boolean>>({});
   const [customLabel, setCustomLabel] = useState("");
   const [customHref, setCustomHref] = useState("");
+  const [headingLabel, setHeadingLabel] = useState("");
+  const allPages = [...NAV_PAGE_OPTIONS, ...customPages];
 
   return (
     <div className="space-y-4">
@@ -384,6 +403,25 @@ function AddItemsPanel({ onAdd }: { onAdd: (rows: FlatRow[]) => void }) {
               </label>
             </li>
           ))}
+          {customPages.length > 0 && (
+            <li className="px-2 pb-1 pt-2 text-[0.65rem] font-semibold uppercase tracking-wider text-[var(--color-muted)]">
+              Your pages
+            </li>
+          )}
+          {customPages.map((p) => (
+            <li key={p.href}>
+              <label className="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-[var(--color-surface)]/60">
+                <input
+                  type="checkbox"
+                  checked={!!checked[p.href]}
+                  onChange={(e) =>
+                    setChecked((c) => ({ ...c, [p.href]: e.target.checked }))
+                  }
+                />
+                {p.label}
+              </label>
+            </li>
+          ))}
         </ul>
         <div className="border-t border-[var(--color-border)] p-2">
           <Button
@@ -391,7 +429,7 @@ function AddItemsPanel({ onAdd }: { onAdd: (rows: FlatRow[]) => void }) {
             variant="outline"
             className="w-full"
             onClick={() => {
-              const added = NAV_PAGE_OPTIONS.filter((p) => checked[p.href]).map((p) => ({
+              const added = allPages.filter((p) => checked[p.href]).map((p) => ({
                 id: newId(),
                 label: p.label === "Planning applications" ? "Planning" : p.label,
                 href: p.href,
@@ -406,6 +444,47 @@ function AddItemsPanel({ onAdd }: { onAdd: (rows: FlatRow[]) => void }) {
             }}
           >
             Add to menu
+          </Button>
+          <p className="mt-2 text-center text-xs text-[var(--color-muted)]">
+            Need a new page?{" "}
+            <Link href="/admin/pages/new" className="text-[var(--color-primary)] underline">
+              Create one
+            </Link>
+          </p>
+        </div>
+      </div>
+
+      <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-card)]">
+        <h2 className="border-b border-[var(--color-border)] px-3 py-2 text-sm font-semibold">
+          Menu heading
+        </h2>
+        <div className="flex flex-col gap-2 p-3">
+          <label className="text-xs font-medium text-[var(--color-muted)]">
+            Header label
+            <input
+              value={headingLabel}
+              onChange={(e) => setHeadingLabel(e.target.value)}
+              placeholder="e.g. Community"
+              className="mt-1 w-full rounded-md border border-[var(--color-border)] px-2 py-1.5 text-sm"
+            />
+          </label>
+          <p className="text-xs text-[var(--color-muted)]">
+            A top-level header with no page of its own. Drag other items under it to make a submenu.
+          </p>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => {
+              const label = headingLabel.trim();
+              if (!label) {
+                toast.error("Enter a header label.");
+                return;
+              }
+              onAdd([{ id: newId(), label, href: "", depth: 0 }]);
+              setHeadingLabel("");
+            }}
+          >
+            Add heading
           </Button>
         </div>
       </div>
@@ -458,6 +537,7 @@ function AddItemsPanel({ onAdd }: { onAdd: (rows: FlatRow[]) => void }) {
 
 function MenuRow({
   row,
+  customPages,
   open,
   dragging,
   isSub,
@@ -470,6 +550,7 @@ function MenuRow({
   onDragOverRow,
 }: {
   row: FlatRow;
+  customPages: SitePageOption[];
   open: boolean;
   dragging: boolean;
   isSub: boolean;
@@ -481,8 +562,9 @@ function MenuRow({
   onDragEnd: () => void;
   onDragOverRow: (e: DragEvent<HTMLDivElement>) => void;
 }) {
-  const known = NAV_PAGE_OPTIONS.some((p) => p.href === row.href);
-  const selectValue = known ? row.href : "__custom__";
+  const allPages = [...NAV_PAGE_OPTIONS, ...customPages];
+  const known = allPages.some((p) => p.href === row.href);
+  const selectValue = !row.href ? "__heading__" : known ? row.href : "__custom__";
 
   return (
     <div
@@ -512,7 +594,7 @@ function MenuRow({
         >
           <span className="truncate text-sm font-medium text-[var(--foreground)]">{row.label}</span>
           <span className="flex shrink-0 items-center gap-2 text-xs text-[var(--color-muted)]">
-            {pageTypeLabel(row.href)}
+            {pageTypeLabel(row.href, customPages)}
             <span aria-hidden>{open ? "▴" : "▾"}</span>
           </span>
         </button>
@@ -537,6 +619,10 @@ function MenuRow({
               value={selectValue}
               onChange={(e) => {
                 const v = e.target.value;
+                if (v === "__heading__") {
+                  onChange({ href: "" });
+                  return;
+                }
                 if (v === "__custom__") {
                   onChange({ href: known ? "" : row.href });
                   return;
@@ -550,6 +636,16 @@ function MenuRow({
                   {p.label}
                 </option>
               ))}
+              {customPages.length > 0 && (
+                <optgroup label="Your pages">
+                  {customPages.map((p) => (
+                    <option key={p.href} value={p.href}>
+                      {p.label}
+                    </option>
+                  ))}
+                </optgroup>
+              )}
+              <option value="__heading__">Menu heading (no link)</option>
               <option value="__custom__">Custom URL…</option>
             </select>
           </label>

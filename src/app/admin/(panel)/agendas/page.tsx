@@ -81,7 +81,7 @@ export default async function AdminAgendasPage({
         </Link>
       </div>
       <p className="mt-1 text-[var(--color-muted)]">
-        Meeting agendas with a link to the full document or external page. Archived items stay here
+        Meeting agendas with an optional link to the full document or external page. Archived items stay here
         but are hidden from the public site.
       </p>
 

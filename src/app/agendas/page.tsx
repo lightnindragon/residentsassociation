@@ -58,7 +58,7 @@ export default async function AgendasPage() {
                   )}
                   <CardHeader>{p.title}</CardHeader>
                   <CardContent>
-                    {p.excerpt || "Read more for details and the agenda link."}
+                    {p.excerpt || "Read more for details."}
                     <span className="mt-2 block text-xs text-[var(--color-muted)]">
                       {p.published_at
                         ? formatUkDate(p.published_at)

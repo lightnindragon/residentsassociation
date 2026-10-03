@@ -21,7 +21,7 @@ export function EventForm({
     title: string;
     excerpt: string | null;
     body: string;
-    external_url: string;
+    external_url: string | null;
     published_at: string | null;
     cover_image_url: string | null;
     subscribers_notified_at?: string | null;
@@ -67,14 +67,13 @@ export function EventForm({
           placeholder="e.g. Summer Community picnic"
         />
         <Input
-          label="Event link URL"
+          label="Event link URL (optional)"
           name="external_url"
           defaultValue={event?.external_url ?? ""}
-          required
           placeholder="https://…"
         />
         <p className="-mt-2 text-xs text-[var(--color-muted)]">
-          Link to tickets, Facebook event, venue page, or further information.
+          Optional link to tickets, Facebook event, venue page, or further information.
         </p>
         <Input
           label="Excerpt"
