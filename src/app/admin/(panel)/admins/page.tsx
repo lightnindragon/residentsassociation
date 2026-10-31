@@ -30,6 +30,8 @@ export default async function AdminAdminsPage() {
       <h1 className="font-heading text-2xl font-semibold">Administrators</h1>
       <p className="mt-1 text-sm text-[var(--color-muted)]">
         Add committee admins and choose which parts of the admin panel each person can use.
+        If they already have a resident account, use the same email here — that account will be
+        promoted — or open them under Residents and click Make admin.
       </p>
       <AddAdminForm canAssignDev={canAssignDev} />
       <ul className="mt-8 space-y-4">

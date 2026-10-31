@@ -2,6 +2,9 @@ import Link from "next/link";
 import { getSql } from "@/lib/db";
 import { notFound } from "next/navigation";
 import { ResidentEditForm } from "./ResidentEditForm";
+import { MakeAdminForm } from "./MakeAdminForm";
+import { getAdminAccess } from "@/lib/admin-access";
+import { hasAdminPermission } from "@/lib/admin-permissions";
 
 export default async function EditResidentPage({
   params,
@@ -35,6 +38,9 @@ export default async function EditResidentPage({
   }
   if (!user) notFound();
 
+  const access = await getAdminAccess();
+  const canMakeAdmin = !!access && hasAdminPermission(access.role, access.permissions, "admins");
+
   return (
     <div>
       <Link href="/admin/residents" className="text-sm text-[var(--color-primary)] hover:underline">
@@ -46,6 +52,12 @@ export default async function EditResidentPage({
         {user.banned ? " · Banned" : ""}
       </p>
       <ResidentEditForm user={user} />
+      {canMakeAdmin && (
+        <div className="mt-8 max-w-lg border-t border-[var(--color-border)] pt-6">
+          <h2 className="font-heading text-sm font-semibold">Administrator access</h2>
+          <MakeAdminForm userId={user.id} canAssignDev={access?.role === "dev"} />
+        </div>
+      )}
     </div>
   );
 }

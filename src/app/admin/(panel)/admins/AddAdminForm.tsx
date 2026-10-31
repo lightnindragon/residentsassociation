@@ -26,7 +26,11 @@ export function AddAdminForm({ canAssignDev }: { canAssignDev: boolean }) {
       </div>
       <AdminPermissionsFields defaultKeys={null} />
       {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
-      {state?.success && <p className="text-sm text-[var(--color-primary)]">Administrator added.</p>}
+      {state?.success && (
+        <p className="text-sm text-[var(--color-primary)]">
+          Administrator added. If they already had a resident account, that account is now an admin.
+        </p>
+      )}
       <Button type="submit">Add administrator</Button>
     </form>
   );

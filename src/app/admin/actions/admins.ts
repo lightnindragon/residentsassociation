@@ -24,6 +24,26 @@ export async function addAdminUser(
     const permissions = parsePermissionsFromForm(formData, role);
     const hash = await bcrypt.hash(password, 12);
     const sql = getSql();
+    const [existing] = await sql`
+      SELECT id, role FROM users WHERE email = ${email} LIMIT 1
+    `;
+    const prev = existing as { id: string; role: string } | undefined;
+    if (prev?.role === "admin" || prev?.role === "dev") {
+      return { error: "That email is already an administrator. Edit them on this page instead." };
+    }
+    if (prev?.role === "user") {
+      await sql`
+        UPDATE users
+        SET name = ${name}, password_hash = ${hash}, role = ${role}, approved = true,
+            banned = false, banned_until = NULL, admin_permissions = ${permissions},
+            updated_at = NOW()
+        WHERE id = ${prev.id}::uuid AND role = 'user'
+      `;
+      revalidatePath("/admin/admins");
+      revalidatePath("/admin/residents");
+      revalidatePath(`/admin/residents/${prev.id}`);
+      return { success: true };
+    }
     await sql`
       INSERT INTO users (email, password_hash, name, role, approved, admin_permissions)
       VALUES (${email}, ${hash}, ${name}, ${role}, true, ${permissions})
@@ -33,6 +53,38 @@ export async function addAdminUser(
   } catch (e) {
     const msg = e instanceof Error && e.message.includes("access") ? e.message : "Failed (email may already exist).";
     return { error: msg };
+  }
+}
+
+export async function promoteResidentToAdmin(
+  userId: string,
+  formData: FormData
+): Promise<{ ok?: boolean; error?: string }> {
+  try {
+    const actor = await requireAdminPermission("admins");
+    let role = formData.get("role")?.toString() === "dev" ? "dev" : "admin";
+    if (role === "dev" && actor.role !== "dev") {
+      return { error: "Only a dev account can create another dev." };
+    }
+    const permissions = parsePermissionsFromForm(formData, role);
+    const sql = getSql();
+    const rows = await sql`
+      UPDATE users
+      SET role = ${role}, approved = true, banned = false, banned_until = NULL,
+          admin_permissions = ${permissions}, updated_at = NOW()
+      WHERE id = ${userId}::uuid AND role = 'user'
+      RETURNING id
+    `;
+    if (rows.length === 0) {
+      return { error: "Resident not found, or they are already an administrator." };
+    }
+    revalidatePath("/admin/admins");
+    revalidatePath("/admin/residents");
+    revalidatePath(`/admin/residents/${userId}`);
+    return { ok: true };
+  } catch (e) {
+    console.error(e);
+    return { error: e instanceof Error ? e.message : "Failed to make this resident an admin." };
   }
 }
 
